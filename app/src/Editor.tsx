@@ -6,6 +6,7 @@ import { CATEGORIES, FAMILIES, isHours, newLine, kindOf } from './model';
 import { downloadPdf } from './QuotePdf';
 import type { Profile } from './main';
 import library from './wording-library.txt?raw';
+import { ImportSpec } from './ImportSpec';
 
 const LIBRARY = library.split(/^=== /m).filter(Boolean).map(b => {
   const [head, ...rest] = b.split('\n'); return { title: rest.find(l => l.trim()) ?? head, text: rest.join('\n').trim() };
@@ -32,6 +33,7 @@ export function Editor({ quoteId, me }: { quoteId: string; me: Profile }) {
   const [busy, setBusy] = useState(false);
   const [vendorQ, setVendorQ] = useState('');
   const [vendorHits, setVendorHits] = useState<any[]>([]);
+  const [buildNotes, setBuildNotes] = useState<string[]>([]);
 
   const load = async (revId?: string) => {
     const { data: q } = await supabase.from('quotes').select('*, customers(*), contacts(*)').eq('id', quoteId).single();
@@ -124,6 +126,14 @@ export function Editor({ quoteId, me }: { quoteId: string; me: Profile }) {
             <div><label>Main product</label><select disabled={locked} value={fam} onChange={e => upd({ family: e.target.value })}>{FAMILIES.map(f => <option key={f.key} value={f.key}>{f.label}</option>)}</select></div>
             <div><label>Document</label><input disabled value={rev.doc_type} /></div>
           </div>
+
+          {!locked && <ImportSpec doc={doc} settings={settings} onApply={(d, h, notes) => {
+            setDoc(d); setDirty(true); setBuildNotes(notes);
+            setHeader({ ...header, project_name: header.project_name || h.project_name, job_location: header.job_location || h.job_location });
+            setMsg({ t: 'ok', m: `Built ${d.lines.length} lines — review, then Save.` });
+          }} />}
+          {buildNotes.length > 0 && <div className="card"><h3>Check these</h3><ul>{buildNotes.map((n, i) => <li key={i}>{n}</li>)}</ul>
+            <button onClick={() => setBuildNotes([])}>Done</button></div>}
 
           <div className="card">
             <h3>Line items</h3>
