@@ -14,7 +14,7 @@ export function registerPdfAssets(base: string) {
   Font.register({ family: 'Poppins', fonts: [
     { src: BASE + 'Poppins-ExtraLight.ttf', fontWeight: 200 }, { src: BASE + 'Poppins-Light.ttf', fontWeight: 300 },
     { src: BASE + 'Poppins-Regular.ttf', fontWeight: 400 }, { src: BASE + 'Poppins-Bold.ttf', fontWeight: 700 }] });
-  Font.register({ family: 'Signature', src: BASE + 'Yesteryear-Regular.ttf' });
+  Font.register({ family: 'Signature', src: BASE + 'Damion-Regular.ttf' });   // closest free match to Brush Script MT
   Font.registerHyphenationCallback(w => [w]);
   registered = true;
 }
@@ -115,7 +115,7 @@ export function QuoteDocPdf({ quote, rev, doc, priced, me, number }: { quote: an
           {doc.options.filter(o => o.description).map((o, i) => <View key={'o' + i} style={{ position: 'absolute', left: 110.8, top: 335 + i * 21, width: 458.5, flexDirection: 'row', justifyContent: 'space-between' }}>
             <Text style={{ fontWeight: 400 }}>Option {i + 1}: {o.description}</Text><Text style={{ fontWeight: 400 }}>{usd(o.price)}</Text></View>)}
           <Text style={{ position: 'absolute', left: 35, top: 419.2, width: 541, fontSize: PT, lineHeight: 1.98 }}>{TERMS}</Text>
-          <Text style={{ position: 'absolute', left: 45.5, top: 498, fontFamily: 'Signature', fontSize: 35.3 }}>{me.full_name}</Text>
+          <Text style={{ position: 'absolute', left: 45.5, top: 501, fontFamily: 'Signature', fontSize: 31 }}>{me.full_name}</Text>
           <Text style={{ position: 'absolute', left: 42.6, top: 549.8 }}>{me.title}</Text>
           <Shield x={484} y={517} w={70} h={73} />
           {isQuote && <Text style={{ position: 'absolute', left: 44.3, top: 572.2, fontSize: 19.6, fontWeight: 700 }}>Project Acceptance</Text>}

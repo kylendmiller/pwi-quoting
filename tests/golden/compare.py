@@ -24,7 +24,7 @@ for r in ref:
     pagebad = o[0] != r[0]
     fixed = r[0] == 1 and r[3] < 180 or r[0] == nref     # page-1 header and closing page are fixed layout
     if fixed and not r[4].startswith('Brush'): worst = max(worst, abs(dy) if not pagebad else 99)
-    if abs(dx) > 4 or (fam(r[4]) != fam(o[4]) and not r[4].startswith('Brush')) or abs(r[5] - o[5]) > 0.2: worst = max(worst, 98)
+    if not r[4].startswith('Brush') and (abs(dx) > 4 or fam(r[4]) != fam(o[4]) or abs(r[5] - o[5]) > 0.2): worst = max(worst, 98)
     flag = '  ' if abs(dy) < 3 and abs(dx) < 4 and not pagebad else '!!'
     rows.append(f"{flag} p{r[0]}->{o[0]} dy{dy:+6.1f} dx{dx:+6.1f} {r[4][:14]:14}/{o[4][:14]:14} {r[5]}/{o[5]} {r[1][:50]}")
 missing = sum(1 for r in rows if r.startswith('MISSING'))
