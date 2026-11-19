@@ -310,59 +310,62 @@ export function buildFreestanding(spec: FreestandingSpec, cat: Catalog, f = { pr
 }
 
 
+// Customer wording in the PWI quote layout (see wordingFormat.ts for the markup).
 function wording(s: Norm, x: any): string {
-  const series = `FSTR${s.series}${s.capacityTons < 1 ? tons(s.capacityTons).replace('/', '') : s.capacityTons}`;
-  const title = s.series === 'UL' ? 'PWI TOP RUNNER ULTRALITE MANUAL BRIDGE CRANE SYSTEM' : x.motor ? 'INCOMMAND TOP RUNNING MOTORIZED BRIDGE CRANE SYSTEM' : 'INCOMMAND TOP RUNNER MANUAL BRIDGE CRANE SYSTEM';
-  const hoistTxt = `(${s.hoistsPerBridge ?? 1}) Starke ${s.capacityTons >= 5 ? 'wire rope' : 'STK Series electric chain'} hoist, ${tons(s.capacityTons)} ton`;
-  const out = [
-    `(${s.systems}) - ${series} ${title}`,
-    '',
-    'General Specs:',
-    `Runway OAL:\t${ftIn(s.runwayOalFt)}`,
-    `Bridge Crane Span:\t${ftIn(s.spanFt)}`,
-    `Rated Capacity:\t${tons(s.capacityTons)} Ton with (${s.hoistsPerBridge ?? 1}) hoist`,
-    `Hook Height:\t${ftIn(Math.floor(x.hook * 12) / 12)}`,
-    `Overall Height:\t${ftIn(Math.ceil(x.overall * 12) / 12)}`,
-    `System Voltage:\t${s.voltage.replace('/3', '/3 phase')}`,
-    '',
-    'Crane Classification:',
-    'Class C (Moderate Service): This service covers cranes whose service requirements are deemed moderate, handling loads which average 50 percent of the rated capacity with 5 to 10 lifts per hour, averaging 15 feet, with not over 50 percent of the lifts at rated capacity.',
-    '',
-    'Runway Package',
-    `(${x.colsPer}) ${x.builtUp ? 'Built-up plate' : 'Structural'} columns spaced at approx. ${ftIn(Math.round(x.bayFt))} bays`,
-    `${ftIn(s.runwayOalFt)} x ${tons(s.capacityTons)} Ton capacity WF beam runway system`,
-    ...(x.rail ? ['30# ASCE rail and standard weld clips'] : []),
-    'Runway system will include lateral and longitudinal tie back bracing',
-    '(4) HD end stops',
-    'Complete ElectroTrack electrification system',
-    paintLine(s),
-    x.foundation === 'foundation' ? 'Columns set on concrete foundations by others, with epoxy anchors and grouted base plates' : 'Support columns with gusseted base plates designed for a 6" concrete slab',
-    ...(s.bracedToBuilding ? ['Runway system to be braced to the existing building structure (details in approval drawings)'] : []),
-    '',
-    `(${x.bridges}) ${ftIn(s.spanFt)} x ${tons(s.capacityTons)} Ton Capacity ${x.doubleGirder ? 'Double Girder ' : ''}${x.motor ? 'Top Running Motorized' : 'Top Running Manual'} Bridge Crane`,
-    ...(x.motor ? [`Includes ${tons(s.capacityTons)} ton top running motorized end trucks with 2-speed/VFD`] : [`Includes ${tons(s.capacityTons)} ton manual top running end trucks`]),
-    hoistTxt,
-    `${x.lift}' lift`,
-    s.voltage.startsWith('460') ? '460V/3ph' : '230V/3ph',
-    s.trolley === 'motorized' ? '(1) Starke motorized trolley — 2-speed/VFD' : '(1) Starke manual trolley',
-    'Festoon electrification system on bridge',
-    'PWI HD end stops at each end of bridge crane',
-    s.colors?.bridge && !STD_COLORS.test(s.colors.bridge) ? `Bridge painted ${s.colors.bridge} (custom color)` : 'Spark Orange industrial coating',
-    'Rated capacity decals',
-    '',
-    ...(s.control === 'radio' ? ['Radio Remote Control System', `Starke Echo radio remote control system`, `Capable of ${x.motor ? '3 Motion/2 Step control (N/S - E/W - Up/Down)' : 'hoist and trolley control'}`, 'Includes (1) spare transmitter', ''] : ['Pendant control', '']),
-    ...(x.motor ? ['Starke Control Panel', 'Equipped with VFD control for programmable 2-step control and start - stop operation', 'Warning strobe light to indicate bridge is in motion', ''] : []),
-    ...(s.collisionAvoidance ? ['Collision Avoidance', 'Starke dual event twin laser collision avoidance for bridge crane to bridge crane and bridge crane to end stops', ''] : []),
-    ...(s.install ? ['Installation', 'Complete installation by PWI crew, including setup, anchoring, electrification and final adjustments. Customer to provide power to the main disconnect.'] : ['Ship only — installation by others.']),
+  const T = tons(s.capacityTons), n = s.hoistsPerBridge ?? 1;
+  const kind = s.series === 'UL' ? 'ULTRALITE MANUAL' : x.motor ? 'MOTORIZED' : 'MANUAL';
+  const title = s.series === 'UL' ? `PWI TOP RUNNER ${kind} BRIDGE CRANE SYSTEM` : `INCOMMAND TOP RUNNER ${kind} BRIDGE CRANE SYSTEM`;
+  const custom = (v?: string) => !!v && !STD_COLORS.test(v);
+  const c = s.colors ?? {};
+  const out: string[] = [
+    `# ${s.systems > 1 ? `(${s.systems}) ` : ''}${title}`, '',
+    '## General Specs:',
+    `- Runway OAL:\t${ftIn(s.runwayOalFt)}`,
+    `- Bridge Crane Span:\t${ftIn(s.spanFt)}`,
+    `- Rated Capacity:\t${T} Ton with (${n}) hoist${n > 1 ? 's' : ''}`,
+    `- Hook Height:\t${hgt(x.hook, 'floor')}`,
+    `- Overall Height:\t${hgt(x.overall, 'ceil')}`,
+    `- System Voltage:\t${s.voltage.replace('/3', '/3 phase')}`, '',
+    '## Crane Classification:',
+    '> Class C (Moderate Service): This service covers cranes whose service requirements are deemed moderate, handling loads which average 50 percent of the rated capacity with 5 to 10 lifts per hour, averaging 15 feet, with not over 50 percent of the lifts at rated capacity.', '',
+    '## Runway Package',
+    `- (${x.colsPer}) ${x.builtUp ? 'Built-up plate' : 'Structural'} columns spaced at approx. ${ftIn(Math.round(x.bayFt))} bays`,
+    `- ${T} Ton capacity WF beam runway system`,
+    ...(x.rail ? ['- 30# ASCE crane rail with standard weld clips'] : []),
+    '- Runway system will include lateral and longitudinal tie back bracing',
+    '- (4) HD end stops',
+    '- Complete ElectroTrack electrification system',
+    `- ${custom(c.runways) ? `Runways painted ${c.runways} (custom color)` : 'Runways painted gray'}, ${custom(c.columns) ? `columns painted ${c.columns} (custom color)` : 'columns painted gray'}`,
+    x.foundation === 'foundation' ? '- Columns set on concrete foundations by others, with epoxy anchors and grouted base plates' : '- Support columns with gusseted base plates designed for 6" concrete slab',
+    ...(s.bracedToBuilding ? ['- Needs to be braced to present structure'] : []), '',
+    `## (${x.bridges}) ${ftIn(s.spanFt)} x ${T} Ton Capacity ${x.doubleGirder ? 'Double Girder ' : ''}Top Runner ${x.motor ? 'Motorized' : 'Manual'} Bridge Crane`,
+    x.motor ? `- Includes ${T} ton top running motorized end trucks with 2-speed/VFD` : `- Includes ${T} ton manual top running end trucks`,
+    `- (${n}) Starke - ${s.capacityTons >= 5 ? 'wire rope' : 'STK Series'} ${T} ton electric ${s.capacityTons >= 5 ? '' : 'chain '}hoist`,
+    `-- ${x.lift}' lift`,
+    `-- ${s.voltage.startsWith('460') ? '460V/3ph' : s.voltage.startsWith('208') ? '208V/3ph' : '230V/3ph'}`,
+    `- (${n}) Starke ${s.trolley === 'motorized' ? 'Motorized' : 'Manual'} Trolley`,
+    ...(s.trolley === 'motorized' ? ['-- 2-speed/VFD'] : []),
+    '- Festoon electrification system on bridge',
+    '- PWI HD end stops at each end of bridge crane',
+    `- ${custom(c.bridge) ? `Bridge painted ${c.bridge} (custom color)` : 'Spark Orange industrial coating'}`,
+    '- Rated capacity decals', '',
+    ...(s.control === 'radio' ? ['## Radio Remote Control System', '- STARKE Radio Remote Control system',
+      `- Capable of ${x.motor ? '3 Motion/2 Step control   (N/S - E/W - Up/Down)' : 'hoist and trolley control'}`, '- Includes (1) spare transmitter', '']
+      : ['## Pendant Control', '- Pendant control for hoist and trolley', '']),
+    ...(x.motor ? ['## Starke Control Panel', '- Equipped with VFD control for programmable 2-step control and start - stop operation', '- Warning strobe light to indicate bridge is in motion', ''] : []),
+    ...(s.collisionAvoidance ? ['## Collision Avoidance', '- Starke Collision Avoidance for bridge crane to bridge crane and bridge crane to end stops',
+      '- Increased safety for operators especially when transporting heavy loads', '- Simple uni-directional bridge collision avoidance with (2) adjustable events (0-200 ft)', ''] : []),
+    ...(s.install ? ['## Installation', '- Complete installation by PWI crew, including setup, anchoring, electrification and final adjustments', '- Customer to provide power to the main disconnect', '']
+      : ['## Shipping', '- Ship only — installation by others', '']),
+    '[image:fstr]',
   ];
   return out.join('\n');
 }
-
-function paintLine(s: Norm): string {
-  const c = s.colors ?? {}; const custom = (v?: string) => v && !STD_COLORS.test(v);
-  const col = custom(c.columns) ? `columns painted ${c.columns} (custom color)` : 'columns painted two-tone gray and Spark Orange';
-  const run = custom(c.runways) ? `runways painted ${c.runways} (custom color)` : 'runways painted gray';
-  return `${run[0].toUpperCase()}${run.slice(1)}, ${col} industrial coating`;
+/** Feet as the SMT prints heights: 13'-7" */
+function hgt(ft: number, mode: 'floor' | 'ceil'): string {
+  const inches = mode === 'floor' ? Math.floor(ft * 12 + 1e-6) : Math.ceil(ft * 12 - 1e-6);
+  const f = Math.floor(inches / 12), i = inches % 12;
+  return i ? `${f}'-${i}"` : `${f}'`;
 }
 const ftIn = (ft: number) => { const f = Math.floor(ft + 1e-9); const i = Math.round((ft - f) * 12); return i === 12 ? `${f + 1}'` : i ? `${f}' ${i}"` : `${f}'`; };
 const tons = (t: number) => (t === 0.5 ? '1/2' : t === 0.25 ? '1/4' : String(t));

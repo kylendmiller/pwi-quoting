@@ -6,5 +6,5 @@ export default defineConfig(({ command }) => ({
   plugins: [react(), { name: 'version-json', generateBundle() { this.emitFile({ type: 'asset', fileName: 'version.json', source: JSON.stringify({ build: BUILD }) }); } }],
   define: { __BUILD_ID__: JSON.stringify(command === 'build' ? BUILD : 'dev') },
   build: { outDir: '../dist/app', emptyOutDir: true },
-  test: { root: '.', include: ['tests/**/*.test.ts'] },
+  test: { root: '.', include: ['tests/**/*.test.ts', 'tests/**/*.test.tsx'] },
 }));

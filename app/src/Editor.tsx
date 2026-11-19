@@ -181,7 +181,7 @@ export function Editor({ quoteId, me, mode = 'edit' }: { quoteId: string; me: Pr
               {!locked && <select value="" onChange={e => { const b = LIBRARY[Number(e.target.value)]; if (b) upd({ wording: (doc.wording ? doc.wording + '\n\n' : '') + b.text }); }} style={{ width: 300 }}>
                 <option value="">Insert from wording library…</option>{LIBRARY.map((b, i) => <option key={i} value={i}>{b.title.slice(0, 60)}</option>)}</select>}</div>
             <textarea disabled={locked} rows={22} value={doc.wording} onChange={e => upd({ wording: e.target.value })} />
-            <p className="muted">Fix every "xx", "(x)", "?" and "OR" before sending — the system blocks them.</p>
+            <p className="muted">Layout codes: <b>#</b> title · <b>##</b> heading · <b>-</b> bullet · <b>--</b> sub-bullet · <b>&gt;</b> paragraph · "Label:<i>Tab</i>Value" for spec rows · [image:fstr]. Use "Preview PDF" to check. Fix every "xx", "(x)", "?" and "OR" before sending — the system blocks them.</p>
           </div>
 
           <div className="card">

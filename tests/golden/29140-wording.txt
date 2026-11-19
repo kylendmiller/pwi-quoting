@@ -1,0 +1,47 @@
+# INCOMMAND TOP RUNNER BRIDGE CRANE SYSTEM #57899
+
+## General Specs:
+- Runway OAL:	80'
+- Bridge Crane Span:	37'
+- Rated Capacity:	2 Ton with (1) hoist
+- Hook Height:	13'-7"
+- System Voltage:	208V/3 phase
+
+## Crane Classification:
+> Class C (Moderate Service): This service covers cranes whose service requirements are deemed moderate, handling loads which average 50 percent of the rated capacity with 5 to 10 lifts per hour, averaging 15 feet, with not over 50 percent of the lifts at rated capacity.
+
+## Runway Package
+- (8) Square tube columns spaced at 29'-29'-20' span
+- 2 Ton capacity WF beam runway system
+- Runway system will include lateral and longitudinal tie back bracing
+- (4) HD end stops
+- Complete ElectroTrack electrification system
+- Runways and columns painted gray
+- Square tube support columns with gusseted base plates designed for 6" concrete slab
+- Needs to be braced to present structure
+
+## (1) 37’ x 2 Ton Capacity Top Runner Motorized Bridge Crane
+- Includes 2 ton top running motorized end trucks with 2-speed/VFD: 100FPM max
+- (1) Starke - STK Series 2 ton electric chain hoist
+-- Variable speed: 2-26FPM
+-- 15’ lift
+-- 208V/3ph
+- (1) Starke Motorized Trolley
+-- 2-speed/VFD: 82/14FPM
+-- Lug Mount
+
+## Radio Remote Control System
+- STARKE Radio Remote Control system
+- Capable of 3 Motion/2 Step control   (N/S - E/W - Up/Down)
+- Includes (1) spare transmitter
+
+## Starke Control Panel
+- Equipped with VFD control for programmable 2-step control and start - stop operation
+- Warning strobe light to indicate bridge is in motion
+
+## Collision Avoidance
+- Starke Collision Avoidance for bridge crane to bridge crane and bridge crane to end stops
+- Increased safety for operators especially when transporting heavy loads
+- Simple uni-directional bridge collision avoidance with (2) adjustable events (0-200 ft)
+
+[image:fstr]
