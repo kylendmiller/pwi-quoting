@@ -5,7 +5,7 @@ Kyle Miller is President of PWI Corp, a crane, mezzanine and structural steel ma
 
 He wants a salesperson to say the job ("FSTRGM5, 30' span, 80' long, 20' tall, radio, pink columns, install in Milwaukee") and get a complete, correct, ready-to-send quote with almost no clicking. He loved v1 and wants it better, cleaner, faster and more streamlined.
 
-Never write "Paul's Welding" anywhere. The company is PWI or PWI Corp.
+The company is only ever called PWI or PWI Corp.
 
 ## What exists today (v1, live)
 
