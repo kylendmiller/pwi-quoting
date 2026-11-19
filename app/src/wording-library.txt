@@ -1,0 +1,738 @@
+=== TextBox 1 @col0 row2 (3319 chars)
+(1) - 0’ 0” x 0’ 0” STRUCTURALSPACE MEZZANINE PACKAGE        
+General Specs:
+Approximate Square Footage: 	1,680
+Mezzanine Rated Capacity: 	35 psf T.L. / 125 psf L.L. 
+Engineering Standards: 	L/360
+Approximate Deck Height:	11' - 3 1/2" 
+Clear Height:		9' - 4 1/2" 
+Approx. Crossmember Spacing:	4' 0" c/c 
+Max. Assumed Column Load:	50 Kips 
+
+Structure Details:
+Includes standard tubular columns with base plates sized to minimize foundation loading (pre-drilled for 4 anchors)
+Standard structural WF beam frame design with bolted connections on all columns and crossmembers
+X-Bracing or Knee Bracing package included (details to be included in approval drawings)
+PWI Packages include all anchoring and assembly hardware 
+All structural steel will be industrial coated Gray
+Includes rated capacity decals 
+
+You must choose one of the below options if you are purchasing a mezzanine:
+Structure Braced: I, the customer, accept that the lateral loads of the mezzanine structure will be transferred into a separate steel structure not part of this mezzanine and I am responsible for verifying that the separate structure is capable/engineered for the lateral loads being applied by the PWI mezzanine. This option may provide open traffic patterns under the mezzanine.
+Freestanding Braced Mezzanine: I, the customer, accept that I will be presented with bracing options and types for my mezzanine structure and that a bracing package (included in project price) will be required for this mezzanine project. This bracing may interfere with traffic flow in my operation.
+No Bracing: I, the customer, require this mezzanine to be completely unbraced and all lateral loads need to be accounted for in the footer/foundation design. This will require heavier header steel and cross members along with heavier moment connections and columns. This option provides open traffic patterns under the mezzanine. I understand & acknowledge this will add significant cost in structural and footer upgrades.
+
+Supplied Component Breakdown:
+Subfloor: 1-1/2” x 20 ga B-Deck OR 1-1/2" x 20ga F-Deck
+(xxx) sq ft of coverage
+Attached by Hilti shots or self tapping screws
+Galvanized Finish
+ 
+Flooring Surface: Advantech ¾” T&G, OR ResinDek ¾” T&G Diamond Seal 2
+(xxx) Sheets 4' x 8'
+2” collated drill screws 
+Unfinished surface
+ 
+Guardrail Package: 42” Tubular Guardrail System with Mid-rail and Toe-kick. (OSHA Approved Design)
+82 linear ft - Bolt on or welded
+Bolt attaching brackets supplied for vertical posts
+Spark Orange industrial coating 
+ 
+Stairway Package: (1) - 42” Industrial Steel Stairway 
+Height: 138”
+Type C Railing: 42” Tubular 2-rail guardrail with additional 36” round pipe handrail
+42" diamond plate closed/open riser stair treads
+Spark Orange industrial coating 
+Customer is responsible to confirm local code compliance
+
+Access Gate Package: (1) - 10' Manual or Motorized Mezzanine Gate 
+10' Manually rolling access gate with screw attached floor track
+OR Push button overhead gate operated at mezzanine level
+Braced to building structure for lateral bracing
+(2) Push button remote gate operators for fork lift 
+ 
+Foundation Package: (6) - 4’ x 4’ Concrete Footers (Engineer Approved)
+Capable of 48,000 lb loading each
+Includes marking and cutting of existing concrete and final finish of footer
+Removal and disposal of material
+
+=== TextBox 2 @col0 row105 (1692 chars)
+(1) - APEX VERTICAL RECIPROCATING CONVEYORS
+General Specs:
+Carriage Floor Dimensions:	 8’ x 12’
+Maximum Live Load Capacity:	 3,000 lbs
+First Floor Height:		 144”
+OveFirst Floor Height:		 144”
+Hook Height:		 14'
+System Voltage: 		 480V/3 phase
+
+Structure Details:
+Includes standard 5" square tubular columns with base plates (pre-drilled for 4 concrete wedge anchors)
+Entry and exit points on same/opposite/both sides of the carriage
+Standard railroad style lift gates included on one/both sides of the carriage
+96” tall perimeter safety cage with mesh guarding on ground, and upper levels with overhead style manual full height safety doors for ground and upper level entry points
+All structural steel will be industrial coated gray
+Includes rated capacity and operation decals
+Not intended for human load (Material lift only)
+ 
+Control Panel and Safety Features:
+Control panels are installed at each operating level and provide push button control and a safety disconnect button
+VRC control panels include a digital load cell displaying the weight added to the carriage
+Features mechanical Safety Lock-out System (safety doors only open when carriage is at floor height)
+Equipped with secondary brake device in case of lifting device failure
+(customer is responsible to have 110V outlet available where powered gates are used)
+
+Additional Components: 
+Flooring Surface of Carriage: ResinDek ¾”  HD Diamond Seal 2 
+Flush Floor Option: Level access to carriage floor
+Easy-roll on carriage entry provides ground level access to carriage floor with no ramp needed
+PWI will cut floor and pour new concrete pit at 5” depth to allow carriage floor surface to be "flush" with existing concrete floor
+
+=== TextBox 3 @col14 row110 (1537 chars)
+INCOMMAND UNDERHUNG BRIDGE CRANE SYSTEM
+General Specs:
+Runway OAL: 	15'
+Bridge Crane Span:	15'
+Rated Capacity:	2 Ton with (1) hoist
+Hook Height: 	TBD
+System Voltage:	480V/3 phase
+
+Crane Classification:
+Class C (Moderate Service): This service covers cranes whose service requirements are deemed moderate, handling loads which average 50 percent of the rated capacity with 5 to 10 lifts per hour, averaging 15 feet, with not over 50 percent of the lifts at rated capacity. 
+
+Runway Package
+() Square tube freestanding columns spaced at xx’ span
+xx’ x ? Ton WF-beam runway system
+(4) HD End stops
+Complete ElectroTrack electrification system
+Runways and columns gray industrial coating 
+No bracing required (bracing packages available at additional cost)
+
+(1) 25’ x 2 Ton Capacity Motorized Bridge Crane
+
+2 ton Starke manual underhung end trucks 
+(1) Starke - STK Series 1 ton electric chain hoist 
+Single speed: 26FPM
+20’ lift
+460V/3ph
+(1) Starke motorized trolley or Starke manual trolley
+2-speed/VFD: 82/14FPM
+Hook Mount or Lug Mount
+Festoon or Electrotrack electrification system
+PWI HD end stops at each end of bridge crane
+Spark Orange industrial coating 
+Rated capacity decals
+
+ Radio Remote Control System
+InMotion K-Series radio remote control system
+Capable of 3 motion/2 Step control   (N/S - E/W - Up/Down)
+Includes (1) spare transmitter and wireless charging station
+
+Starke Control Panel
+Equipped with VFD control for programmable 2-step control and start - stop operation
+Warning strobe light to indicate bridge is in motion
+
+=== TextBox 4 @col14 row172 (1613 chars)
+INCOMMAND UNDERHUNG BRIDGE CRANE SYSTEM  (CEILING MOUNTED)
+General Specs:
+Runway OAL: : 	15'
+Bridege Crane Span:	15'
+Rated Capacity: 	2 Ton with (1) Hoist
+Hook Height: 	TBD
+System Voltage:	480V/3 phase
+
+Crane Classification:
+Class C (Moderate Service): This service covers cranes whose service requirements are deemed moderate, handling loads which average 50 percent of the rated capacity with 5 to 10 lifts per hour, averaging 15 feet, with not over 50 percent of the lifts at rated capacity. 
+Runway Package
+55’ x 2 Ton capacity W-beam runway system mounted directly to bar joists or steel frame building structure
+Welded Connection or Bolted Connection 
+Runway system will include lateral and longitudinal stability bracing
+(4) HD end stops
+Complete 4-conductor electrification kit on runway system
+Runways gray industrial coating 
+
+(1) 25’ x 2 Ton Capacity Motorized Bridge Crane
+
+2 ton manual underhung end trucks 
+(1) Starke - STK Series 1 ton electric chain hoist 
+Single speed: 26FPM
+20’ lift
+460V/3ph
+(1) Starke motorized trolley or Starke manual trolley
+2-speed/VFD: 82/14FPM
+Hook Mount or Lug Mount
+Festoon or Electrotrack electrification system
+PWI HD end stops at each end of bridge crane
+Spark Orange industrial coating 
+Rated capacity decals
+
+ Radio Remote Control System
+InMotion K-Series radio remote control system
+Capable of 3 motion/2 Step control   (N/S - E/W - Up/Down)
+Includes (1) spare transmitter and wireless charging station
+
+Starke Control Panel
+Equipped with VFD control for programmable 2-step control and start - stop operation
+Warning strobe light to indicate bridge is in motion
+
+=== TextBox 5 @col14 row1 (3928 chars)
+INCOMMAND TOP RUNNING MOTORIZED BRIDGE CRANE SYSTEM
+ 
+General Specs:
+
+Runway OAL:	90'
+Bridge Crane Span: 	35'
+Rated Capacity: 	1 Ton with (1) hoist
+Hook Height:  	14'
+System Voltage:	460V/3 phase
+
+Crane Classification:
+
+Class C (Moderate Service): This service covers cranes whose service requirements are deemed moderate, handling loads which average 50 percent of the rated capacity with 5 to 10 lifts per hour, averaging 15 feet, with not over 50 percent of the lifts at rated capacity. 
+
+WARNING: CLASS D REQUIRES MANAGER APPROVAL IN EVERY CIRCUMSTANCE
+Class D (Heavy Service): This service covers cranes which may be used in heavy machine shops, foundries, fabricating plants, steel warehouses, container yards, lumber mills, etc., and standard duty bucket and magnet operations where heavy duty production is required. In this type of service, loads approaching 50 percent of the rated capacity will be handled constantly during the working period. High speeds are desirable for this type of service with 10 to 20 lifts per hour averaging 15 feet, not over 65 percent of the lifts at rated capacity. 
+
+Runway Package
+
+(xx) Square tube columns spaced at xx’ span
+xx’ x ? Ton capacity WF beam runway system
+30# ASCE rail and standard weld clips
+Runway system will include lateral and longitudinal tie back bracing
+(4) HD end stops
+Complete ElectroTrack electrification system
+Runways and columns painted gray 
+Square tube support columns with gusseted base plates designed for a 6" concrete slab.
+Square tube support columns with gusseted base plates requiring concrete foundations. Foundation sizing is included in the total package price with sizing details provided in the approval drawing set. Foundation materials and installation is to be provided by others.
+Steel plate support columns requiring concrete foundations. Foundation sizing is included in the total package price with sizing details provided in the approval drawing set. Foundation materials and installation is to be provided by others. PE calculations and stamps are included in the total package price.
+
+ 
+(1) 35’ x 5 Ton Capacity Top Running Motorized Bridge Crane
+Includes 5 ton top running motorized end trucks with 2-speed/VFD: 150FPM max
+(1) Starke - STK Series 1 ton electric chain hoist 
+Single speed: 26FPM
+20’ lift
+460V/3ph
+(1) Starke Motorized Trolley or Starke Manual Trolley
+2-speed/VFD: 82/14FPM
+Hook Mount or Lug Mount
+
+(1) Starke - SMW Series 4 ton wire rope hoist 
+Two Speed Lift: 24/4 FPM
+Two Speed/VFD Trolley Travel: 75/20 FPM
+40’ lift
+460V/3ph
+
+Complete ElectroTrack "Festoonless" electrification system 
+PWI HD end stops at each end of bridge crane
+Spark Orange industrial coating 
+Rated capacity decals
+(1) Shawbox underhung 5 ton electric wire rope hoist
+2 Speed Lift: 20/3.3 FPM
+20’ lift (hook will be appx. 20" off of concrete floor at lowest position)
+Trolley Traverse Speed: 80/20 FPM
+Trolley Control Type: 2 Speed
+460V/3ph
+Hoist Suspension Type: Top Running Low Profile
+Hoist Duty Classification: HMI Class H4/ISO M5
+Operating Environment: Normal
+4-Part Single Reeved
+Hoist Overload Limit Switch: Included
+Load Display: Included
+Hoist Control Enclosure Rating: IP55-Similar to NEMA 4/12
+
+ Radio Remote Control System
+Inmotion K-Series Radio Remote Control system
+Capable of 3 Motion/2 Step control   (N/S - E/W - Up/Down)
+Includes (1) spare transmitter
+ 
+ Starke Control Panel
+Equipped with VFD control for programmable 2-step control and start - stop operation
+Warning strobe light to indicate bridge is in motion
+
+ Collision Avoidance
+Starke Collision Avoidance for bridge crane to bridge crane and bridge crane to end stops
+Increased safety for operators especially when transporting heavy loads
+Simple uni-directional bridge collision avoidance with (2) adjustable events (0-50 ft)
+Precision uni-directional bridge collision avoidance with (2) programmable events (0-200 FT)
+Fully customizable based on customers request
+
+=== TextBox 6 @col42 row2 (578 chars)
+(1) - ANCHORPOINT 43' SINGLE TRACK FALL PROTECTION SYSTEM
+ 
+System Includes:
+ 
+(1) FPS1043 PWI Single Track Fall Protection Truss (Engineered System)
+Spark Orange industrial coating 
+Rated capacity decals - 2 person
+Conforms to OSHA Code-  1910.140(c)(13)(i) & 1910.140(c)(13)(ii)
+
+
+Safety rated clamp plates and attaching hardware
+Brackets are designed to attach directly to bar joists or steel building structure
+
+(2) - Starke (SFT300) - Fall Protection Trolley
+(2) - Starke (SRLWR-20) - 20' Self Retracting Lifeline
+(2) - Starke (SDH200-ML) - Medium/Large deluxe body harness
+
+=== TextBox 7 @col28 row2 (995 chars)
+(1) - GUARDIAN WORK PLATFORM SET
+(x) 51’ x 30” work platforms (engineer-approved triangular truss design)
+(x) 24’ standard stationary single tube tower assemblies
+(x) 24” x 110” traveling Fixed/Pivot rail crosswalks
+(x)  Starke 2- ton capacity chain hoists (26 FPM lift speed, pendant operated from one tower)
+Fully braced to building structure for stability
+Does not include required 3/4” plywood flooring on all work platforms and crosswalks
+Spark Orange industrial coating 
+Includes rated capacity decals
+
+Safety Components
+(x) Starke (S3KLAS) Secondary Brake Assemblies
+Installed on each end tower protecting the unit in case of a hoist chain failure
+(x) Linear feet of inner safety railing 
+(x) Self closing safety gates 
+Provides 2' incremental crosswalk access to units
+36” inner rail with mid-rail and toe kick between gates at unit
+Typical 2 gates at rear and 13 gates at front configuration
+Work platforms and crosswalks include 42” tubular guardrail with 4” toe kick along outer edges
+
+=== TextBox 8 @col28 row43 (1325 chars)
+(1) - TORQUE FRAME ROTATOR SYSTEM 
+General Specs:
+Lift Capacity:	4,000lbs
+Lift Height:	72”
+Rotation Degrees:	360 Degrees
+Drive System:	460V/3 phase powered hydraulic pump, hydraulic drives
+ 
+Structure Details:
+360° rotation with adjustable speed control
+Features 3 hydraulic valves controlling Up/Down, Rotation, and Track Drive 
+Features a hydraulic drive wheel system for traversing motion with adjustable wheel tension to grip track 
+Spark Orange industrial coating with all safety and grease point decals required
+ 
+Additional Components:
+Bumper Attachment: Standard 4” square bumper coupler 
+Includes (2) tube frame bumper "fork style" clamps
+Includes (2) I-beam bumper clamps
+(2) Adjustable position attaching brackets with 1” removable pins
+HD square tube frame bolts to frame rotator base unit
+Brackets adjust in 3-1/2” increments
+Black industrial coating 
+
+Floor Track: 20’ Standard Floor Track Package 
+(2) 20’ lengths of floor track for frame rotator base unit to roll on
+Includes holes for anchors
+(1) 20’ length of grip track for drive wheel to run on
+Spark Orange industrial coating 
+ 
+Underbelly Material: Top Mounted Material Dispenser 
+Features 2 roll material positions
+Bolts to frame rotator base unit
+Black industrial coating 
+ 
+(1) Travel Trailer Front Rotational Unit
+(1) 5th Wheel Front Rotational Unit
+
+=== TextBox 9 @col28 row97 (718 chars)
+(1)- STACKCOMMAND Stacker Crane
+General Specs:
+Runway Length:		90’
+Lift Capacity:		3,500lbs
+Bundle Capability:		4x8x42” high
+Mezzanine Deck Height:	138”
+ 
+Structure Details:
+Includes (2) 90’ runway beams (primed gray)
+Includes structural header beams as required, attached to building frames
+Features 48” fork length with safety guard to prevent bundle from falling
+Motorized travel 100 FPM maximum travel with VFD controls
+InMotion radio remote controls for Up/Down and N/S travel, (1 spare remote)
+Spark Orange industrial coating 
+Includes rated capacity decals
+ 
+Additional Components:
+Radio System: InMotion Radio Controls 
+Radio remote controls with Up/Down and Forward/Reverse motion
+Includes 1 spare transmitter
+
+=== TextBox 10 @col14 row234 (941 chars)
+ULTRALITE JIB CRANE SYSTEM
+General Specs:
+Span: 		15'
+Overall Height:	15'
+Height Under Boom: 	14'
+Rated Capacity:	2 Ton with (1) hoist
+Hook Height: 	TBD
+System Voltage:	480V/3 phase
+
+(1) 15’ x 2 Ton Capacity Manual (Beam/Workstation) or Motorized Jib Crane
+
+360° manual rotation 
+Field Weld or Bolted Rotational stop kit
+Epoxy anchor bolt kit with template
+(1) Starke - STK Series 1 ton electric chain hoist 
+Single speed: 26FPM
+20’ lift
+460V/3ph
+(1) Starke motorized trolley or Starke manual trolley
+2-speed/VFD: 82/14FPM
+Hook Mount or Lug Mount
+Top Ring Collector, Bottom Entry, Top Entry (less than 360° rotation)
+Festoon or Electrotrack electrification system
+PWI HD end stops 
+Spark Orange industrial coating 
+Includes rated capacity decals
+Requires (LxWxD) concrete foundation
+
+
+ Radio Remote Control System
+InMotion K-Series radio remote control system
+Capable of 3 motion/2 step control   (N-S/E-W/Up-Down)
+Includes spare transmitter
+
+=== TextBox 11 @col13 row279 (941 chars)
+FREESTANDING MONORAIL SYSTEM
+General Specs:
+Overall Length:	200’
+Rated Capacity:	2 Ton with (1) Hoist
+Hook Height:	TBD
+System Voltage: 	480V/3 phase
+
+Crane Classification:
+Class C (Moderate Service): This service covers cranes whose service requirements are deemed moderate, handling loads which average 50 percent of the rated capacity with 5 to 10 lifts per hour, averaging 15 feet, with not over 50 percent of the lifts at rated capacity. 
+ 
+Monorail Details:
+Freestanding or mounted directly to bar joists or steel frame building structure
+Welded connections or Bolted connections
+(1) Starke - STK Series 1 ton electric chain hoist 
+Single speed: 26FPM
+20’ lift
+460V/3ph
+Pendant control
+(1) Starke motorized trolley or Starke manual trolley
+2-speed/VFD: 82/14FPM
+Hook Mount or Lug Mount
+Complete Festoon or ElectroTrack "Festoonless" electrification system 
+HD PWI bolt-on end stops
+Spark Orange industrial coating 
+Rated capacity decals
+
+=== TextBox 12 @col13 row319 (1377 chars)
+HYPERLITE BRIDGE CRANE SYSTEM (CEILING MOUNTED)
+General Specs:
+Runway OAL:	25'
+Runway Span: 	20'
+Bridge Crane Width:	25'
+Rated capacity:	1/2 Ton with (1) hoist
+Hook Height:	TBD
+System Voltage:	480V/3 phase
+
+Crane Classification:
+Class C (Moderate Service): This service covers cranes whose service requirements are deemed moderate, handling loads which average 50 percent of the rated capacity with 5 to 10 lifts per hour, averaging 15 feet, with not over 50 percent of the lifts at rated capacity. 
+
+Enclosed Track Runway Structure
+(2) 25’ x 1/2 Ton Enclosed Track Runway Truss with End Stops 
+Drop rod connections to building bar joists (Includes hardware and clamps)
+Runway system will include lateral and longitudinal stability bracing
+Complete 4-conductor electrification kit on runway system
+Runways gray industrial coating
+
+(1) 25’ x 1/2 Ton Capacity HyperLite Manual Bridge Crane
+
+ 1/2 ton manual underhung Hyper-Lite end trucks 
+(1) Starke STK  Electric Chain Hoist 
+1/2 ton capacity 
+Single speed: 26FPM
+20’ lift
+460V/3ph
+(1) Starke manual trolley
+Festoon electrification system
+End stops at each end of bridge crane
+Spark Orange industrial coating
+Rated capacity decals
+
+ Radio Remote Control System
+InMotion K606 Plus radio remote control system
+Capable of 3 Motion/2 Step control   (N/S - E/W - Up/Down)
+Includes (1) spare transmitter and wireless charging station
+
+=== TextBox 14 @col28 row128 (745 chars)
+(1) - TORQUEX FRAME ROTATOR			
+General Specs:
+Lift Capacity: 2000lbs 
+Rotation Degrees: 360 Degrees
+ 
+Structure Details:
+360° rotation with adjustable speed control (Max RPM - 1.6)
+Features wireless remote controlling rotation
+Features battery diagnostic monitor 
+Operates on rechargeable battery
+Includes (2) 60v DeWalt FLEXVOLT 20/60 MAX DCB612 battery and (1) charging station
+Includes HD electric gear DC motor
+Spark Orange industrial coating with all safety and grease point decals required
+
+ 
+Additional Components:
+
+ Radio Remote Control System
+InMotion K200 radio remote control system
+Capable of 1 Motion with dial for variable speed (Clockwise - Counter Clockwise) 
+
+Check what remote they are using. VS remotes do not include a spare.
+
+=== TextBox 15 @col54 row2 (1048 chars)
+FLIGHT#1 - (Change stair title here based on what type of stairway you're customizing)
+
+Type D Railing: 42” Tubular 2-rail guardrail with additional 36” round pipe handrail
+Height: 
+Tread Width: 30" / 36" / 42" / 48" / 60"
+Tread Style: Diamond Plate, Open Riser / Diamond Plate, Closed Riser / Poured Pan / Bar Grate, Open Riser
+Landings: No Landing / Top Landing, Exit Left / Top Landing, Exit Right / Top Landing, Exit Straight
+Finish: Gray Primer / Safety Yellow / Gray Paint / Black Paint / Galvanized / Black Exterior Coating
+
+***Customer is responsible to confirm local code compliance.
+***Stairzone packages feature fully welded guardrail construction with bolted treads. Your stairway will ship fully assembled unless noted otherwise.
+
+ 
+
+Standalone IBC Guardrail Kit - (Type D)
+42" height square tube guardrail system design with base plates for bolt down installation
+2" square tube posts
+2" square tube horizontal framing, top and bottom 
+3/4" vertical balusters welded on 4" centers 
+Includes anchoring hardware
+Black industrial coating
+
+=== TextBox 17 @col41 row30 (879 chars)
+Expedited Project Agreement:
+This project requires a ship date that is faster than PWI’s current lead time.
+The expedite fee for meeting your requested timeline is 10% of the Total Package Price and is listed as an option on the last page of this document.
+PWI guarantees the ship date agreed upon below. 
+This date represents the day the product leaves PWI’s manufacturing facility in Nappanee, IN.
+If PWI does not meet the guaranteed ship date, the expedite fee will be waived.
+The delivery timeline to your facility is not guaranteed, as it may be affected by carrier delays or weather conditions.
+The installation timeline (if included in your project) is also not guaranteed, as it is dependent on on-site conditions outside of PWI’s control.
+Guaranteed Ship Date: 12/17/2025
+Estimated Transit Duration : 1 (business days)
+Estimated Installation Duration: 10 (business days)
+
+=== TextBox 20 @col13 row370 (1385 chars)
+ULTRALITE BRIDGE CRANE SYSTEM (CEILING MOUNTED)
+General Specs:
+Runway OAL::	25'
+Runway Span: 	20'
+Bridge Crane Width:	25'
+Rated capacity:	1/2 Ton with (1) hoist
+Hook Height:	TBD
+System Voltage:	480V/3 phase
+
+Crane Classification:
+Class C (Moderate Service): This service covers cranes whose service requirements are deemed moderate, handling loads which average 50 percent of the rated capacity with 5 to 10 lifts per hour, averaging 15 feet, with not over 50 percent of the lifts at rated capacity. 
+
+Enclosed Track Runway Structure
+(2) 25’ x 1/2 Ton Enclosed Track Runway Truss with End Stops 
+Drop rod connections to building bar joists (Includes hardware and clamps)
+Runway system will include lateral and longitudinal stability bracing
+Complete 4-conductor electrification kit on runway system
+Runways gray industrial coating
+
+(1) 25’ x 1/2 Ton Capacity UltraLite Manual Bridge Crane
+
+ 1/2 ton manual underhung Hyper-Lite end trucks 
+(1) Starke STK  Electric Chain Hoist 
+1/2 ton capacity 
+Single speed: 26FPM
+20’ lift
+460V/3ph
+(1) Starke SHT050 manual trolley
+Festoon electrification system
+End stops at each end of bridge crane
+Spark Orange industrial coating
+Rated capacity decals
+
+ Radio Remote Control System
+InMotion K606 Plus radio remote control system
+Capable of 3 Motion/2 Step control   (N/S - E/W - Up/Down)
+Includes (1) spare transmitter and wireless charging station
+
+=== TextBox 21 @col13 row423 (537 chars)
+ULTRALITE GANTRY CRANE SYSTEM 
+General Specs:
+Span: 		16'
+Overall Height:	15' 4"
+Height Under Beam:	14'
+Beam Height: 	16"
+Rated Capacity:	5 Ton with (1) hoist
+Hook Height: 	11'
+System Voltage:	480V/3 phase
+
+(1) 15’ x 5 Ton Capacity Mobile Gantry Crane
+
+(1) Starke - STK Series 5 ton electric chain hoist 
+Single speed: 11FPM
+20’ lift
+460V/3ph
+(1) Starke motorized trolley
+2-speed/VFD: 82/14FPM
+Lug Mount
+Pendant Control
+Electrotrack electrification system
+PWI HD end stops 
+Spark Orange industrial coating 
+Includes rated capacity decals
+
+=== TextBox 13 @col28 row161 (788 chars)
+(1) - TORQUEMP (MATERIAL POSITIONER)			
+General Specs:
+Lift Capacity: 10 Ton (per unit)
+Sold as a pair (2 units)
+Rotation Degrees: 360 Degrees
+ 
+Structure Details:
+360° rotation with adjustable speed control (Max RPM - 1.6)
+Features wireless remote controlling rotation
+Features battery diagnostic monitor 
+Operates on rechargeable battery
+Includes (2) 60v DeWalt FLEXVOLT 20/60 MAX DCB612 battery and (1) charging station
+Includes HD electric gear DC motor
+Spark Orange industrial coating with all safety and grease point decals required
+
+ 
+Additional Components:
+
+ Radio Remote Control System
+InMotion K200 radio remote control system
+Capable of 1 Motion with dial for variable speed (Clockwise - Counter Clockwise) 
+
+Check what remote they are using. VS remotes do not include a spare.
+
+=== TextBox 16 @col28 row196 (346 chars)
+VORTEX LIGHT DUTY VERTICAL VACUUM LIFTER
+General Specs: 
+Rated Capacity: 250 lbFeaturewireless remote controlling rotation
+Material Width: 4’-8’
+Material Height: 4’-8’
+Pump Size: Medium Flow
+Pump Voltage: 110/Single Phase
+Pad Options: Silicone 
+Pad Placement: Semi-Fixed 
+Lifting Point: One
+Hook Point: Adjustable
+Kickstand: Flip-up and Flip-down
+
+=== TextBox 22 @col28 row215 (1608 chars)
+APEX VERTICAL RECIPROCATING CONVEYORS 
+General Specs:
+Carriage Floor Dimensions:	 10’ x 10’
+Maximum Live Load Capacity:	 6,000 lbs
+First Floor Height:		 144”
+Overall Height:		 300”
+ 
+Structure Details:
+Includes standard 5" square tubular columns with base plates (pre-drilled for 4 concrete wedge anchors)
+Entry and exit points on same sides of the carriage
+Standard railroad style lift gates included on same sides of the carriage
+96” tall perimeter safety cage with mesh guarding on ground, and upper levels with overhead style manual full height safety doors for ground and upper level entry points
+All structural steel will be painted standard gray
+Includes rated capacity and operation decals
+Not intended for human load (Material lift only)
+ 
+Control Panel and Safety Features:
+Control panels are installed at each operating level and provide push button control and a safety disconnect button
+VRC control panels include a digital load cell displaying the weight added to the carriage
+Features mechanical Safety Lock-out System (safety doors only open when carriage is at floor height)
+Equipped with secondary brake device in case of lifting device failure
+(customer is responsible to have 110V outlet available where powered gates are used)
+
+Additional Components: 
+Flooring Surface of Carriage: ResinDek ¾”  HD Diamond Seal 2
+2” ResinDek Collated Drill Screws 
+Gray surface 
+Third Party will cut floor and pour new concrete pit at 5” depth to allow carriage floor surface to be "flush" with existing concrete floor. PWI to provide template for third party to cut and prep concrete with reinforcement.
+
+=== TextBox 19 @col13 row458 (1365 chars)
+(x) INCOMMAND  GANTRY CRANE SYSTEM - Steerable | Fixed
+
+General Specs:
+Span: 		xx'
+Overall Height: 	xx' x"
+Height Under Beam: 	xx'
+Rated Capacity: 	xx Ton with (1) hoist
+Hook Height:  	xx'
+System Voltage:	460V/3 phase OR 230V/3 phase
+
+Floor Track Runway System 
+OAL: xx’
+Embedded/floor mounted track including hardware
+(4) HD end stops
+Complete ElectroTrack electrification system suspended from ceiling 
+
+xx’ x x Ton Capacity Motorized Gantry Crane
+Includes motorized end trucks with 2-speed/VFD: 40FPM max
+steerable/fixed v-groove 
+Polyurethane/Steel
+Traveling Pendant OR Pendant mounted to Control Panel 
+Cord Reel included with mounting bracket
+(1) Starke - STK Series 5 ton electric chain hoist 
+Single speed: 11FPM
+20’ lift
+460V/3ph
+(1) Starke - SMT Series 5 ton motorized trolley 
+2-speed/VFD: 82/14FPM
+Lug Mount
+(1) Starke - SMW Series 4 ton wire rope hoist 
+Two Speed Lift: 24/4 FPM
+Two Speed/VFD Trolley Travel: 75/20 FPM
+40’ lift
+460V/3ph
+
+Spark Orange industrial coating 
+Rated capacity decals
+
+ Radio Remote Control System
+Inmotion K-Plus OR Starke Echo Series Radio Remote Control system
+Capable of 3 Motion/2 Step control/Steerability  (N/S - E/W - Up/Down)
+Includes (1) spare transmitter
+ 
+
+Starke Control Panel
+Equipped with VFD control for programmable 2-step control and start - stop operation
+Warning strobe light to indicate gantry is in motion
+
+=== TextBox 23 @col28 row264 (1059 chars)
+COILCONTROL MATERIAL DISPENSER
+General Specs:
+
+Coil Width: xx"
+Coil ID: xx"
+Coil OD: xx"
+Lifting Capacity: xx lbs
+Lift Height: 14' 
+Confirmed Power Supply: 460v/3-ph
+Lifting Speed: 26fpm
+Rotation/Decoiling Speed: Variable
+
+Each System includes:
+
+(xx) Square tube columns spaced at xx’ span
+xx’ x ? Ton capacity WF beam header system
+(1) Starke - STK Series 1 ton electric chain hoist 
+Single speed: 26FPM
+20’ lift
+460V/3ph
+Complete ElectroTrack "Festoonless" electrification system Drive motor and linear bearing motor mount
+(1) Starke Motorized Trolley or Starke Manual Trolley
+2-speed/VFD: 82/14FPM
+Hook Mount or Lug Mount
+
+Center pipe and pneumatic tire assembly to keep coil centered
+Warning beacon and audible alarm activated during travel
+Stability Bracing as required
+Structural steel painted industrial gray primer
+Dispensing frame painted safety yellow/spark orange
+
+ Radio Remote Control System
+Inmotion K-Series Radio Remote Control system
+Capable of 3 Motion/2 Step control   (Trolley Travel - Coil/Uncoil - Up/Down)
+Includes (1) spare transmitter
+
