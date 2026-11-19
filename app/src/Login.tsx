@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { supabase } from './supabase';
 
 export function Login() {
@@ -6,6 +6,14 @@ export function Login() {
   const [code, setCode] = useState('');
   const [sent, setSent] = useState(false);
   const [err, setErr] = useState('');
+  // one-time admin sign-in link: #/login?th=<token hash>
+  useEffect(() => {
+    const th = new URLSearchParams(location.hash.split('?')[1] ?? '').get('th');
+    if (!th) return;
+    supabase.auth.verifyOtp({ token_hash: th, type: 'magiclink' }).then(({ error }) => {
+      if (error) setErr('That sign-in link is expired or already used. ' + error.message); else location.hash = '/';
+    });
+  }, []);
   const send = async () => {
     setErr('');
     const { error } = await supabase.auth.signInWithOtp({ email: email.trim(), options: { shouldCreateUser: true } });
