@@ -1,0 +1,70 @@
+{
+ "Tube": {
+  "price_per_lb": 1.55,
+  "updated": "2026-01-15"
+ },
+ "Tube >6\"": {
+  "price_per_lb": 1.55,
+  "updated": "2026-01-15"
+ },
+ "Tube >10\"": {
+  "price_per_lb": 1.55,
+  "updated": "2026-01-15"
+ },
+ "Channel": {
+  "price_per_lb": 1.2,
+  "updated": "2026-01-15"
+ },
+ "Pipe": {
+  "price_per_lb": 1.55,
+  "updated": "2026-01-15"
+ },
+ "Angle": {
+  "price_per_lb": 1,
+  "updated": "2026-01-15"
+ },
+ "G01": {
+  "price_per_lb": 1.3,
+  "updated": "2026-04-23"
+ },
+ "G02": {
+  "price_per_lb": 1.3,
+  "updated": "2026-04-23"
+ },
+ "G03": {
+  "price_per_lb": 1.3,
+  "updated": "2026-04-23"
+ },
+ "G04": {
+  "price_per_lb": 1.3,
+  "updated": "2026-04-23"
+ },
+ "G05": {
+  "price_per_lb": 1.4,
+  "updated": "2026-04-23"
+ },
+ "G06": {
+  "price_per_lb": 1.4,
+  "updated": "2026-04-23"
+ },
+ "G07": {
+  "price_per_lb": 1.4,
+  "updated": "2026-04-23"
+ },
+ "G08": {
+  "price_per_lb": 1.4,
+  "updated": "2026-04-23"
+ },
+ "G09": {
+  "price_per_lb": 1.4,
+  "updated": "2026-04-23"
+ },
+ "G10": {
+  "price_per_lb": 1.4,
+  "updated": "2026-04-23"
+ },
+ "G11": {
+  "price_per_lb": 1.4,
+  "updated": "2026-04-23"
+ }
+}

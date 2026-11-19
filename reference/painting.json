@@ -1,0 +1,82 @@
+[
+ {
+  "row": 4,
+  "item": "Primer Full Booth Run",
+  "sell": 1587
+ },
+ {
+  "row": 5,
+  "item": "Standard Paint Full Booth Run",
+  "sell": 1983.75
+ },
+ {
+  "row": 6,
+  "item": "Custom Color Paint Full Booth Run",
+  "sell": 2530
+ },
+ {
+  "row": 7,
+  "item": "Polyurethane Full Booth Run",
+  "sell": 2875
+ },
+ {
+  "row": 8,
+  "item": "AutoCalc Gantry Paint Runs",
+  "sell": 1983.75
+ },
+ {
+  "row": 10,
+  "item": "Primer Full Booth Run",
+  "sell": 1587
+ },
+ {
+  "row": 11,
+  "item": "Standard Paint Full Booth Run",
+  "sell": 1983.75
+ },
+ {
+  "row": 12,
+  "item": "Custom Color Paint Full Booth Run",
+  "sell": 2530
+ },
+ {
+  "row": 13,
+  "item": "Polyurethane Full Booth Run",
+  "sell": 2875
+ },
+ {
+  "row": 15,
+  "item": "Primer Full Booth Run",
+  "sell": 1587
+ },
+ {
+  "row": 16,
+  "item": "Standard Paint Full Booth Run",
+  "sell": 1983.75
+ },
+ {
+  "row": 17,
+  "item": "Custom Color Paint Full Booth Run",
+  "sell": 2530
+ },
+ {
+  "row": 18,
+  "item": "Polyurethane Full Booth Run",
+  "sell": 2875
+ },
+ {
+  "row": 24,
+  "item": "Structural Single Dip Process - per lb",
+  "sell": 0.8625
+ },
+ {
+  "row": 26,
+  "item": "Structural Double Dip Process - per lb",
+  "sell": 1.4375
+ },
+ {
+  "row": 28,
+  "item": "Tubular Dip Process - per lb",
+  "sell": 1.15
+ }
+]

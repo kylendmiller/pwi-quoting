@@ -1,0 +1,947 @@
+[
+ {
+  "month": "Feb",
+  "type": "FB",
+  "miles_bucket": "0-500",
+  "miles": 590,
+  "price": 2875
+ },
+ {
+  "month": "Dec",
+  "type": "FB",
+  "miles_bucket": "1000-1500",
+  "miles": 1015,
+  "price": 3200
+ },
+ {
+  "month": "Feb",
+  "type": "FB",
+  "miles_bucket": "1000-1500",
+  "miles": 1410,
+  "price": 5800
+ },
+ {
+  "month": "Mar",
+  "type": "FB",
+  "miles_bucket": "1500+",
+  "miles": 1825,
+  "price": 6000
+ },
+ {
+  "month": "Jan",
+  "type": "HS",
+  "miles_bucket": "0-500",
+  "miles": 940,
+  "price": 3700
+ },
+ {
+  "month": "Jan",
+  "type": "HS",
+  "miles_bucket": "1000-1500",
+  "miles": 4590,
+  "price": 11875
+ },
+ {
+  "month": "Jan",
+  "type": "HS",
+  "miles_bucket": "1500+",
+  "miles": 5562,
+  "price": 10650
+ },
+ {
+  "month": "Jan",
+  "type": "HS",
+  "miles_bucket": "500-1000",
+  "miles": 5675,
+  "price": 13400
+ },
+ {
+  "month": "Jan",
+  "type": "LTL",
+  "miles_bucket": "1500+",
+  "miles": 2255,
+  "price": 2750
+ },
+ {
+  "month": "Jan",
+  "type": "LTL",
+  "miles_bucket": "500-1000",
+  "miles": 610,
+  "price": 1250
+ },
+ {
+  "month": "Jan",
+  "type": "LTL",
+  "miles_bucket": "1000-1500",
+  "miles": 1020,
+  "price": 2400
+ },
+ {
+  "month": "Jan",
+  "type": "LTL",
+  "miles_bucket": "500-1000",
+  "miles": 580,
+  "price": 1400
+ },
+ {
+  "month": "Mar",
+  "type": "LTL",
+  "miles_bucket": "500-1000",
+  "miles": 1980,
+  "price": 8600
+ },
+ {
+  "month": "Jan",
+  "type": "FB",
+  "miles_bucket": "0-500",
+  "miles": 2400,
+  "price": 13500
+ },
+ {
+  "month": "Jan",
+  "type": "FB",
+  "miles_bucket": "500-1000",
+  "miles": 2735,
+  "price": 10975
+ },
+ {
+  "month": "Dec",
+  "type": "FB",
+  "miles_bucket": "1500+",
+  "miles": 4005,
+  "price": 9900
+ },
+ {
+  "month": "Feb",
+  "type": "HS",
+  "miles_bucket": "0-500",
+  "miles": 717,
+  "price": 2500
+ },
+ {
+  "month": "Feb",
+  "type": "HS",
+  "miles_bucket": "1000-1500",
+  "miles": 8310,
+  "price": 22365
+ },
+ {
+  "month": "Feb",
+  "type": "HS",
+  "miles_bucket": "1500+",
+  "miles": 2140,
+  "price": 2550
+ },
+ {
+  "month": "Feb",
+  "type": "HS",
+  "miles_bucket": "500-1000",
+  "miles": 7265,
+  "price": 20650
+ },
+ {
+  "month": "Feb",
+  "type": "LTL",
+  "miles_bucket": "1000-1500",
+  "miles": 1100,
+  "price": 2350
+ },
+ {
+  "month": "Feb",
+  "type": "LTL",
+  "miles_bucket": "1500+",
+  "miles": 2180,
+  "price": 2750
+ },
+ {
+  "month": "Feb",
+  "type": "LTL",
+  "miles_bucket": "1500+",
+  "miles": 4030,
+  "price": 11525
+ },
+ {
+  "month": "Dec",
+  "type": "LTL",
+  "miles_bucket": "500-1000",
+  "miles": 7259,
+  "price": 22450
+ },
+ {
+  "month": "Mar",
+  "type": "HS",
+  "miles_bucket": "0-500",
+  "miles": 1055,
+  "price": 2860
+ },
+ {
+  "month": "Mar",
+  "type": "HS",
+  "miles_bucket": "1000-1500",
+  "miles": 5285,
+  "price": 11100
+ },
+ {
+  "month": "Mar",
+  "type": "HS",
+  "miles_bucket": "1500+",
+  "miles": 5535,
+  "price": 12625
+ },
+ {
+  "month": "Mar",
+  "type": "HS",
+  "miles_bucket": "500-1000",
+  "miles": 9425,
+  "price": 25045
+ },
+ {
+  "month": "Mar",
+  "type": "LTL",
+  "miles_bucket": "0-500",
+  "miles": 420,
+  "price": 800
+ },
+ {
+  "month": "Mar",
+  "type": "LTL",
+  "miles_bucket": "1000-1500",
+  "miles": 1415,
+  "price": 1950
+ },
+ {
+  "month": "Mar",
+  "type": "LTL",
+  "miles_bucket": "500-1000",
+  "miles": 1625,
+  "price": 2600
+ },
+ {
+  "month": "Feb",
+  "type": "LTL",
+  "miles_bucket": "500-1000",
+  "miles": 9175,
+  "price": 41550
+ },
+ {
+  "month": "Jan",
+  "type": "LTL",
+  "miles_bucket": "1500+",
+  "miles": 12216,
+  "price": 30300
+ },
+ {
+  "month": "Jan",
+  "type": "LTL",
+  "miles_bucket": "1000-1500",
+  "miles": 13280,
+  "price": 48750
+ },
+ {
+  "month": "Dec",
+  "type": "HS",
+  "miles_bucket": "0-500",
+  "miles": 2370,
+  "price": 6800
+ },
+ {
+  "month": "Dec",
+  "type": "HS",
+  "miles_bucket": "1000-1500",
+  "miles": 7200,
+  "price": 15750
+ },
+ {
+  "month": "Dec",
+  "type": "HS",
+  "miles_bucket": "1500+",
+  "miles": 4010,
+  "price": 7925
+ },
+ {
+  "month": "Dec",
+  "type": "HS",
+  "miles_bucket": "500-1000",
+  "miles": 9305,
+  "price": 22095
+ },
+ {
+  "month": "Dec",
+  "type": "LTL",
+  "miles_bucket": "1000-1500",
+  "miles": 1275,
+  "price": 2400
+ },
+ {
+  "month": "Dec",
+  "type": "LTL",
+  "miles_bucket": "1500+",
+  "miles": 1565,
+  "price": 2700
+ },
+ {
+  "month": "Dec",
+  "type": "LTL",
+  "miles_bucket": "500-1000",
+  "miles": 3091,
+  "price": 6895
+ },
+ {
+  "month": "Dec",
+  "type": "OSL",
+  "miles_bucket": "500-1000",
+  "miles": 2037,
+  "price": 19320
+ },
+ {
+  "month": "Mar",
+  "type": "FB",
+  "miles_bucket": "1000-1500",
+  "miles": 1320,
+  "price": 4100
+ },
+ {
+  "month": "Mar",
+  "type": "FB",
+  "miles_bucket": "1500+",
+  "miles": 4180,
+  "price": 14600
+ },
+ {
+  "month": "Mar",
+  "type": "FB",
+  "miles_bucket": "500-1000",
+  "miles": 1280,
+  "price": 5500
+ },
+ {
+  "month": "Mar",
+  "type": "HS",
+  "miles_bucket": "0-500",
+  "miles": 865,
+  "price": 2400
+ },
+ {
+  "month": "Mar",
+  "type": "HS",
+  "miles_bucket": "1000-1500",
+  "miles": 1130,
+  "price": 2950
+ },
+ {
+  "month": "Mar",
+  "type": "HS",
+  "miles_bucket": "1500+",
+  "miles": 5290,
+  "price": 11616
+ },
+ {
+  "month": "Mar",
+  "type": "HS",
+  "miles_bucket": "500-1000",
+  "miles": 3160,
+  "price": 8510
+ },
+ {
+  "month": "Mar",
+  "type": "LTL",
+  "miles_bucket": "0-500",
+  "miles": 665,
+  "price": 1800
+ },
+ {
+  "month": "Mar",
+  "type": "LTL",
+  "miles_bucket": "500-1000",
+  "miles": 795,
+  "price": 1200
+ },
+ {
+  "month": "Mar",
+  "type": "OSL",
+  "miles_bucket": "0-500",
+  "miles": 250,
+  "price": 2370
+ },
+ {
+  "month": "Mar",
+  "type": "OSL",
+  "miles_bucket": "1000-1500",
+  "miles": 1250,
+  "price": 11850
+ },
+ {
+  "month": "Mar",
+  "type": "OSL",
+  "miles_bucket": "1500+",
+  "miles": 1501,
+  "price": 14230
+ },
+ {
+  "month": "April",
+  "type": "FB",
+  "miles_bucket": "0-500",
+  "miles": 545,
+  "price": 3348
+ },
+ {
+  "month": "April",
+  "type": "FB",
+  "miles_bucket": "1000-1500",
+  "miles": 5115,
+  "price": 21168
+ },
+ {
+  "month": "April",
+  "type": "FB",
+  "miles_bucket": "1500+",
+  "miles": 7960,
+  "price": 26750
+ },
+ {
+  "month": "April",
+  "type": "FB",
+  "miles_bucket": "500-1000",
+  "miles": 3980,
+  "price": 15876
+ },
+ {
+  "month": "April",
+  "type": "HS",
+  "miles_bucket": "0-500",
+  "miles": 2167,
+  "price": 7180
+ },
+ {
+  "month": "April",
+  "type": "HS",
+  "miles_bucket": "1000-1500",
+  "miles": 12759,
+  "price": 29862
+ },
+ {
+  "month": "April",
+  "type": "HS",
+  "miles_bucket": "1500+",
+  "miles": 16116,
+  "price": 35262
+ },
+ {
+  "month": "April",
+  "type": "HS",
+  "miles_bucket": "500-1000",
+  "miles": 7038,
+  "price": 16792
+ },
+ {
+  "month": "April",
+  "type": "LTL",
+  "miles_bucket": "0-500",
+  "miles": 1045,
+  "price": 2592
+ },
+ {
+  "month": "April",
+  "type": "LTL",
+  "miles_bucket": "1000-1500",
+  "miles": 3845,
+  "price": 6480
+ },
+ {
+  "month": "April",
+  "type": "LTL",
+  "miles_bucket": "1500+",
+  "miles": 2110,
+  "price": 3024
+ },
+ {
+  "month": "April",
+  "type": "LTL",
+  "miles_bucket": "500-1000",
+  "miles": 1060,
+  "price": 1782
+ },
+ {
+  "month": "May",
+  "type": "FB",
+  "miles_bucket": "1000-1500",
+  "miles": 6562,
+  "price": 23706
+ },
+ {
+  "month": "May",
+  "type": "FB",
+  "miles_bucket": "1500+",
+  "miles": 2329,
+  "price": 7776
+ },
+ {
+  "month": "May",
+  "type": "FB",
+  "miles_bucket": "500-1000",
+  "miles": 3211,
+  "price": 13608
+ },
+ {
+  "month": "May",
+  "type": "HS",
+  "miles_bucket": "0-500",
+  "miles": 2054,
+  "price": 5940
+ },
+ {
+  "month": "May",
+  "type": "HS",
+  "miles_bucket": "1000-1500",
+  "miles": 8018,
+  "price": 19332
+ },
+ {
+  "month": "May",
+  "type": "HS",
+  "miles_bucket": "1500+",
+  "miles": 6678,
+  "price": 14256
+ },
+ {
+  "month": "May",
+  "type": "HS",
+  "miles_bucket": "500-1000",
+  "miles": 4953,
+  "price": 12420
+ },
+ {
+  "month": "May",
+  "type": "OSL",
+  "miles_bucket": "1000-1500",
+  "miles": 1216,
+  "price": 6480
+ },
+ {
+  "month": "May",
+  "type": "OSL",
+  "miles_bucket": "500-1000",
+  "miles": 533,
+  "price": 4428
+ },
+ {
+  "month": "May",
+  "type": "PL",
+  "miles_bucket": "0-500",
+  "miles": 378,
+  "price": 648
+ },
+ {
+  "month": "May",
+  "type": "PL",
+  "miles_bucket": "1000-1500",
+  "miles": 2432,
+  "price": 4536
+ },
+ {
+  "month": "May",
+  "type": "PL",
+  "miles_bucket": "1500+",
+  "miles": 5219,
+  "price": 10044
+ },
+ {
+  "month": "May",
+  "type": "PL",
+  "miles_bucket": "500-1000",
+  "miles": 3996,
+  "price": 6372
+ },
+ {
+  "month": "June",
+  "type": "FB",
+  "miles_bucket": "0-500",
+  "miles": 350,
+  "price": 2484
+ },
+ {
+  "month": "June",
+  "type": "FB",
+  "miles_bucket": "500-1000",
+  "miles": 8894,
+  "price": 41600
+ },
+ {
+  "month": "June",
+  "type": "FB",
+  "miles_bucket": "1000-1500",
+  "miles": 5382,
+  "price": 26730
+ },
+ {
+  "month": "June",
+  "type": "FB",
+  "miles_bucket": "1500+",
+  "miles": 5682,
+  "price": 20412
+ },
+ {
+  "month": "June",
+  "type": "HS",
+  "miles_bucket": "0-500",
+  "miles": 1801,
+  "price": 4799
+ },
+ {
+  "month": "June",
+  "type": "HS",
+  "miles_bucket": "500-1000",
+  "miles": 14349,
+  "price": 33132
+ },
+ {
+  "month": "June",
+  "type": "HS",
+  "miles_bucket": "1000-1500",
+  "miles": 11649,
+  "price": 22680
+ },
+ {
+  "month": "June",
+  "type": "HS",
+  "miles_bucket": "1500+",
+  "miles": 10628,
+  "price": 20240
+ },
+ {
+  "month": "June",
+  "type": "PL",
+  "miles_bucket": "500-1000",
+  "miles": 1706,
+  "price": 3024
+ },
+ {
+  "month": "July",
+  "type": "FB",
+  "miles_bucket": "0-500",
+  "miles": 718,
+  "price": 3024
+ },
+ {
+  "month": "July",
+  "type": "FB",
+  "miles_bucket": "1000-1500",
+  "miles": 9059,
+  "price": 43308
+ },
+ {
+  "month": "July",
+  "type": "FB",
+  "miles_bucket": "1500+",
+  "miles": 11700,
+  "price": 35312
+ },
+ {
+  "month": "July",
+  "type": "FB",
+  "miles_bucket": "500-1000",
+  "miles": 5981,
+  "price": 30456
+ },
+ {
+  "month": "July",
+  "type": "HS",
+  "miles_bucket": "0-500",
+  "miles": 3131,
+  "price": 8712
+ },
+ {
+  "month": "July",
+  "type": "HS",
+  "miles_bucket": "1000-1500",
+  "miles": 10904,
+  "price": 24732
+ },
+ {
+  "month": "July",
+  "type": "HS",
+  "miles_bucket": "1500+",
+  "miles": 7904,
+  "price": 16740
+ },
+ {
+  "month": "July",
+  "type": "HS",
+  "miles_bucket": "500-1000",
+  "miles": 6821,
+  "price": 17034
+ },
+ {
+  "month": "July",
+  "type": "OSL",
+  "miles_bucket": "500-1000",
+  "miles": 813,
+  "price": 12200
+ },
+ {
+  "month": "July",
+  "type": "Partial",
+  "miles_bucket": "0-500",
+  "miles": 1050,
+  "price": 2160
+ },
+ {
+  "month": "July",
+  "type": "Partial",
+  "miles_bucket": "1000-1500",
+  "miles": 3606,
+  "price": 5400
+ },
+ {
+  "month": "July",
+  "type": "Partial",
+  "miles_bucket": "1500+",
+  "miles": 1911,
+  "price": 2700
+ },
+ {
+  "month": "July",
+  "type": "Partial",
+  "miles_bucket": "500-1000",
+  "miles": 2786,
+  "price": 5292
+ },
+ {
+  "month": "Aug",
+  "type": "FB",
+  "miles_bucket": "0-500",
+  "miles": 2757,
+  "price": 11448
+ },
+ {
+  "month": "Aug",
+  "type": "FB",
+  "miles_bucket": "500-1000",
+  "miles": 2132,
+  "price": 8046
+ },
+ {
+  "month": "Aug",
+  "type": "FB",
+  "miles_bucket": "1000-1500",
+  "miles": 5045,
+  "price": 17928
+ },
+ {
+  "month": "Aug",
+  "type": "HS",
+  "miles_bucket": "0-500",
+  "miles": 481,
+  "price": 1188
+ },
+ {
+  "month": "Aug",
+  "type": "HS",
+  "miles_bucket": "500-1000",
+  "miles": 2506,
+  "price": 6156
+ },
+ {
+  "month": "Aug",
+  "type": "HS",
+  "miles_bucket": "1500+",
+  "miles": 1950,
+  "price": 5000
+ },
+ {
+  "month": "Aug",
+  "type": "OSL",
+  "miles_bucket": "500-1000",
+  "miles": 1216,
+  "price": 9504
+ },
+ {
+  "month": "Aug",
+  "type": "Partial",
+  "miles_bucket": "0-500",
+  "miles": 840,
+  "price": 1782
+ },
+ {
+  "month": "Aug",
+  "type": "Partial",
+  "miles_bucket": "500-1000",
+  "miles": 714,
+  "price": 1512
+ },
+ {
+  "month": "Sep",
+  "type": "FB",
+  "miles_bucket": "0-500",
+  "miles": 1436,
+  "price": 6480
+ },
+ {
+  "month": "Sep",
+  "type": "FB",
+  "miles_bucket": "500-1000",
+  "miles": 10707,
+  "price": 44604
+ },
+ {
+  "month": "Sep",
+  "type": "FB",
+  "miles_bucket": "1000-1500",
+  "miles": 15043,
+  "price": 68904
+ },
+ {
+  "month": "Sep",
+  "type": "FB",
+  "miles_bucket": "1500+",
+  "miles": 9387,
+  "price": 31874
+ },
+ {
+  "month": "Sep",
+  "type": "HS",
+  "miles_bucket": "0-500",
+  "miles": 1088,
+  "price": 3906
+ },
+ {
+  "month": "Sep",
+  "type": "HS",
+  "miles_bucket": "500-1000",
+  "miles": 6216,
+  "price": 16312
+ },
+ {
+  "month": "Sep",
+  "type": "HS",
+  "miles_bucket": "1000-1500",
+  "miles": 4924,
+  "price": 11556
+ },
+ {
+  "month": "Sep",
+  "type": "HS",
+  "miles_bucket": "1500+",
+  "miles": 5392,
+  "price": 12096
+ },
+ {
+  "month": "Sep",
+  "type": "OSL",
+  "miles_bucket": "500-1000",
+  "miles": 1314,
+  "price": 7020
+ },
+ {
+  "month": "Sep",
+  "type": "Partial",
+  "miles_bucket": "0-500",
+  "miles": 907,
+  "price": 2160
+ },
+ {
+  "month": "Sep",
+  "type": "Partial",
+  "miles_bucket": "500-1000",
+  "miles": 2815,
+  "price": 5238
+ },
+ {
+  "month": "Sep",
+  "type": "Partial",
+  "miles_bucket": "1000-1500",
+  "miles": 3249,
+  "price": 6780
+ },
+ {
+  "month": "Sep",
+  "type": "Partial",
+  "miles_bucket": "1500+",
+  "miles": 2098,
+  "price": 3780
+ },
+ {
+  "month": "Oct",
+  "type": "FB",
+  "miles_bucket": "0-500",
+  "miles": 359,
+  "price": 1620
+ },
+ {
+  "month": "Oct",
+  "type": "FB",
+  "miles_bucket": "500-1000",
+  "miles": 3578,
+  "price": 14580
+ },
+ {
+  "month": "Oct",
+  "type": "FB",
+  "miles_bucket": "1000-1500",
+  "miles": 9830,
+  "price": 43092
+ },
+ {
+  "month": "Oct",
+  "type": "FB",
+  "miles_bucket": "1500+",
+  "miles": 3062,
+  "price": 13176
+ },
+ {
+  "month": "Oct",
+  "type": "HS",
+  "miles_bucket": "0-500",
+  "miles": 385,
+  "price": 756
+ },
+ {
+  "month": "Oct",
+  "type": "HS",
+  "miles_bucket": "500-1000",
+  "miles": 9081,
+  "price": 23102
+ },
+ {
+  "month": "Oct",
+  "type": "HS",
+  "miles_bucket": "1000-1500",
+  "miles": 6971,
+  "price": 16740
+ },
+ {
+  "month": "Oct",
+  "type": "HS",
+  "miles_bucket": "1500+",
+  "miles": 6645,
+  "price": 14256
+ },
+ {
+  "month": "Oct",
+  "type": "OSL",
+  "miles_bucket": "500-1000",
+  "miles": 525,
+  "price": 5000
+ },
+ {
+  "month": "Oct",
+  "type": "Partial",
+  "miles_bucket": "0-500",
+  "miles": 1552,
+  "price": 3888
+ },
+ {
+  "month": "Oct",
+  "type": "Partial",
+  "miles_bucket": "500-1000",
+  "miles": 540,
+  "price": 1150
+ },
+ {
+  "month": "Oct",
+  "type": "Partial",
+  "miles_bucket": "1000-1500",
+  "miles": 1169,
+  "price": 1728
+ }
+]

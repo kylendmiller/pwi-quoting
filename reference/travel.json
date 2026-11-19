@@ -1,0 +1,27 @@
+[
+ {
+  "row": 7,
+  "item": "Hotels (one room per person)",
+  "cost": 170
+ },
+ {
+  "row": 8,
+  "item": "Per diem costs",
+  "cost": 75
+ },
+ {
+  "row": 9,
+  "item": "Rental Car (Weekly)",
+  "cost": 650
+ },
+ {
+  "row": 10,
+  "item": "PWI Flights (Per Hour)",
+  "cost": 1300
+ },
+ {
+  "row": 12,
+  "item": "LTL Tool Return to PWI",
+  "cost": 2000
+ }
+]

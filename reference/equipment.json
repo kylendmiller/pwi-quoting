@@ -1,0 +1,156 @@
+[
+ {
+  "row": 3,
+  "item": "Toyota 6K Pneumatic Forklift",
+  "daily": 411,
+  "weekly": 1007,
+  "monthly": 2652.5
+ },
+ {
+  "row": 4,
+  "item": "PWI Scissor Lift",
+  "daily": 267.5,
+  "weekly": 541.3636,
+  "monthly": 1173.4091
+ },
+ {
+  "row": 5,
+  "item": "JCB 508C (Shrek)",
+  "daily": 713.3333,
+  "weekly": 1786.6667,
+  "monthly": 4115
+ },
+ {
+  "row": 6,
+  "item": "JLG G12-55A",
+  "daily": 1001.6667,
+  "weekly": 2738.3333,
+  "monthly": 6536.6667
+ },
+ {
+  "row": 7,
+  "item": "Genie GTH-1545 (Smurf)",
+  "daily": 1432.5,
+  "weekly": 3720,
+  "monthly": 8940
+ },
+ {
+  "row": 8,
+  "item": "Broderson IC-400 Carry Deck Crane",
+  "daily": 3000,
+  "weekly": 9000,
+  "monthly": 27000
+ },
+ {
+  "row": 9,
+  "item": "Rental Fork Lift",
+  "daily": 405,
+  "weekly": 960.5556,
+  "monthly": 2614.4444
+ },
+ {
+  "row": 10,
+  "item": "Rental Boom Lift",
+  "daily": 616.25,
+  "weekly": 1332.5,
+  "monthly": 2953.75
+ },
+ {
+  "row": 11,
+  "item": "Rental Scissor Lift",
+  "daily": 331,
+  "weekly": 679.5,
+  "monthly": 1649
+ },
+ {
+  "row": 12,
+  "item": "Rental 6K Telehandler",
+  "daily": 820,
+  "weekly": 1785,
+  "monthly": 4295
+ },
+ {
+  "row": 13,
+  "item": "Rental 10K Telehandler",
+  "daily": 910,
+  "weekly": 2335,
+  "monthly": 5040
+ },
+ {
+  "row": 14,
+  "item": "Rental 15K Telehandler",
+  "daily": 1432.5,
+  "weekly": 3720,
+  "monthly": 8940
+ },
+ {
+  "row": 15,
+  "item": "Wacker Neuson Large Generator",
+  "daily": 298.8333,
+  "weekly": 771.5,
+  "monthly": 1840.8333
+ },
+ {
+  "row": 25,
+  "item": "Walk behind saw w/ 18\" blade",
+  "daily": 500,
+  "weekly": null,
+  "monthly": null
+ },
+ {
+  "row": 26,
+  "item": "Concrete buggy",
+  "daily": 150,
+  "weekly": null,
+  "monthly": null
+ },
+ {
+  "row": 27,
+  "item": "50 Series mini excavator",
+  "daily": 200,
+  "weekly": null,
+  "monthly": null
+ },
+ {
+  "row": 28,
+  "item": "Tilt trailer or dumpster",
+  "daily": 350,
+  "weekly": null,
+  "monthly": null
+ },
+ {
+  "row": 29,
+  "item": "Disposal of cut out concrete",
+  "daily": 500,
+  "weekly": null,
+  "monthly": null
+ },
+ {
+  "row": 34,
+  "item": "Transportaion/Fuel Surcharge",
+  "daily": 0.123,
+  "weekly": null,
+  "monthly": null
+ },
+ {
+  "row": 35,
+  "item": "Rental Company Freight Surcharge",
+  "daily": 0.05,
+  "weekly": null,
+  "monthly": null
+ },
+ {
+  "row": 36,
+  "item": "Taxes and Other Charges",
+  "daily": 0.15,
+  "weekly": null,
+  "monthly": null
+ },
+ {
+  "row": 37,
+  "item": "Delivery/Pickup fee",
+  "daily": 400,
+  "weekly": null,
+  "monthly": null
+ }
+]

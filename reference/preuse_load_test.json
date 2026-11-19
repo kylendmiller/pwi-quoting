@@ -1,0 +1,72 @@
+[
+ {
+  "row": 4,
+  "item": "1 Ton Hoist, test weight",
+  "daily": 200
+ },
+ {
+  "row": 5,
+  "item": "2 Ton Hoist, test weight",
+  "daily": 400
+ },
+ {
+  "row": 6,
+  "item": "3 Ton Hoist, test weight",
+  "daily": 600
+ },
+ {
+  "row": 7,
+  "item": "5 Ton Hoist, test weight",
+  "daily": 1000
+ },
+ {
+  "row": 8,
+  "item": "10 Ton Hoist, test weight",
+  "daily": 1500
+ },
+ {
+  "row": 9,
+  "item": "Rental - 1 Ton Hoist, test weight",
+  "daily": 400
+ },
+ {
+  "row": 10,
+  "item": "Rental - 2 Ton Hoist, test weight",
+  "daily": 800
+ },
+ {
+  "row": 11,
+  "item": "Rental - 3 Ton Hoist, test weight",
+  "daily": 1600
+ },
+ {
+  "row": 12,
+  "item": "Rental - 5 Ton Hoist, test weight",
+  "daily": 2000
+ },
+ {
+  "row": 13,
+  "item": "Rental - 10 Ton Hoist, test weight",
+  "daily": 3000
+ },
+ {
+  "row": 14,
+  "item": "Pre Use inspection hourly fee",
+  "daily": 160
+ },
+ {
+  "row": 15,
+  "item": "Scissor lift day rental",
+  "daily": 90
+ },
+ {
+  "row": 16,
+  "item": "Round Trip Freight Charge",
+  "daily": 300
+ },
+ {
+  "row": 17,
+  "item": "Office Charge",
+  "daily": 80
+ }
+]

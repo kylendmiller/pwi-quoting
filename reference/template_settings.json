@@ -1,0 +1,10 @@
+{
+ "template_shop_rate": 100,
+ "template_onsite_rate": 113,
+ "pm_rate": 95,
+ "cad_rate": 120,
+ "pe_rate": 180,
+ "structural_markup_pct": 26,
+ "sales_tax_rate": 0.07,
+ "freight_markup": 0.2
+}
