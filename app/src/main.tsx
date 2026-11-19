@@ -8,6 +8,10 @@ import { NewQuote } from './NewQuote';
 import { Editor } from './Editor';
 import { Approvals } from './Approvals';
 import { Admin } from './Admin';
+import { captureFromUrl, capturePending } from './pendingSpec';
+import { useAppVersion } from './useAppVersion';
+
+captureFromUrl();
 
 export type Profile = { user_id: string; full_name: string; title: string; role: 'none' | 'sales' | 'manager' | 'admin' };
 
@@ -21,6 +25,17 @@ function App() {
   const [session, setSession] = useState<any>(undefined);
   const [me, setMe] = useState<Profile | null>(null);
   const route = useHash();
+  const newVersion = useAppVersion();
+  useEffect(() => {          // paste a Claude block or link anywhere (outside a text box) → new quote from it
+    const f = (e: ClipboardEvent) => {
+      const t = e.clipboardData?.getData('text') ?? '';
+      const el = document.activeElement as HTMLElement | null;
+      if (el && /INPUT|TEXTAREA|SELECT/.test(el.tagName)) return;
+      if (!/pwi_quote|#\/new\?s=/.test(t)) return;
+      try { capturePending(t); e.preventDefault(); location.hash = '/new'; dispatchEvent(new HashChangeEvent('hashchange')); } catch (err: any) { alert(err.message); }
+    };
+    addEventListener('paste', f); return () => removeEventListener('paste', f);
+  }, []);
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => setSession(data.session));
     const { data } = supabase.auth.onAuthStateChange((_e, s) => setSession(s));
@@ -39,8 +54,8 @@ function App() {
   const isMgr = me.role === 'manager' || me.role === 'admin';
   const nav = (to: string, label: string) => <a href={`#${to}`} className={route === to || (to !== '/' && route.startsWith(to)) ? 'active' : ''}>{label}</a>;
   let page: React.ReactNode;
-  if (route.startsWith('/q/')) page = <Editor quoteId={route.slice(3)} me={me} />;
-  else if (route === '/new') page = <NewQuote />;
+  if (route.startsWith('/q/')) { const [id, sub] = route.slice(3).split('/'); page = <Editor key={id + sub} quoteId={id} me={me} mode={sub === 'edit' ? 'edit' : 'review'} />; }
+  else if (route.startsWith('/new')) page = <NewQuote />;
   else if (route === '/approvals') page = <Approvals />;
   else if (route === '/admin' && me.role === 'admin') page = <Admin />;
   else page = <QuoteList />;
@@ -51,6 +66,7 @@ function App() {
         <nav>{nav('/', 'QUOTES')}{nav('/new', 'NEW QUOTE')}{isMgr && nav('/approvals', 'APPROVALS')}{me.role === 'admin' && nav('/admin', 'SETTINGS')}</nav>
         <span className="me">{me.full_name || session.user.email} · {me.role} · <a style={{ color: '#fff' }} href="#/" onClick={() => supabase.auth.signOut()}>sign out</a></span>
       </header>
+      {newVersion && <div className="update-bar">A new version of the quote app is ready. <button onClick={() => location.reload()}>Reload</button></div>}
       <main>{page}<div className="footer-tag">CONQUER YOUR SPACE</div></main>
     </>
   );

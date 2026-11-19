@@ -45,3 +45,13 @@ export function emptyDoc(family: string): QuoteDoc {
 }
 export const newLine = (category: CategoryKey, family: string, over: Partial<QuoteLine> = {}): QuoteLine =>
   ({ key: Math.random().toString(36).slice(2, 10), kind: kindOf(category), category, family, description: '', qty: 1, ...over });
+
+/** One-line plain-English description of a spec item. */
+export function describe(it: any): string {
+  if (it.type !== 'freestanding') return `${it.tag ?? it.type} — lines added by hand`;
+  const h = it.overallHeightFt != null ? `${it.overallHeightFt}' overall` : `${it.hookHeightFt}' under hook`;
+  return `${it.systems > 1 ? it.systems + ' × ' : ''}FSTR${it.series}${it.capacityTons} — ${it.capacityTons} ton, ${it.spanFt}' span × ${it.runwayOalFt}' runway, ${h}, ` +
+    `${it.bridgeDrive} bridge, ${it.control ?? (it.bridgeDrive === 'motorized' ? 'radio' : 'pendant')}, ${it.voltage}` +
+    (it.colors && Object.keys(it.colors).length ? `, colors: ${Object.entries(it.colors).map(([k, v]) => `${k} ${v}`).join(', ')}` : '') +
+    (it.install ? `, installed (${it.miles} mi)` : ', ship only');
+}

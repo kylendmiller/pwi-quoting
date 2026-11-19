@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { supabase, api, money } from './supabase';
 import { priceManual, type QuoteDoc, type QuoteLine, type Settings } from '../../src/engine/manual';
 import type { CategoryKey } from '../../src/engine/rollup';
-import { CATEGORIES, FAMILIES, isHours, newLine, kindOf } from './model';
+import { CATEGORIES, FAMILIES, isHours, newLine, kindOf, describe } from './model';
 import { downloadPdf } from './QuotePdf';
 import type { Profile } from './main';
 import library from './wording-library.txt?raw';
@@ -18,7 +18,7 @@ const FLAG_TEXT: Record<string, string> = {
   CLASS_D: 'Class D crane',
 };
 
-export function Editor({ quoteId, me }: { quoteId: string; me: Profile }) {
+export function Editor({ quoteId, me, mode = 'edit' }: { quoteId: string; me: Profile; mode?: 'review' | 'edit' }) {
   const [quote, setQuote] = useState<any>(null);
   const [revs, setRevs] = useState<any[]>([]);
   const [rev, setRev] = useState<any>(null);
@@ -120,6 +120,11 @@ export function Editor({ quoteId, me }: { quoteId: string; me: Profile }) {
 
       <div className="editor">
         <div>
+          {mode === 'review' ? <><Review quote={quote} doc={doc} header={header} priced={priced} quoteId={quoteId} locked={locked} />{!locked && <ImportSpec doc={doc} settings={settings} onApply={(d, h, notes) => {
+            setDoc(d); setDirty(true); setBuildNotes(notes);
+            setHeader({ ...header, project_name: header.project_name || h.project_name, job_location: header.job_location || h.job_location });
+            setMsg({ t: 'ok', m: `Built ${d.lines.length} lines — review, then Save.` });
+          }} />}</> : <>
           <div className="card grid g4">
             <div><label>Project</label><input disabled={locked} value={header.project_name ?? ''} onChange={e => { setHeader({ ...header, project_name: e.target.value }); setDirty(true); }} /></div>
             <div><label>Job location</label><input disabled={locked} value={header.job_location ?? ''} onChange={e => { setHeader({ ...header, job_location: e.target.value }); setDirty(true); }} /></div>
@@ -187,6 +192,7 @@ export function Editor({ quoteId, me }: { quoteId: string; me: Profile }) {
                 {!locked && <button className="secondary" onClick={() => upd({ options: doc.options.filter((_, j) => j !== i) })}>×</button>}</div>))}
             {!locked && doc.options.length < 3 && <button className="secondary" onClick={() => upd({ options: [...doc.options, { description: '', price: 0 }] })}>+ Option</button>}
           </div>
+          </>}
         </div>
 
         <div className="panel">
@@ -219,8 +225,11 @@ export function Editor({ quoteId, me }: { quoteId: string; me: Profile }) {
             {msg && <p className={msg.t === 'err' ? 'msg-error' : ''}>{msg.m}</p>}
             <div className="grid">
               {!locked && <button onClick={save} disabled={busy || !dirty}>{dirty ? 'Save' : 'Saved'}</button>}
-              {!locked && <button onClick={() => act('send', { revision_id: rev.id }, 'Sent — revision locked')} disabled={busy || dirty || openFlags.length > 0 || lintErrors.length > 0}>Mark as sent (locks R{rev.rev})</button>}
-              <button className="secondary" onClick={() => downloadPdf({ quote, rev, doc, priced: priced!, me, number })} disabled={!priced}>Download PDF</button>
+              {!locked && <button onClick={async () => {
+                const ok = await act('send', { revision_id: rev.id }, `Sent — R${rev.rev} locked`);
+                if (ok) downloadPdf({ quote, rev: { ...rev, locked: true, sent_at: new Date().toISOString() }, doc, priced: priced!, me, number });
+              }} disabled={busy || dirty || openFlags.length > 0 || lintErrors.length > 0}>Send: lock R{rev.rev} + download PDF</button>}
+              <button className="secondary" onClick={() => downloadPdf({ quote, rev, doc, priced: priced!, me, number })} disabled={!priced}>{locked ? 'Download PDF' : 'Preview PDF (DRAFT)'}</button>
               {locked && <button className="secondary" onClick={() => act('revise', { quote_id: quote.id }, 'New revision started')}>Start new revision</button>}
               {locked && !quote.job_id && <button className="secondary" onClick={async () => {
                 const job = prompt('Job ID (5 digits) for this won job:'); if (!job) return;
@@ -277,3 +286,39 @@ function QuickAdd({ fam, refData, onAdd, onSteel, vendorQ, setVendorQ, vendorHit
     </div>
   );
 }
+
+// Plain-English review of a built quote: what it is, what was assumed, what to check.
+function Review({ quote, doc, header, priced, quoteId, locked }: any) {
+  const items: any[] = (doc.spec as any)?.items ?? [];
+  const blockers: string[] = doc.blockers ?? [];
+  const notes: string[] = (doc.buildNotes ?? []).filter((n: string) => !blockers.includes(n));
+  const lines = doc.lines.length;
+  return <>
+    <div className="card">
+      <h3>Summary</h3>
+      <p style={{ fontSize: 16, margin: '4px 0 8px' }}>
+        {quote.customers?.name} · {header.project_name}{header.job_location ? ` · ${header.job_location}` : ''}
+      </p>
+      {items.length > 0 ? <ul className="summary">{items.map((it, i) => <li key={i}>{describe(it)}</li>)}</ul>
+        : <p className="muted">Built by hand — {lines} line{lines === 1 ? '' : 's'}.</p>}
+      <div className="row">
+        <a className="btn secondary" href={`#/q/${quoteId}/edit`}>{locked ? 'View lines & wording' : 'Edit lines & wording'}</a>
+        <span className="muted">{lines} line items · {priced?.totals.shopHours ?? 0} shop hrs · {priced?.totals.installHours ?? 0} install hrs</span>
+      </div>
+    </div>
+    {(blockers.length > 0 || notes.length > 0) && <div className="card">
+      <h3>Check these</h3>
+      {blockers.map((b, i) => <div key={'b' + i} className="banner block">{b}</div>)}
+      {notes.map((n, i) => <div key={'n' + i} className="msg-warn">⚠ {n}</div>)}
+    </div>}
+    {(doc.assumptions ?? []).length > 0 && <div className="card">
+      <h3>What Claude and the builder assumed</h3>
+      <p className="muted">To change one, tell Claude ("make it hook height", "3-man crew") and open the new link — or edit the lines.</p>
+      <table className="assume"><tbody>{doc.assumptions.map((a: any, i: number) => <tr key={i}><td><b>{label(a.field)}</b></td><td>{a.why}</td></tr>)}</tbody></table>
+    </div>}
+    <div className="card"><h3>Customer wording</h3><pre className="wording">{doc.wording || '—'}</pre></div>
+  </>;
+}
+const LABELS: Record<string, string> = { heightBasis: 'Height', columnsPerSystem: 'Columns', doubleGirder: 'Girder', asceRail: 'Rail', steelSource: 'Steel sizes', foundation: 'Foundation',
+  liftFt: 'Lift', hoistFamily: 'Hoist', colors: 'Paint', crewMen: 'Crew', travelMode: 'Travel', crewDays: 'Days on site', equipment: 'Equipment', freight: 'Freight' };
+const label = (f: string) => LABELS[f] ?? f;

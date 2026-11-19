@@ -36,6 +36,7 @@ function QuoteDocPdf({ quote, rev, doc, priced, me, number }: { quote: any; rev:
   return (
     <Document title={`${number} - ${quote.project_name} - ${rev.doc_type} R${rev.rev}`} author="PWI Corp">
       <Page size="LETTER" style={st.page}>
+        {!rev.locked && <Text fixed style={{ position: 'absolute', top: 330, left: 90, fontSize: 110, color: '#D4D7DA', opacity: 0.5, transform: 'rotate(-30deg)' }}>DRAFT</Text>}
         <View style={st.head}>
           <View style={{ flex: 1 }}>
             <View style={st.kv}><Text style={st.k}>Date:</Text><Text style={st.v}>{date}</Text></View>

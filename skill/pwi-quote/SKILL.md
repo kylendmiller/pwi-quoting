@@ -1,77 +1,135 @@
 ---
 name: pwi-quote
-description: Turn a spoken or typed PWI job description (freestanding crane, bridge, gantry, mezzanine…) into a quote block that fills the PWI quote app. Use when a PWI salesperson describes a project to quote.
+description: Turn a spoken or typed PWI job description (freestanding crane, bridge, gantry, mezzanine…) into a link that builds the full quote in the PWI quote app. Use when a PWI salesperson describes a project to quote.
 ---
 
 # PWI Quote
 
-The salesperson describes a job in plain words, and may attach a drawing. Your output is ONE JSON block that they paste into **Paste from Claude** in the quote app (https://pwi-quotes.netlify.app). From that block the app builds every line item, the labor, the install, the freight and the customer wording.
+The rep says the job in plain words, sometimes with a drawing attached. You hand back **one link**. When they tap it, the PWI quote app (pwi-quotes.netlify.app) builds the whole quote: every line item, install, travel, lodging, lifts, freight and the customer wording.
 
-The company name is PWI or PWI Corp. Never write "Paul's Welding".
+Only ever call the company **PWI** or **PWI Corp**.
 
-## How to run it
+## 1. Pull out everything they said
 
-1. Read what they said and pull out every field below. Model codes carry a lot of the answer: **FSTRM2** = freestanding, motorized, 2 ton; **FSTRGM5** = girder motorized, 5 ton; **FSTRUL1** = Ultra-Lite, 1 ton; **FSTRHL** = Hyper-Lite. If they attached a drawing, read the dimensions off it.
-2. Ask only for the **required fields that are still missing**. Put them all in one round of multiple-choice questions (AskUserQuestion when you have it), with the most common answer first. Never ask about anything that has a default unless they brought it up.
-3. Output the block, then give 2–3 lines on any assumption that changes price (for example, "assumed 460V" or "no install").
+**Model codes**
 
-Keep it fast. One question round is the goal; two is the most.
+| Code | Means |
+|---|---|
+| FSTRM2 | freestanding, motorized, 2 t |
+| FSTRGM5 | girder motorized, 5 t |
+| FSTRUL1 | Ultra-Lite, 1 t |
+| FSTRHL | Hyper-Lite |
 
-## Fields: freestanding (`"type": "freestanding"`)
+"Top runner" is any FSTR.
 
-| field | required | values / default |
-|---|---|---|
-| series | yes | `UL` Ultra-Lite, `M` motorized/standard top running, `GM` girder motorized, `HL` Hyper-Lite |
-| capacityTons | yes | 0.25, 0.5, 1, 2, 3, 5, 7.5, 10 |
-| runwayOalFt | yes | feet (decimals OK: 20'8" = 20.67) |
-| spanFt | yes | feet |
-| hookHeightFt | yes | height under hook, feet |
-| bridgeDrive | yes | `manual` or `motorized`. FSTR is NOT automatically either way, so ask unless the model code or their words say it. |
-| trolley | no | defaults to the same as bridgeDrive |
-| voltage | yes | `460V/3`, `230V/3`, `208V/3` |
-| control | no | `radio` (default when motorized; Starke Echo) or `pendant` (default when manual) |
-| install | yes | true / false (ship only) |
-| miles | if install | one-way miles from Nappanee, IN. If they give a city instead, estimate the miles. |
-| systems | no | 1 |
-| bridgesPerSystem | no | 1 |
-| hoistsPerBridge | no | 1 |
-| columnsPerSystem | no | auto from OAL; set it only if the drawing shows it |
-| collisionAvoidance | no | false; true only when 2+ bridges share a runway or they ask for it |
-| asceRail | no | auto (motorized and 5 t+) |
-| bracedToBuilding | no | false |
-| liftFt | no | auto from hook height |
-| preUseInspection | no | false |
+**Dimensions**
+- "30 wide by 80 long" means span 30, runway 80. Width is always the span.
+- **"X feet tall" or "X high" is OVERALL height** → `overallHeightFt`.
+- Use `hookHeightFt` only when they say "under the hook" or "hook height". Never fill both.
 
-## Other products
+**Paint**
+- "Pink columns" → `colors.columns: "pink"`.
+- Any color other than gray or Spark Orange is a custom color. It costs more, and the app prices it.
 
-Bridge, gantry, monorail, jib, mezzanine, stairs, VRC, fall protection: their auto-builders are not ready yet. Still include each one as an item with `type` and a full `wording` string written in PWI's spec style:
-- the title line `(qty) - MODEL TITLE`
-- General Specs
-- the component sections
+**Location**
+- A city or ZIP means installed, unless they say "ship only".
+- Estimate one-way road miles from Nappanee, IN 46550 → `miles`.
 
-The app keeps that wording and tells the rep to add the lines by hand.
+**Customer and contact**
+- Take the customer name and contact name, email and phone only if they were said or are in an attachment.
+- Never invent a customer.
 
-## Output format
+## 2. Ask once, only for what is truly missing
 
-Output exactly one fenced json block:
+Ask in **one** round of multiple-choice questions (AskUserQuestion when you have it), with the most common answer first.
+
+Ask for these only when missing:
+- product
+- capacity
+- span
+- runway length
+- a height
+- whether the bridge is **manual or motorized** (FSTR can be either; skip it if the code or their words already say it)
+- **customer name**
+- **ship only or installed** (plus the city if installed)
+
+Do NOT ask about these. Default them and say so in one line:
+- voltage → 460V/3
+- control → radio if motorized, pendant if manual
+- 1 bridge, 1 hoist, 1 system
+- no collision avoidance unless 2+ bridges share a runway
+
+If they say they want it "right", don't ask more questions. The app shows every assumption on its review screen.
+
+## 3. Make the link
+
+Build the spec as compact JSON. If you can run code, make the link like this:
+
+```bash
+python3 -c "import base64,json,sys;s=json.dumps(json.loads(sys.argv[1]),separators=(',',':'));print('https://pwi-quotes.netlify.app/#/new?s='+base64.urlsafe_b64encode(s.encode()).decode().rstrip('='))" '<SPEC JSON>'
+```
+
+Then reply with:
+1. a one-line read-back, e.g. "FSTRGM5, 5 t, 30' × 80', 20' overall, motorized, radio, pink columns, installed Milwaukee (~165 mi). Assumed 460V/3."
+2. the link: **[Open draft quote](link)**
+
+If you cannot run code, do NOT hand-type base64. Instead, give the JSON in a ```json block and say: "Copy this and press Ctrl+V on the quote list page."
+
+## Spec format
 
 ```json
 {
   "pwi_quote": 1,
-  "project": "Bay 3 crane",
-  "location": "Elkhart, IN",
+  "project": "80' FSTRGM5 crane system",
+  "location": "Milwaukee, WI",
+  "customer": { "name": "Acme Fabrication", "city": "Milwaukee", "state": "WI",
+                "contact": { "name": "Jane Doe", "email": "jane@acme.com" } },
   "items": [
-    { "type": "freestanding", "series": "M", "capacityTons": 2, "runwayOalFt": 60, "spanFt": 30,
-      "hookHeightFt": 16, "bridgeDrive": "motorized", "trolley": "motorized", "voltage": "460V/3",
-      "control": "radio", "install": true, "miles": 25, "systems": 1 }
+    { "type": "freestanding", "tag": "Bay 1", "series": "GM", "capacityTons": 5,
+      "spanFt": 30, "runwayOalFt": 80, "overallHeightFt": 20,
+      "bridgeDrive": "motorized", "voltage": "460V/3", "control": "radio",
+      "colors": { "columns": "pink" }, "install": true, "miles": 165 }
   ]
 }
 ```
 
-A job with several products is one block with several items.
+**Freestanding fields**
 
-## Example
+Required:
 
-> "FSTRM2, 2 ton, 60 foot runway, 30 span, 16 under hook, 460, installed in Elkhart"
+| Field | Values |
+|---|---|
+| `series` | `UL` / `M` / `GM` / `HL` |
+| `capacityTons` | 0.25–10 |
+| `spanFt` | 5–60 |
+| `runwayOalFt` | 8–400 |
+| height | `overallHeightFt` (8–30) **or** `hookHeightFt` (6–28) |
+| `bridgeDrive` | `manual` / `motorized` |
+| `voltage` | `460V/3` / `230V/3` / `208V/3` |
+| `install` | true / false |
+| `miles` | one-way from Nappanee; required whenever installed or shipped |
 
-Everything required is there: 2 t, motorized (M), OAL, span, hook height, voltage, install, location. Ask nothing. Output the block with miles ≈ 25 and control `radio`. Then add one line: "Assumed radio control, 1 bridge, 1 hoist."
+Optional, only if said:
+- `systems`, `bridgesPerSystem` (1–2), `hoistsPerBridge` (1–2), `columnsPerSystem`, `liftFt`
+- `trolley`, `control`
+- `collisionAvoidance`, `asceRail`, `doubleGirder`, `foundation` (`slab` / `foundation`)
+- `colors { columns, runways, bridge }`
+- `crewMen`, `travelMode` (`drive` / `fly` / `local`)
+- `bracedToBuilding`, `preUseInspection`
+
+**Out of range**
+
+The auto-builder only handles the ranges above. For anything bigger, or for specials (door interlocks, 50' bays, tapered columns), tell the rep it must be quoted by hand. Still give the link: they get the wording and can add the lines.
+
+**Other products**
+
+Bridge, gantry, monorail, jib, mezzanine, stairs, VRC and fall protection don't build automatically yet. Include each one as an item with `type`, `tag` and a full `wording` string in PWI spec style:
+- `(qty) - MODEL TITLE`
+- General Specs
+- the component sections
+
+The app keeps the wording and tells the rep to add the lines by hand.
+
+**Changes later**
+
+"Make it 100 feet long" → send the whole updated spec as a new link or block. The rep pastes it into **Update from Claude** on that quote, which rebuilds it and keeps the lines they added by hand.

@@ -41,3 +41,17 @@ td input, td select { padding: 4px 6px; }
 .row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 .footer-tag { text-align: center; color: var(--orange); font-weight: 700; letter-spacing: 2px; margin: 30px 0 10px; }
 @media (max-width: 900px) { .editor { grid-template-columns: 1fr; } .g3, .g4 { grid-template-columns: 1fr 1fr; } .panel { position: static; } }
+
+/* round 2 */
+input, select, textarea { font-size: 16px; }            /* stops iPhone zoom-on-focus */
+button, a.btn { min-height: 40px; }
+a.btn { display: inline-flex; align-items: center; padding: 8px 16px; border-radius: 6px; background: var(--orange); color: #fff; font-weight: 700; text-decoration: none; }
+a.btn.secondary { background: #fff; color: var(--onyx); border: 1px solid var(--silver); }
+.update-bar { background: var(--orange); color: #fff; padding: 8px 16px; display: flex; gap: 12px; align-items: center; justify-content: center; font-weight: 700; }
+.update-bar button { background: #fff; color: var(--onyx); min-height: 32px; }
+.from-claude { border-left: 4px solid var(--orange); }
+ul.summary { margin: 4px 0 10px; padding-left: 18px; font-size: 15px; line-height: 1.5; }
+table.assume td { padding: 6px; border-bottom: 1px solid var(--silver); vertical-align: top; font-size: 13px; }
+table.assume td:first-child { white-space: nowrap; width: 110px; }
+pre.wording { white-space: pre-wrap; font-family: inherit; font-size: 13px; max-height: 360px; overflow: auto; background: #fafafa; padding: 10px; border-radius: 6px; margin: 0; }
+@media (max-width: 600px) { header.top nav a { font-size: 12px; padding: 0 6px; } header.top .me { display: none; } main { padding: 8px; } }

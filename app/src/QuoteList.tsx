@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 import { supabase, money } from './supabase';
+import { getPending } from './pendingSpec';
+import { describe } from './model';
 
 export function QuoteList() {
   const [rows, setRows] = useState<any[]>([]);
@@ -10,8 +12,13 @@ export function QuoteList() {
   }, []);
   const f = q.toLowerCase();
   const shown = rows.filter(r => !f || [r.quote_number, r.job_id, r.project_name, r.customers?.name].some(v => (v ?? '').toLowerCase().includes(f)));
+  const pending = getPending();
   return (
     <>
+      {pending ? <div className="card from-claude"><h3>Quote from Claude waiting</h3>
+        <ul className="summary">{pending.items.map((it: any, i: number) => <li key={i}>{describe(it)}</li>)}</ul>
+        <a className="btn" href="#/new">Create it →</a></div>
+        : <p className="muted">Tip: copy the block or link Claude gives you and press Ctrl+V anywhere on this page.</p>}
       <div className="row" style={{ justifyContent: 'space-between' }}>
         <h2>Quotes</h2>
         <a className="btn" href="#/new">+ New quote</a>

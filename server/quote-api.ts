@@ -4,10 +4,12 @@
 // @ts-ignore deno import
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import { priceManual, sendBlocked, type QuoteDoc, type Settings } from '../src/engine/manual';
+import { buildFromSpec } from '../src/engine/buildSpec';
+import { loadCatalog } from '../src/engine/catalogLoader';
 
 declare const Deno: { env: { get(k: string): string | undefined }; serve(h: (r: Request) => Promise<Response>): void };
 
-const ENGINE_VERSION = 'manual-1';
+const ENGINE_VERSION = 'manual-1+fs2';
 const cors = { 'access-control-allow-origin': '*', 'access-control-allow-headers': 'authorization, content-type, apikey, x-client-info', 'access-control-allow-methods': 'POST, OPTIONS' };
 const json = (b: unknown, status = 200) => new Response(JSON.stringify(b), { status, headers: { ...cors, 'content-type': 'application/json' } });
 
@@ -32,6 +34,12 @@ Deno.serve(async (req: Request) => {
   const settings = await loadSettings(admin);
   const ev = (quote_id: string, revision_id: string | null, event: string, data: unknown = {}) =>
     admin.from('quote_events').insert({ quote_id, revision_id, actor: uid, event, data });
+  const isMgr = ['manager', 'admin'].includes(role);
+  const ownQuote = async (quote_id: string) => {
+    const { data: q } = await admin.from('quotes').select('salesperson_id').eq('id', quote_id).single();
+    return !!q && (q.salesperson_id === uid || isMgr);
+  };
+  const notYours = () => json({ error: "This quote belongs to another salesperson. Ask them or a sales manager." }, 403);
 
   try {
     switch (body.action) {
@@ -53,6 +61,8 @@ Deno.serve(async (req: Request) => {
         if (!r) return json({ error: 'Revision not found' }, 404);
         if (r.locked) return json({ error: 'This revision was sent and is locked. Start a new revision.' }, 409);
         if (r.doc_version !== doc_version) return json({ error: 'Someone else saved this quote. Reload to see their changes.' }, 409);
+        if (!(r.quotes.salesperson_id === uid || isMgr)) return notYours();
+        await serverChecks(admin, doc as QuoteDoc, settings);
         const priced = priceManual(doc as QuoteDoc, settings);
         const t = priced.totals, ro = priced.rollup.quote;
         // keep only approvals whose covered numbers are unchanged
@@ -80,6 +90,8 @@ Deno.serve(async (req: Request) => {
         if (!['manager', 'admin'].includes(role)) return json({ error: 'Only a sales manager can approve.' }, 403);
         const { revision_id, rule, note } = body;
         const { data: r } = await admin.from('quote_revisions').select('*').eq('id', revision_id).single();
+        const { data: oq } = await admin.from('quotes').select('salesperson_id').eq('id', r?.quote_id).single();
+        if (oq?.salesperson_id === uid && role !== 'admin') return json({ error: "You can't approve your own quote." }, 403);
         const f = (r?.flags ?? []).find((x: { rule: string }) => x.rule === rule);
         if (!f) return json({ error: 'Nothing to approve for that rule.' }, 400);
         await admin.from('approvals').insert({ revision_id, rule, detail: f.detail, covered_hash: await hash(f.detail), requested_by: r.created_by, decision: 'approved', decided_by: uid, decided_at: new Date().toISOString(), note });
@@ -90,6 +102,7 @@ Deno.serve(async (req: Request) => {
         const { revision_id } = body;
         const { data: r } = await admin.from('quote_revisions').select('*').eq('id', revision_id).single();
         if (!r || r.locked) return json({ error: 'Already sent.' }, 409);
+        if (!(await ownQuote(r.quote_id))) return notYours();
         const priced = priceManual(r.doc as QuoteDoc, settings);
         const { data: appr } = await admin.from('approvals').select('rule, covered_hash').eq('revision_id', revision_id).eq('decision', 'approved');
         const ok: string[] = [];
@@ -102,6 +115,7 @@ Deno.serve(async (req: Request) => {
       }
       case 'revise': {             // copy the latest revision into a new editable one
         const { quote_id, doc_type } = body;
+        if (!(await ownQuote(quote_id))) return notYours();
         const { data: last } = await admin.from('quote_revisions').select('*').eq('quote_id', quote_id).order('rev', { ascending: false }).limit(1).single();
         const { data: r, error } = await admin.from('quote_revisions').insert({ quote_id, rev: last.rev + 1, doc: last.doc, doc_type: doc_type ?? last.doc_type, created_by: uid }).select().single();
         if (error) throw error;
@@ -112,6 +126,7 @@ Deno.serve(async (req: Request) => {
       case 'win': {                // job ID replaces the quote number; confirmation revision created
         const { quote_id, job_id } = body;
         if (!/^\d{5}$/.test(job_id ?? '')) return json({ error: 'Job ID must be 5 digits.' }, 400);
+        if (!(await ownQuote(quote_id))) return notYours();
         const { error } = await admin.from('quotes').update({ job_id, status: 'won' }).eq('id', quote_id);
         if (error) return json({ error: error.message.includes('unique') ? 'That job ID is already used.' : error.message }, 400);
         await ev(quote_id, null, 'won', { job_id });
@@ -138,4 +153,19 @@ async function loadSettings(admin: any): Promise<Settings> {
   const s: Record<string, unknown> = {};
   for (const row of data ?? []) s[row.key] = row.value;
   return s as unknown as Settings;
+}
+
+/** The install suggestion and send-blockers are never trusted from the browser:
+ *  rebuild from the saved spec with live prices. No spec → no suggestion (manual install needs approval). */
+async function serverChecks(admin: any, doc: QuoteDoc, settings: Settings) {
+  doc.suggestedInstallHours = null; doc.blockers = [];
+  if (!doc.spec) return;
+  try {
+    const cat = await loadCatalog(admin, settings);
+    const b = buildFromSpec(doc.spec as any, cat, settings, { ...doc, lines: [] });
+    doc.suggestedInstallHours = b.doc.suggestedInstallHours ?? null;
+    doc.blockers = b.blockers;
+  } catch (e) {
+    doc.blockers = [`Auto-build check failed: ${(e as Error).message}`];
+  }
 }

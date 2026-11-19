@@ -17,6 +17,7 @@ export interface QuoteLine {
   unitSell?: number;                // material: catalog sell each (used when no cost/markup)
   laborOp?: string;                 // labor_ops code
   reason?: string;                  // required for site_difficulty / overrides
+  auto?: boolean;                   // made by an auto-builder (replaced on rebuild)
 }
 
 export interface QuoteDoc {
@@ -32,6 +33,10 @@ export interface QuoteDoc {
   pvPerHourOverride?: number | null;
   wording: string;
   options: { description: string; price: number }[];
+  spec?: unknown;                   // the spec the auto-builder ran from (re-build / re-quote)
+  assumptions?: { field: string; value: unknown; why: string; alt?: unknown; altLabel?: string; item?: number }[];
+  buildNotes?: string[];
+  blockers?: string[];              // set by the server's rebuild: must be resolved before sending
 }
 
 export interface Settings {
@@ -123,13 +128,16 @@ export function lintWording(doc: QuoteDoc, s: Settings): Lint[] {
   if (!w.trim()) out.push({ level: 'error', message: 'Quote wording is empty.' });
   if (/\bxx\b|\(x\)|\?\s*Ton/i.test(w)) out.push({ level: 'error', message: 'Wording still has placeholders (xx, (x) or ? Ton).' });
   if (/\bOR\b/.test(w)) out.push({ level: 'error', message: 'Wording still has an "OR" choice — pick one.' });
-  for (const b of s.banned_strings) if (b.trim().length > 3 && w.toLowerCase().includes(b.toLowerCase())) out.push({ level: 'error', message: `Wording contains banned text: "${b}".` });
+  const letters = (t: string) => t.toLowerCase().replace(/[^a-z]/g, '');
+  const wl = letters(w);
+  if (s.banned_strings.some(b => letters(b).length > 3 && wl.includes(letters(b)))) out.push({ level: 'error', message: 'Wording contains a banned company name. Use PWI or PWI Corp.' });
   const tl = /(\d+)\s*psf\s*T\.?L\.?\s*\/\s*(\d+)\s*psf\s*L\.?L/i.exec(w);
   if (tl && Number(tl[1]) < Number(tl[2])) out.push({ level: 'error', message: `Mezzanine capacity: T.L. (${tl[1]}) is less than L.L. (${tl[2]}).` });
   for (const l of doc.lines) {
     if (l.laborOp === 'site_difficulty' && !l.reason?.trim()) out.push({ level: 'error', message: 'Site Difficulty Allowance needs a reason.' });
     if (l.kind === 'material' && l.unitCost != null && !l.markupPct) out.push({ level: 'warning', message: `"${l.description}" has no markup.` });
   }
+  for (const b of doc.blockers ?? []) out.push({ level: 'error', message: b });
   return out;
 }
 

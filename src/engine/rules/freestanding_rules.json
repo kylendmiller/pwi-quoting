@@ -1,0 +1,345 @@
+{
+ "height": {
+  "_why": "overall = hook + headroom(cap); column = overall - runway depth - rail - 0.25 top plate. Headroom fitted on 29213/29354/29331/28640. 10 t kept at 4' (not below 5 t) \u2014 conservative per review.",
+  "headroomFtByCap": [
+   [
+    2,
+    3.0
+   ],
+   [
+    5,
+    4.0
+   ],
+   [
+    999,
+    4.0
+   ]
+  ],
+  "railHeightFt": 0.33,
+  "topPlateFt": 0.25,
+  "roundColumnToFt": 0.5
+ },
+ "bays": {
+  "maxBayFtByCap": [
+   [
+    3,
+    30
+   ],
+   [
+    5,
+    30
+   ],
+   [
+    999,
+    25
+   ]
+  ],
+  "combineBaysUpToFt": 40
+ },
+ "columnType": {
+  "builtUpFromCap": 10,
+  "builtUpPlfByCap": [
+   [
+    5,
+    57
+   ],
+   [
+    10,
+    70
+   ],
+   [
+    999,
+    85
+   ]
+  ],
+  "maxChartHeightFt": 22
+ },
+ "basePlate": [
+  [
+   1,
+   0.5,
+   14
+  ],
+  [
+   3,
+   0.75,
+   20
+  ],
+  [
+   5,
+   1,
+   28
+  ],
+  [
+   999,
+   1,
+   24
+  ]
+ ],
+ "anchors": [
+  {
+   "maxCap": 1,
+   "part": "5/8\" Concrete Wedge Anchor",
+   "perColumn": 4
+  },
+  {
+   "maxCap": 5,
+   "part": "3/4\" Concrete Wedge Anchor",
+   "perColumn": 8
+  },
+  {
+   "maxCap": 999,
+   "part": "3/4\" Epoxy Anchors",
+   "perColumn": 8,
+   "plus": [
+    {
+     "part": "Grouted Baseplates",
+     "perColumn": 1
+    }
+   ],
+   "wording": "foundation"
+  }
+ ],
+ "hoist": [
+  {
+   "maxCap": 3,
+   "family": "STK",
+   "pattern": "STK{cap}*-{lift}-{v}-3PH-{trolley}"
+  },
+  {
+   "maxCap": 999,
+   "family": "SMW",
+   "pattern": "SMW{cap}*-{lift}-{v}-3PH*",
+   "doubleGirderFamily": "STW"
+  }
+ ],
+ "endTruck": [
+  [
+   3,
+   "SCT-110-100"
+  ],
+  [
+   5,
+   "STT-170-150"
+  ],
+  [
+   10,
+   "STT-250-150"
+  ]
+ ],
+ "endTruckWheelbase": {
+  "spanInPerWbIn": 7.5,
+  "minIn": 48,
+  "stepIn": 6
+ },
+ "panel460": [
+  [
+   3,
+   "SCP-0246"
+  ],
+  [
+   5,
+   "SCP-0346"
+  ],
+  [
+   10,
+   "SCP-0446"
+  ],
+  [
+   999,
+   "SCP-1046"
+  ]
+ ],
+ "panel230": [
+  [
+   3,
+   "SCP-0323"
+  ],
+  [
+   999,
+   "SCP-0523"
+  ]
+ ],
+ "paint": {
+  "_why": "Template note: a full booth run = 16 beams < 18in tall and < 30 ft. Unit = ceil(length/30) per piece; runs = ceil(units/16 to 0.5), min 1; custom color min 1 full run.",
+  "piecesPerRun": 16,
+  "maxLenFt": 30,
+  "roundTo": 0.5,
+  "standardRun": 1983.75,
+  "customRun": 2530,
+  "customMinRuns": 1
+ },
+ "shopOps": {
+  "_source": "SMT Labor tab rows 95-117 (current template)",
+  "cutList": 1,
+  "colTubeGusset": 2.5,
+  "colWideFlangeMoment": 6,
+  "colBuiltUpPerFt": 0.5,
+  "pcrRunwayLE20": 2,
+  "pcrRunwayGT20": 3,
+  "webStiffenersPerBeamFromCap": [
+   5,
+   1
+  ],
+  "bridge": {
+   "ultralite": 10,
+   "manual": 14,
+   "single": 60,
+   "double": 105,
+   "over70ftAdd": 20
+  },
+  "collisionAvoidPerBridge": 20,
+  "railShopPer5ft": 0.25,
+  "handling": {
+   "pctOfMaterialSell": 0.015,
+   "perHour": 85,
+   "min": 5
+  }
+ },
+ "siteOps": {
+  "setup": 10,
+  "column": 3,
+  "runwayPiece": 3,
+  "runwayPieceOver40": 5,
+  "endStops": 2,
+  "electrificationPer100ftOal": 5.8,
+  "bridgeUnder8k": 8,
+  "bridgeOver8k": 12,
+  "manualBridge": 4,
+  "railPer100ftOal": 16,
+  "collisionAvoidPerBridge": 5,
+  "bracingPerLocation": 1,
+  "touchupCleanup": {
+   "base": 10,
+   "pctOfSubtotal": 0.08
+  }
+ },
+ "crew": {
+  "menIfHoursAbove": [
+   [
+    120,
+    2
+   ],
+   [
+    99999,
+    3
+   ]
+  ],
+  "hoursPerDay": 10,
+  "dayRoundSlack": 0.25
+ },
+ "travel": {
+  "driveMph": 65,
+  "flyAboveMiles": 800,
+  "flyDoorToDoorHrsEachWay": 10,
+  "localMiles": 100,
+  "hotel": 170,
+  "perDiem": 75,
+  "rentalCarWeekly": 650,
+  "flightPerMan": 612,
+  "toolReturnLtl": 2000,
+  "markupPct": 10,
+  "sameDayDriveMiles": 250
+ },
+ "equipment": {
+  "markupPct": 15,
+  "deliveryFee": 400,
+  "lift": [
+   {
+    "maxColumnTopFt": 24,
+    "item": "Rental Scissor Lift"
+   },
+   {
+    "maxColumnTopFt": 999,
+    "item": "Rental Boom Lift"
+   }
+  ],
+  "liftsByMen": {
+   "2": 1,
+   "3": 2
+  },
+  "handler": {
+   "reachFactor": 1.3,
+   "classes": [
+    [
+     3000,
+     "Rental Fork Lift"
+    ],
+    [
+     6000,
+     "Rental 6K Telehandler"
+    ],
+    [
+     10000,
+     "Rental 10K Telehandler"
+    ],
+    [
+     15000,
+     "Rental 15K Telehandler"
+    ]
+   ],
+   "aboveMaxFlag": "crane service \u2014 price in cost-based"
+  },
+  "generatorIf": "asceRail",
+  "weekly": {
+   "fromDays": 3
+  },
+  "monthly": {
+   "fromWeeks": 4
+  }
+ },
+ "freight": {
+  "markup": 0.2,
+  "tonsPerLoad": 24,
+  "oversizeIfPieceOverFt": 53,
+  "ratePerMile": {
+   "FB": {
+    "0-500": 4.69,
+    "500-1000": 4.17,
+    "1000-1500": 4.13,
+    "1500+": 3.36
+   },
+   "HS": {
+    "0-500": 2.83,
+    "500-1000": 2.5,
+    "1000-1500": 2.35,
+    "1500+": 2.14
+   },
+   "LTL": {
+    "0-500": 2.48,
+    "500-1000": 2.23,
+    "1000-1500": 2.01,
+    "1500+": 1.58
+   },
+   "OSL": {
+    "0-500": 9.48,
+    "500-1000": 8.9,
+    "1000-1500": 7.4,
+    "1500+": 9.48
+   }
+  },
+  "typeRule": [
+   {
+    "maxTons": 0.75,
+    "maxPieceFt": 20,
+    "type": "LTL"
+   },
+   {
+    "maxTons": 5,
+    "maxPieceFt": 40,
+    "type": "HS"
+   },
+   {
+    "maxTons": 999,
+    "maxPieceFt": 53,
+    "type": "FB"
+   }
+  ]
+ },
+ "pmCad": {
+  "pmHrsPer10k": 5.2,
+  "cadHrsPer10k": 4.5,
+  "pmMin": 15,
+  "cadMin": 12
+ }
+}
