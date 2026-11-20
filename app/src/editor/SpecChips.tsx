@@ -2,8 +2,7 @@
 // Editing a chip never changes the quote directly: the parent rebuilds and shows the rebuild dialog first.
 import { useState } from 'react';
 import type { QuoteDoc } from '../../../src/engine/manual';
-import { HOURS_PER_DAY, S_READY } from './engineApi';
-import { crewOf } from './KpiStrip';
+import { HOURS_PER_DAY, installCrew } from './engineApi';
 
 type F = { k: string; label: (v: any) => string; type: 'num' | 'text' | 'bool' | 'sel'; opts?: string[]; title: string; always?: boolean; installOnly?: boolean };
 const FIELDS: F[] = [
@@ -29,17 +28,18 @@ const FIELDS: F[] = [
 const parseColors = (s: string) => Object.fromEntries(s.split(',').map(x => x.split(':').map(y => y.trim())).filter(x => x.length === 2 && x[0] && x[1]));
 const colorsText = (v: any) => (v ? Object.entries(v).map(([a, b]) => `${a}: ${b}`).join(', ') : '');
 
-export function SpecChips({ doc, locked, onSpec, onCrewDays, busy }: {
+export function SpecChips({ doc, locked, onSpec, onCrew, busy }: {
   doc: QuoteDoc; locked: boolean; busy: boolean;
   onSpec: (spec: any, label: string) => void;
-  onCrewDays: (men: number, days: number) => void;
+  /** spec.crewMen / spec.installDays (days null = back to the builder's days). The parent shows the rebuild preview. */
+  onCrew: (crew: { men?: number; days?: number | null }, label: string) => void;
 }) {
   const spec: any = doc.spec;
   const [edit, setEdit] = useState<{ i: number; k: string; text: string } | null>(null);
   if (!spec?.items?.length) return null;
-  const crew = crewOf(doc);
+  const crew = installCrew(doc);
   const installed = spec.items.some((it: any) => it.install);
-  const siteH = doc.lines.filter(l => l.kind === 'site_labor').reduce((a, l) => a + l.qty, 0);
+  const siteH = doc.lines.filter(l => l.kind === 'site_labor' && l.laborOp !== 'site_travel').reduce((a, l) => a + l.qty, 0);
 
   const apply = (i: number, f: F, raw: string | boolean) => {
     setEdit(null);
@@ -52,11 +52,6 @@ export function SpecChips({ doc, locked, onSpec, onCrewDays, busy }: {
     const items = spec.items.map((it: any, j: number) => (j === i ? { ...it, [f.k]: v } : it));
     onSpec({ ...spec, items }, `${f.title}: ${f.label(cur)} → ${f.label(v)}`);
   };
-  const setMen = (men: number) => {
-    if (!(men >= 1 && men <= 12)) return;
-    onSpec({ ...spec, items: spec.items.map((it: any) => (it.install ? { ...it, crewMen: men } : it)) }, `Crew: ${crew.men ?? '?'} → ${men} men`);
-  };
-
   return (
     <div className="qe-spec">
       {spec.items.map((it: any, i: number) => (
@@ -76,24 +71,37 @@ export function SpecChips({ doc, locked, onSpec, onCrewDays, busy }: {
           })}
         </div>
       ))}
-      {installed && <InstallControl men={crew.men} days={crew.days} siteHours={siteH} locked={locked || busy} onMen={setMen} onDays={d => onCrewDays(crew.men ?? 2, d)} />}
+      {installed && <InstallControl men={crew.men} days={crew.days} builtDays={crew.builtDays} set={crew.set} siteHours={siteH} suggested={doc.suggestedInstallHours ?? null} locked={locked || busy}
+        onMen={m => onCrew({ men: m }, `Crew: ${crew.men ?? '?'} → ${m} men`)}
+        onDays={d => onCrew({ days: d }, d == null ? `Days on site: ${crew.days} → builder's ${crew.builtDays ?? ''}` : `Days on site: ${crew.days ?? '?'} → ${d}`)} />}
     </div>
   );
 }
 
-/** U7: Men × Days × 10 h — one control. */
-export function InstallControl({ men, days, siteHours, locked, onMen, onDays }: { men: number | null; days: number | null; siteHours: number; locked: boolean; onMen: (n: number) => void; onDays: (n: number) => void }) {
+/** U7: Men × Days × 10 h — one control. Both numbers are spec fields (crewMen, installDays): a change goes through the
+ *  rebuild preview, then on-site hours, travel, lodging, per diem and equipment all follow. */
+export function InstallControl({ men, days, builtDays, set, siteHours, suggested, locked, onMen, onDays }: {
+  men: number | null; days: number | null; builtDays: number | null; set: boolean; siteHours: number; suggested: number | null; locked: boolean;
+  onMen: (n: number) => void; onDays: (n: number | null) => void;
+}) {
   const [m, setM] = useState<string | null>(null), [d, setD] = useState<string | null>(null);
-  const num = (s: string | null, fb: number | null) => (s == null ? fb : Number(s));
+  const num = (s: string | null, fb: number | null) => (s == null || s.trim() === '' ? fb : Number(s));
+  const editing = m != null || d != null;
   const hrs = (num(m, men) ?? 0) * (num(d, days) ?? 0) * HOURS_PER_DAY;
+  const commitM = () => { if (m != null && m.trim() !== '' && Number(m) !== men) onMen(Number(m)); setM(null); };
+  const commitD = () => { if (d != null && d.trim() !== '' && Number(d) !== days) onDays(Number(d)); setD(null); };
+  const below = set && builtDays != null && days != null && days < builtDays;
   return (
-    <div className="qe-install" title="Install crew. Changing men rebuilds travel, lodging and equipment; changing days sets on-site hours.">
+    <div className="qe-install" title={`Install crew: men × days × ${HOURS_PER_DAY} h on site. Changing either rebuilds on-site hours, travel, lodging, per diem and equipment (you see the rebuild first).`}>
       <span className="qe-spec-name">Install crew</span>
-      <input disabled={locked} value={m ?? men ?? ''} size={2} onChange={e => setM(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') { onMen(Number(m)); setM(null); } if (e.key === 'Escape') setM(null); }} onBlur={() => { if (m != null && Number(m) !== men) onMen(Number(m)); setM(null); }} />
+      <input aria-label="Crew men" disabled={locked} value={m ?? men ?? ''} size={2} onChange={e => setM(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') commitM(); if (e.key === 'Escape') setM(null); }} onBlur={commitM} />
       <span>men ×</span>
-      <input disabled={locked} value={d ?? days ?? ''} size={2} onChange={e => setD(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') { onDays(Number(d)); setD(null); } if (e.key === 'Escape') setD(null); }} onBlur={() => { if (d != null && Number(d) !== days) onDays(Number(d)); setD(null); }} />
-      <span>days{m != null || d != null ? <> × {HOURS_PER_DAY} h = <b>{Math.round(hrs)} h</b> on site</> : <> · <b>{Math.round(siteHours * 10) / 10} h</b> on site</>}{days ? <small className="muted"> · {Math.ceil(days / 5)} wk</small> : null}</span>
-      {!S_READY.crewDays && <small className="muted" title="The job spec has no crew-days field yet, so a days change adds an 'Install adjustment' hours line; travel and equipment stay as built. Change men to rebuild travel.">days → hours only*</small>}
+      <input aria-label="Days on site" className={set ? 'set' : ''} disabled={locked} value={d ?? days ?? ''} size={2} onChange={e => setD(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') commitD(); if (e.key === 'Escape') setD(null); }} onBlur={commitD} />
+      <span>days × {HOURS_PER_DAY} h = <b>{editing || set ? Math.round(hrs) : Math.round(siteHours * 10) / 10} h</b> on site{days ? <small className="muted"> · {days < 3 ? `${days} day` : `${Math.ceil(days / 5)} wk`} rental</small> : null}</span>
+      {set
+        ? <small className={below ? 'bad' : 'muted'}>{builtDays != null ? <>builder: {builtDays} days{suggested != null ? ` (${Math.round(suggested * 10) / 10} h suggested incl. travel)` : ''}{below ? ' · fewer days needs approval' : ''}</> : 'days set by you'}
+            {!locked && <> · <button className="link" onClick={() => onDays(null)}>use builder days</button></>}</small>
+        : <small className="muted">builder's days{suggested != null ? ` · ${Math.round(suggested * 10) / 10} h suggested incl. travel` : ''}</small>}
     </div>
   );
 }

@@ -274,6 +274,7 @@ export class Kit {
       // installDays (spec): the rep's crew days drive the whole trip; the builder's own days stay the install suggestion.
       const builtDays = crewDaysFor(workHrs, men), setDays = o.installDays && o.installDays > 0 ? o.installDays : undefined;
       const crewDays = setDays ?? builtDays;
+      const bd = setDays != null ? { builtCrewDays: builtDays } : {};   // detail: the builder's days, only when overridden
       const mode = o.travelMode ?? (miles <= T.localMiles ? 'local' : miles > T.flyAboveMiles ? 'fly' : 'drive');
       if (!o.travelMode) this.A.push({ field: 'travelMode', value: mode, why: mode === 'local' ? `${miles} mi — daily commute, no lodging` : mode === 'fly' ? `${miles} mi > ${T.flyAboveMiles} — crew flies, rental car, tools ship LTL` : `${miles} mi — crew drives`, alt: mode === 'fly' ? 'drive' : mode === 'drive' ? 'fly' : 'drive' });
       const hrsFor = (d: number) => mode === 'local' ? men * 2 * d * miles / T.driveMph : mode === 'fly' ? men * 2 * T.flyDoorToDoorHrsEachWay : men * 2 * miles / T.driveMph;
@@ -287,12 +288,12 @@ export class Kit {
         const th = Math.round(travelHrs); if (setDays == null) this.site += th;
         this.push({ kind: 'site_labor', category: 'onsiteLabor', description: `Travel (${mode}, ${men} men, ${miles} mi)`, qty: th, laborOp: 'site_travel' },
           { role: 'travel_time', basis: { source: 'rule', text: mode === 'local' ? `${men} men × 2 × ${crewDays} days × ${miles} mi ÷ ${T.driveMph} mph (daily commute)` : mode === 'fly' ? `${men} men × 2 × ${T.flyDoorToDoorHrsEachWay} h door to door` : `${men} men × 2 × ${miles} mi ÷ ${T.driveMph} mph`, assumption: o.travelMode ? undefined : 'travelMode' },
-            detail: { type: 'travel', what: 'travel_time', mode, men, crewDays, miles, driveMph: T.driveMph } });
+            detail: { type: 'travel', what: 'travel_time', mode, men, crewDays, miles, driveMph: T.driveMph, ...bd } });
       }
       if (mode !== 'local') {
         const days = crewDays + (miles > T.sameDayDriveMiles ? 2 : 0);
         const tl = (d: string, qty: number, c: number, what: 'hotel' | 'per_diem' | 'flight' | 'rental_car' | 'tool_return', role: Role) => this.push({ kind: 'travel', category: 'travel', description: d, qty, unitCost: c, markupPct: T.markupPct },
-          { role, basis: { ...tbasis, assumption: 'crewDays' }, detail: { type: 'travel', what, mode, men, crewDays, tripDays: days, nights: days - 1, miles, rate: c, markupPct: T.markupPct } });
+          { role, basis: { ...tbasis, assumption: 'crewDays' }, detail: { type: 'travel', what, mode, men, crewDays, tripDays: days, nights: days - 1, miles, rate: c, markupPct: T.markupPct, ...bd } });
         tl(`Hotels — ${men} rooms × ${days - 1} nights`, men * (days - 1), T.hotel, 'hotel', 'lodging');
         tl(`Per diem — ${men} men × ${days} days`, men * days, T.perDiem, 'per_diem', 'per_diem');
         if (mode === 'fly') { tl('Flights (round trip per man)', men, T.flightPerMan, 'flight', 'airfare'); tl('Rental car (weekly)', Math.ceil(days / 7), T.rentalCarWeekly, 'rental_car', 'rental_car'); tl('LTL tool return to PWI', 1, T.toolReturnLtl, 'tool_return', 'tool_return'); }
@@ -308,7 +309,7 @@ export class Kit {
         this.push({ kind: 'equipment', category: 'equipment', description: `${item} — ${useWeekly ? `${weeks} wk` : `${crewDays} day`}`, qty, unitCost: Math.round(unit * 100) / 100, markupPct: E.markupPct },
           { role: purpose === 'lift' ? 'lift' : purpose === 'generator' ? 'generator' : purpose === 'handler' ? (/fork/i.test(item) ? 'forklift' : 'telehandler') : 'equipment',
             basis: { source: 'rule', text: `${why}; ${period === 'day' ? `${crewDays} days × $${it.daily}/day` : period === 'week' ? `${weeks} wk × $${it.weekly}/wk` : `${weeks} wk × $${it.monthly}/month ÷ 4`}`, assumption: 'equipment' },
-            detail: { type: 'equipment', item, purpose, period, crewDays, weeks, rates: { daily: it.daily, weekly: it.weekly, monthly: it.monthly }, markupPct: E.markupPct, why } });
+            detail: { type: 'equipment', item, purpose, period, crewDays, ...bd, weeks, rates: { daily: it.daily, weekly: it.weekly, monthly: it.monthly }, markupPct: E.markupPct, why } });
       };
       const liftItem = E.lift.find(l => o.workTopFt <= l.maxColumnTopFt)!.item;
       const liftMax = E.lift.find(l => o.workTopFt <= l.maxColumnTopFt)!.maxColumnTopFt;
@@ -322,7 +323,7 @@ export class Kit {
       const nDel = 1 + (handler && handler !== 'Rental Fork Lift' ? 1 : 0);
       this.push({ kind: 'equipment', category: 'equipment', description: 'Rental delivery / pickup', qty: nDel, unitCost: E.deliveryFee, markupPct: 0 },
         { role: 'rental_delivery', basis: { source: 'rule', text: `${nDel} delivery/pickup @ $${E.deliveryFee} (lift${nDel > 1 ? ' + handler' : ''})` },
-          detail: { type: 'equipment', item: 'Rental delivery / pickup', purpose: 'delivery', period: 'day', crewDays, weeks, markupPct: 0 } });
+          detail: { type: 'equipment', item: 'Rental delivery / pickup', purpose: 'delivery', period: 'day', crewDays, ...bd, weeks, markupPct: 0 } });
       this.A.push({ field: 'equipment', value: `${liftItem}, ${handler ?? '15K telehandler + crane?'}${o.generator ? ', generator' : ''} × ${weeks} wk`, why: `Work height ≈ ${o.workTopFt.toFixed(1)}', heaviest pick ≈ ${Math.round(o.heaviestPickLb)} lb, ${crewDays} crew days` });
       }
   /** PM + CAD hours scale with job size: $ = k·(materials + shop $, in $k)^exp (fitted on sold crane jobs). */

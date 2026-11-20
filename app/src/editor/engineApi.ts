@@ -16,14 +16,15 @@ import { planRebuild, applyPlan, type RebuildPlan, type LineChange, type Section
 import { ensureRefs, type Conflict } from '../../../src/engine/buildSpec';
 import { parseNum, parseFtIn, parseNumResult } from '../../../src/engine/parseNum';
 import { deltaDoc } from '../../../src/engine/changeOrder';
-import { readSteelCost } from '../../../src/engine/kit';
+import { readSteelCost, HOURS_PER_DAY, INSTALL_DAYS_OP } from '../../../src/engine/kit';
+import type { RemovedInfo } from '../../../src/engine/manual';
 
 // ---------------------------------------------------------------- straight re-exports of Track S
 export { deriveLine, editLine, revertField, lineLb, planRebuild, applyPlan, parseNum, parseFtIn, parseNumResult, deltaDoc, deriveFamily, pvHours, flagDef, ensureRefs };
 export type { LineEdit, DeriveCtx, RebuildPlan, LineChange, SectionMoney, Conflict, QuoteMoney, EditableField };
 
-/** Which Track S pieces are wired in. crewDays: the spec has no crew-days field yet (see setCrewDaysFallback). */
-export const S_READY = { deriveLine: true, planRebuild: true, parseNum: true, deltaDoc: true, crewDays: false, stdCost: true, refs: true };
+/** Which Track S pieces are wired in. crewDays: spec.installDays (round 4) — days go through the rebuild preview. */
+export const S_READY = { deriveLine: true, planRebuild: true, parseNum: true, deltaDoc: true, crewDays: true, stdCost: true, refs: true };
 
 // ---------------------------------------------------------------- types the editor relies on
 /** S's QuoteLine already carries ref / source / edited / builtDetail / gmPct. */
@@ -165,18 +166,43 @@ export function deriveCtx(shapes: { shape: string; lb_per_ft: number; price_grou
   };
 }
 
-// ---------------------------------------------------------------- deleting auto lines (S5 doc.removed)
-/** Removes a line. An auto line's ref goes to doc.removed so a rebuild keeps it deleted. */
-export function removeLine(doc: QuoteDoc, key: string): { doc: QuoteDoc; ref?: string; line?: QuoteLine } {
+// ---------------------------------------------------------------- deleting auto lines (S5 doc.removed + round 4 removedInfo)
+/** Removes a line. An auto line's ref goes to doc.removed so a rebuild keeps it deleted, and doc.removedInfo keeps what
+ *  it was (description, Main Summary row, sell) so the editor can list and restore it after a reload. */
+export function removeLine(doc: QuoteDoc, key: string, sell?: number): { doc: QuoteDoc; ref?: string; line?: QuoteLine } {
   const d = doc.lines.some(l => l.key === key && l.auto && !l.ref) ? ensureRefs(doc) : doc;
   const l = d.lines.find(x => x.key === key);
   if (!l) return { doc };
-  const removed = l.auto && l.ref ? [...new Set([...(d.removed ?? []), l.ref])] : d.removed;
-  return { doc: { ...d, lines: d.lines.filter(x => x.key !== key), ...(removed ? { removed } : {}) }, ref: l.auto ? l.ref : undefined, line: l };
+  const ref = l.auto ? l.ref : undefined;
+  const removed = ref ? [...new Set([...(d.removed ?? []), ref])] : d.removed;
+  const removedInfo = ref ? [...(d.removedInfo ?? []).filter(x => x.ref !== ref), { ref, description: l.description, category: l.category, sell: Math.round((sell ?? lineSell(l)) * 100) / 100 }] : d.removedInfo;
+  return { doc: { ...d, lines: d.lines.filter(x => x.key !== key), ...(removed ? { removed } : {}), ...(removedInfo ? { removedInfo } : {}) }, ref, line: l };
 }
-/** Puts a removed auto line back (and drops its ref from doc.removed). */
+/** A line's sell the way priceManual works it out for material-type lines (labor needs rates: pass the priced sell). */
+function lineSell(l: QuoteLine): number {
+  if (l.unitSell != null && l.unitCost == null) return l.unitSell * l.qty;
+  return (l.unitCost ?? 0) * l.qty * (1 + (l.markupPct ?? 0) / 100);
+}
+/** Puts a removed auto line back exactly as it was (same session, line in hand) and drops its ref from doc.removed. */
 export function restoreLine(doc: QuoteDoc, line: QuoteLine): QuoteDoc {
-  return { ...doc, lines: [...doc.lines, line], removed: (doc.removed ?? []).filter(r => r !== line.ref) };
+  return { ...forgetRemoved(doc, line.ref ?? ''), lines: [...doc.lines, line] };
+}
+/** Drops a ref from doc.removed / doc.removedInfo. A rebuild (planRebuild) then brings the builder's line back. */
+export function forgetRemoved(doc: QuoteDoc, ref: string): QuoteDoc {
+  const out: QuoteDoc = { ...doc, removed: (doc.removed ?? []).filter(r => r !== ref) };
+  if (doc.removedInfo) out.removedInfo = doc.removedInfo.filter(x => x.ref !== ref);
+  return out;
+}
+/** Every line the rep removed, for the "Removed by you" lists. Docs saved before removedInfo: description from the
+ *  session cache when there is one, else "line removed" with no row (category null). */
+export interface RemovedEntry { ref: string; description: string; category: RemovedInfo['category'] | null; sell: number | null; known: boolean }
+export function removedList(doc: QuoteDoc, cache?: Map<string, QuoteLine>): RemovedEntry[] {
+  const info = new Map((doc.removedInfo ?? []).map(x => [x.ref, x]));
+  return (doc.removed ?? []).map(ref => {
+    const i = info.get(ref); if (i) return { ref, description: i.description, category: i.category, sell: Number.isFinite(i.sell) ? i.sell : null, known: true };
+    const c = cache?.get(ref); if (c) return { ref, description: c.description, category: c.category, sell: null, known: true };
+    return { ref, description: 'line removed', category: null, sell: null, known: false };
+  });
 }
 
 // ---------------------------------------------------------------- policy flags (S11)
@@ -210,18 +236,42 @@ export function targetAdjustment(doc: QuoteDoc, s: Settings, target: number): { 
   return { amount, doc: d, priced: p };
 }
 
-// ---------------------------------------------------------------- crew days (U7)
-export const HOURS_PER_DAY = 10;   // rules/freestanding_rules.json crew.hoursPerDay
-/** The spec has no crew-days field (Track S added crewMen only; deriveLine edits travel / equipment per line).
- *  So a days change adds one hand "Install adjustment" line making site hours = men × days × 10 h;
- *  travel and equipment do NOT follow yet (the UI says so). A crew-men change is a spec edit (rebuild dialog). */
-export function setCrewDaysFallback(doc: QuoteDoc, men: number, days: number, family: string): QuoteDoc {
-  const KEY = 'install-adjust-days';
-  const others = linesOf(doc).filter(l => l.key !== KEY);
-  const site = others.filter(l => l.kind === 'site_labor').reduce((a, l) => a + l.qty, 0);
-  const delta = Math.round((men * days * HOURS_PER_DAY - site) * 10) / 10;
-  const lines = delta === 0 ? others : [...others, { key: KEY, kind: 'site_labor', category: 'onsiteLabor', family, description: `Install adjustment (crew ${men} men × ${days} days)`, qty: delta, laborOp: 'site_other', role: 'install', source: 'hand' } as EditorLine];
-  return { ...doc, lines };
+// ---------------------------------------------------------------- install crew (U7): spec.crewMen × spec.installDays
+export { HOURS_PER_DAY, INSTALL_DAYS_OP };   // rules crew.hoursPerDay — the same number travel uses
+/** The install crew the quote is built with: men and days on site (from the trip lines), whether the days were set on
+ *  the spec (installDays) and the builder's own days. */
+export function installCrew(doc: QuoteDoc): { men: number | null; days: number | null; builtDays: number | null; set: boolean } {
+  const ds: any[] = doc.lines.map(l => l.detail).filter((d: any) => d?.type === 'travel' || d?.type === 'equipment');
+  const a = (f: string) => (doc.assumptions ?? []).find(x => x.field === f)?.value as number | undefined;
+  const t = ds.find(d => d.type === 'travel'), e = ds.find(d => d.type === 'equipment');
+  const items: any[] = ((doc.spec as any)?.items ?? []).filter((it: any) => it?.install);
+  const set = items.length > 0 && items.every(it => it.installDays != null);
+  const days = t?.crewDays ?? e?.crewDays ?? a('crewDays') ?? null;
+  return { men: t?.men ?? a('crewMen') ?? items.find(it => it.crewMen)?.crewMen ?? null, days, builtDays: (t ?? e)?.builtCrewDays ?? (set ? null : days), set };
+}
+/** The spec with the install crew changed: crewMen on every installed item; installDays split over installed items
+ *  by their builder install hours (whole days, at least 1 each, adding up to `days`). days null = back to the builder's days. */
+export function withInstallCrew(doc: QuoteDoc, crew: { men?: number; days?: number | null }): any {
+  const spec: any = doc.spec;
+  const idx: number[] = spec.items.map((it: any, i: number) => (it.install ? i : -1)).filter((i: number) => i >= 0);
+  let split: Map<number, number> | null = null;
+  if (crew.days != null) {
+    const days = Math.max(idx.length, Math.round(crew.days));
+    const hrs = idx.map(i => doc.lines.filter(l => l.auto && l.item === i && l.kind === 'site_labor' && l.laborOp !== 'site_travel' && l.laborOp !== INSTALL_DAYS_OP).reduce((a, l) => a + l.qty, 0));
+    const tot = hrs.reduce((a, h) => a + h, 0);
+    const raw = idx.map((_, j) => (tot > 0 ? hrs[j] / tot : 1 / idx.length) * (days - idx.length));
+    const got = raw.map(x => 1 + Math.floor(x));
+    let left = days - got.reduce((a, x) => a + x, 0);
+    raw.map((x, j) => [x - Math.floor(x), j] as const).sort((a, b) => b[0] - a[0]).forEach(([, j]) => { if (left > 0) { got[j]++; left--; } });
+    split = new Map(idx.map((i, j) => [i, got[j]]));
+  }
+  return { ...spec, items: spec.items.map((it: any, i: number) => {
+    if (!it.install) return it;
+    let n = crew.men != null ? { ...it, crewMen: crew.men } : it;
+    if (crew.days === null) { const { installDays: _d, ...rest } = n; n = rest; }
+    else if (split) n = { ...n, installDays: split.get(i) };
+    return n;
+  }) };
 }
 
 /** Flags raised / cleared between two priced results (rule + detail). */

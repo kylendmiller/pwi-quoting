@@ -56,8 +56,8 @@ export type LineDetail =
   | { type: 'sell'; sellEach: number }
   | { type: 'paint'; run: 'standard' | 'custom' | 'primer' | 'flat'; pieceUnits: number; piecesPerRun: number; runRate: number; minRuns?: number; colorLabel?: string }
   | { type: 'labor'; where: 'shop' | 'site'; op: string; smtRow?: string; baseHrs: number; factor: number; factorName: 'production' | 'install'; hours: number; scheduleOnly?: boolean }
-  | { type: 'travel'; what: 'travel_time' | 'hotel' | 'per_diem' | 'flight' | 'rental_car' | 'tool_return'; mode: 'drive' | 'fly' | 'local'; men: number; crewDays: number; tripDays?: number; nights?: number; miles: number; rate?: number; markupPct?: number; driveMph?: number }
-  | { type: 'equipment'; item: string; purpose: 'lift' | 'handler' | 'generator' | 'extra' | 'delivery'; period: 'day' | 'week' | 'month'; crewDays: number; weeks: number; rates?: { daily: number; weekly: number; monthly: number }; markupPct: number; why?: string }
+  | { type: 'travel'; what: 'travel_time' | 'hotel' | 'per_diem' | 'flight' | 'rental_car' | 'tool_return'; mode: 'drive' | 'fly' | 'local'; men: number; crewDays: number; tripDays?: number; nights?: number; miles: number; rate?: number; markupPct?: number; driveMph?: number; builtCrewDays?: number /* set only when spec installDays overrides the builder's days */ }
+  | { type: 'equipment'; item: string; purpose: 'lift' | 'handler' | 'generator' | 'extra' | 'delivery'; period: 'day' | 'week' | 'month'; crewDays: number; builtCrewDays?: number; weeks: number; rates?: { daily: number; weekly: number; monthly: number }; markupPct: number; why?: string }
   | { type: 'pmcad'; what: 'pm' | 'cad'; method: 'power_law' | 'fixed'; driverDollars?: number; k?: number; exp?: number; mult?: number; share?: number; rate?: number; min?: number; hours: number }
   | { type: 'pe'; hours: number };
 

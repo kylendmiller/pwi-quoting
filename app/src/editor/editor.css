@@ -36,6 +36,8 @@ button.link { background: none; border: 0; color: var(--orange); padding: 0 4px;
 .qe-chip.editing input, .qe-chip.editing select { border: 0; padding: 1px 4px; font-size: 13px; width: auto; }
 .qe-install input { width: 44px; text-align: center; padding: 1px 4px; font-size: 13px; }
 .qe-install span { font-size: 12.5px; }
+.qe-install small { font-size: 11.5px; }
+.qe-install input.set { background: var(--amber); border-color: var(--amber-edge); font-weight: 700; }
 
 /* approval lines (U9) */
 .qe-flagline { background: #FEF0C7; border-left: 3px solid #e0a100; padding: 4px 10px 4px 28px; font-size: 12.5px; display: flex; align-items: center; gap: 10px; }
@@ -64,6 +66,11 @@ button.link { background: none; border: 0; color: var(--orange); padding: 0 4px;
 .qe-badge.ed { background: var(--amber); color: #9a4b00; border: 1px solid var(--amber-edge); }
 .qe-badge.hand { background: #EEF0F2; color: var(--onyx); }
 .qe-badge.flag { background: #FEF0C7; color: #8a5a00; }
+.qe-badge.rem { background: #fff; color: var(--charcoal); border: 1px dashed var(--silver, #C5C9CE); }
+.qe-removed-box { font-size: 12.5px; padding: 4px 0; }
+.qe-removed-box ul { list-style: none; margin: 4px 0 0; padding: 0; }
+.qe-removed-box li { display: flex; align-items: center; gap: 8px; padding: 2px 0; border-top: 1px dashed #E3E5E8; }
+.qe-removed-box li > span:first-child { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-decoration: line-through; text-decoration-color: #b0b4b9; }
 .qe-peek { padding: 0 12px 5px 32px; margin-top: -3px; font-size: 12px; color: var(--charcoal); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; }
 .qe-sheet-tools { display: flex; gap: 10px; align-items: center; padding: 6px 12px; font-size: 12px; border-bottom: 1px solid var(--silver); flex-wrap: wrap; }
 .qe-sheet-tools .muted { margin-left: auto; font-size: 11px; }
@@ -145,6 +152,7 @@ button.link { background: none; border: 0; color: var(--orange); padding: 0 4px;
 .qe-rail .card { padding: 12px; margin-bottom: 10px; }
 .qe-undo { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
 .qe-unsaved { font-size: 12.5px; margin-bottom: 6px; }
+.qe-removed-count { font-size: 12px; margin-bottom: 6px; }
 .qe-unsaved ul { margin: 4px 0; padding-left: 16px; max-height: 220px; overflow: auto; font-size: 12px; }
 .qe-reasons { margin: 0; padding-left: 16px; font-size: 11.5px; color: var(--charcoal); }
 .qe-target input { font-size: 15px; margin-bottom: 6px; }

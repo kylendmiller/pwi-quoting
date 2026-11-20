@@ -54,20 +54,24 @@ function diffLines(a: QuoteDoc, pa: Priced, b: QuoteDoc, pb: Priced): LineChange
 const bySection = (d: QuoteDoc, p: Priced) => new Map(sectionize(d, p, { includeEmpty: true }).sections.map(s => [s.key, s.totals.sell]));
 const flagKey = (f: Flag) => `${f.rule}|${JSON.stringify(f.detail)}`;
 
-export function planRebuild(old0: QuoteDoc, newSpec0: QuoteSpec, cat: Catalog, settings: Settings & Record<string, unknown>): RebuildPlan {
+/** opts.restore: refs of removed lines to bring back. They leave doc.removed / doc.removedInfo and show as 'add' in
+ *  specChanges (the rep's change), not as price updates. */
+export function planRebuild(old0: QuoteDoc, newSpec0: QuoteSpec, cat: Catalog, settings: Settings & Record<string, unknown>, opts: { restore?: string[] } = {}): RebuildPlan {
   const old = ensureRefs(old0);
   const oldSpec = old.spec as QuoteSpec | undefined;
   // 1. same spec, today's prices (edits kept)
   const A = oldSpec ? buildFromSpec(oldSpec, cat, settings, old) : null;
-  const aDoc = A?.doc ?? old;
+  const aDoc0 = A?.doc ?? old;
+  const back = new Set(opts.restore ?? []);
+  const aDoc = back.size ? forget(aDoc0, back) : aDoc0;
   // 2. new spec on top
   const newSpec = assignItemIds(inheritIds(newSpec0, oldSpec ?? { items: [] }));
   const B = buildFromSpec(newSpec, cat, settings, aDoc);
   const raw = buildFromSpec(newSpec, cat, settings, { ...aDoc, lines: [], removed: [] }).doc;
-  const removed = new Set(old.removed ?? []);
+  const removed = new Set((old.removed ?? []).filter(r => !back.has(r)));
 
   const pOld = price(old, settings), pA = price(aDoc, settings), pB = price(B.doc, settings);
-  const priceUpdates = A ? diffLines(old, pOld, aDoc, pA) : [];
+  const priceUpdates = A ? diffLines(old, pOld, aDoc0, pA) : [];
   const specChanges = diffLines(aDoc, pA, B.doc, pB);
   for (const l of raw.lines) if (l.ref && removed.has(l.ref))
     specChanges.push({ ref: l.ref, section: sectionOf(l.category), description: l.description, change: 'kept_deleted', sellBefore: 0, sellAfter: 0 });
@@ -104,6 +108,13 @@ export function planRebuild(old0: QuoteDoc, newSpec0: QuoteSpec, cat: Catalog, s
   plan.builderDoc = resolve(B.doc, plan.conflicts, () => 'builder');
   plan.empty = !priceUpdates.length && !specChanges.length && !plan.conflicts.length && delta.total === 0 && (old.wording ?? '') === (B.doc.wording ?? '');
   return plan;
+}
+
+/** The doc without these refs in removed / removedInfo (so a build brings their lines back). */
+function forget(d: QuoteDoc, refs: Set<string>): QuoteDoc {
+  const out: QuoteDoc = { ...d, removed: (d.removed ?? []).filter(r => !refs.has(r)) };
+  if (d.removedInfo) out.removedInfo = d.removedInfo.filter(x => !refs.has(x.ref));
+  return out;
 }
 
 function resolve(doc: QuoteDoc, conflicts: Conflict[], pick: (c: Conflict) => 'mine' | 'builder'): QuoteDoc {

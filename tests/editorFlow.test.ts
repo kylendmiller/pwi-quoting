@@ -207,3 +207,109 @@ describe('editor flow through engineApi', () => {
     expect(changedPaths(editCell(hand, 'detail.baseHrs', 99, ctx))).toEqual({});
   });
 });
+
+// ---- round 4: removed lines survive a save / reload and can be restored; install crew goes through the spec
+import { removedList, forgetRemoved, withInstallCrew, installCrew, INSTALL_DAYS_OP } from '../app/src/editor/engineApi';
+import { validateDoc } from '../src/engine/manual';
+import { stampFromBuild } from '../src/engine/stamp';
+
+describe('round 4: restore deleted lines after reload', () => {
+  const d0 = build();
+  const p0 = price(d0, S);
+  const victim = d0.lines.find(l => l.auto && l.category === 'stdParts')!;
+  const sell = p0.lines.find(l => l.key === victim.key)!.sell;
+  const del = removeLine(d0, victim.key, sell);
+  // the save shape: what the browser sends and the server stores (JSON), then what the editor loads back
+  const saved = stampFromBuild(JSON.parse(JSON.stringify(del.doc)), d0);
+  const reloaded: QuoteDoc = JSON.parse(JSON.stringify(saved));
+
+  it('delete writes removedInfo (ref, description, row, sell) next to doc.removed', () => {
+    expect(del.doc.removed).toEqual([victim.ref]);
+    expect(del.doc.removedInfo).toEqual([{ ref: victim.ref, description: victim.description, category: 'stdParts', sell: Math.round(sell * 100) / 100 }]);
+    expect(validateDoc(del.doc)).toEqual([]);                 // the server accepts the new field
+    expect(validateDoc({ ...del.doc, removedInfo: [{ ref: 5 }] as any })[0]).toMatch(/removedInfo/);
+  });
+
+  it('after a save → reload roundtrip the line is listed with its description and row (no session cache)', () => {
+    expect(reloaded.removedInfo).toEqual(del.doc.removedInfo);
+    const list = removedList(reloaded);
+    expect(list).toEqual([{ ref: victim.ref, description: victim.description, category: 'stdParts', sell: Math.round(sell * 100) / 100, known: true }]);
+  });
+
+  it('restore = drop the ref + rebuild preview: the builder line comes back as an add and the price returns', () => {
+    const plan = planRebuild(reloaded, reloaded.spec as QuoteSpec, testCatalog, S, { restore: [victim.ref!] });
+    const add = plan.specChanges.find(c => c.ref === victim.ref)!;
+    expect(add.change).toBe('add');
+    expect(plan.priceUpdates.some(c => c.ref === victim.ref)).toBe(false);
+    expect(plan.specChanges.some(c => c.change === 'kept_deleted')).toBe(false);
+    const back = applyPlan(plan);
+    expect(back.removed).toEqual([]);
+    expect(back.removedInfo).toEqual([]);
+    expect(back.lines.find(l => l.ref === victim.ref)?.description).toBe(victim.description);
+    expect(price(back, S).quote).toEqual(p0.quote);
+    // and it stays back on the next rebuild
+    expect(rebuildSame(back).lines.some(l => l.ref === victim.ref)).toBe(true);
+    // and through another save roundtrip
+    const again = stampFromBuild(JSON.parse(JSON.stringify(back)), d0);
+    expect(again.removed).toEqual([]);
+    expect(again.removedInfo).toEqual([]);
+  });
+
+  it('old docs without removedInfo list the ref as "line removed" and still restore', () => {
+    const { removedInfo: _x, ...old } = reloaded;
+    const list = removedList(old as QuoteDoc);
+    expect(list).toEqual([{ ref: victim.ref, description: 'line removed', category: null, sell: null, known: false }]);
+    expect(validateDoc(old as QuoteDoc)).toEqual([]);
+    const back = applyPlan(planRebuild(old as QuoteDoc, old.spec as QuoteSpec, testCatalog, S, { restore: [victim.ref!] }));
+    expect(back.lines.some(l => l.ref === victim.ref)).toBe(true);
+    expect(price(back, S).quote).toEqual(p0.quote);
+    // forgetRemoved alone (no spec rebuild) only clears the lists
+    expect(forgetRemoved(old as QuoteDoc, victim.ref!).removed).toEqual([]);
+  });
+
+  it('the server stamp keeps removedInfo only for refs still removed', () => {
+    const stale = stampFromBuild({ ...del.doc, removed: [], removedInfo: del.doc.removedInfo }, d0);
+    expect(stale.removedInfo).toEqual([]);
+  });
+});
+
+describe('round 4: install crew control (men × days) through spec + planRebuild', () => {
+  const d0 = build();
+  const c0 = installCrew(d0);
+  it('reads the builder crew', () => {
+    expect(c0.set).toBe(false);
+    expect(c0.men).toBeGreaterThan(0);
+    expect(c0.days).toBe(c0.builtDays);
+  });
+  it('days → spec.installDays → rebuild preview; hours, travel and equipment follow; fewer days raises the approval', () => {
+    const more = withInstallCrew(d0, { days: c0.days! + 2 });
+    expect(more.items[0].installDays).toBe(c0.days! + 2);
+    const plan = planRebuild(d0, more, testCatalog, S);
+    expect(plan.specChanges.some(c => c.change === 'add' && c.ref?.endsWith('install-days-adjustment'))).toBe(true);
+    const d1 = applyPlan(plan);
+    const c1 = installCrew(d1);
+    expect(c1).toEqual({ men: c0.men, days: c0.days! + 2, builtDays: c0.days, set: true });
+    const site = d1.lines.filter(l => l.kind === 'site_labor' && l.laborOp !== 'site_travel').reduce((a, l) => a + l.qty, 0);
+    expect(Math.round(site * 10) / 10).toBe(c0.men! * (c0.days! + 2) * 10);
+    expect(price(d1, S).flags.some(f => f.rule === 'INSTALL_BELOW_SUGGESTED')).toBe(false);
+    // fewer days
+    const fewer = applyPlan(planRebuild(d1, withInstallCrew(d1, { days: c0.days! - 1 }), testCatalog, S));
+    expect(fewer.lines.find(l => l.laborOp === INSTALL_DAYS_OP)!.qty).toBeLessThan(0);
+    expect(price(fewer, S).flags.some(f => f.rule === 'INSTALL_BELOW_SUGGESTED')).toBe(true);
+    // back to the builder's days: no adjustment, builder price
+    const back = applyPlan(planRebuild(fewer, withInstallCrew(fewer, { days: null }), testCatalog, S));
+    expect(back.lines.some(l => l.laborOp === INSTALL_DAYS_OP)).toBe(false);
+    expect((back.spec as any).items[0].installDays).toBeUndefined();
+    expect(price(back, S).quote).toEqual(price(d0, S).quote);
+  });
+  it('several installed items: days split by install hours, whole days adding up', () => {
+    const multi: QuoteSpec = { pwi_quote: 1, items: [{ ...SPEC.items[0], miles: 150 }, { type: 'mezzanine', lengthFt: 40, widthFt: 30, deckHeightFt: 12, stairs: 1, install: true, miles: 150 }] };
+    const dm = buildFromSpec(multi, testCatalog, S, base).doc;
+    const sp = withInstallCrew(dm, { days: 9 });
+    const ds = sp.items.map((it: any) => it.installDays);
+    expect(ds.every((x: number) => Number.isInteger(x) && x >= 1)).toBe(true);
+    expect(ds[0] + ds[1]).toBe(9);
+    const d1 = applyPlan(planRebuild(dm, sp, testCatalog, S));
+    expect(installCrew(d1).days).toBe(9);
+  });
+});

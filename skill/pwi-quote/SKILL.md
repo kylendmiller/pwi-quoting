@@ -117,6 +117,7 @@ Optional, only if said:
 - `collisionAvoidance`, `asceRail`, `doubleGirder`, `foundation` (`slab` / `foundation`)
 - `colors { columns, runways, bridge }`
 - `crewMen`, `travelMode` (`drive` / `fly` / `local`)
+- `installDays`: whole days on site (1–365), **only** when the rep says how long the install takes ("3 guys for 5 days" → `crewMen: 3, installDays: 5`). The app then quotes men × days × 10 h on site (a visible +/− hours line on top of its own task list) and uses exactly those days for hotel nights, per diem and equipment rental (day / week / month rate). Leave it out otherwise — the builder works days out from its hours. Fewer days than the builder needs is allowed but goes to a sales manager for approval.
 - `bracedToBuilding`, `preUseInspection`, `backupPendant` (radio plus a backup pendant — bridge goes to festoon)
 - `serviceClass`: `D` only when they say Class D / heavy service (foundry, steel yard, constant near-capacity lifts) — the app sizes the hoist up and derates it; default Class C
 
@@ -124,7 +125,7 @@ Optional, only if said:
 
 The auto-builder only handles the ranges above. For anything bigger, or for specials (door interlocks, 50' bays, tapered columns), tell the rep it must be quoted by hand. Still give the link: they get the wording and can add the lines.
 
-**Every other product builds automatically too.** Pick the `type`, fill what was said, default the rest. Each item may also carry `tag`, `install`, `miles`, `crewMen`, `travelMode`. Several installed items on one job share **one** trip automatically.
+**Every other product builds automatically too.** Pick the `type`, fill what was said, default the rest. Each item may also carry `tag`, `install`, `miles`, `crewMen`, `travelMode`, `installDays`. Several installed items on one job share **one** trip automatically (with `installDays` on each item, the trip runs the sum of their days).
 
 **Bridge crane** — `type: "bridge"` (same fields as freestanding, plus):
 - `support`: `building_runway` (default — runway on the building's columns) / `crane_columns` (new PWI columns) / `bridge_only` (existing runway)

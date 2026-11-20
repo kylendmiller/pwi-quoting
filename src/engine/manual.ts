@@ -57,8 +57,13 @@ export interface QuoteDoc {
   buildNotes?: string[];
   blockers?: string[];              // set by the server's rebuild: must be resolved before sending
   removed?: string[];               // refs of auto lines the rep deleted: they stay deleted on rebuild
+  removedInfo?: RemovedInfo[];      // what those lines were (written on delete) so the editor can list / restore them after a reload
   steelCostDate?: string;           // steel_cost.effective the auto lines were built at
 }
+
+/** One deleted auto line, as it was when the rep deleted it (doc.removedInfo). doc.removed stays the source of truth;
+ *  refs in removed without an entry here (docs saved before round 4) list as "line removed". */
+export interface RemovedInfo { ref: string; description: string; category: CategoryKey; sell: number }
 
 export interface Settings {
   shop_rate: number; onsite_rate: number; pm_rate: number; cad_rate: number; pe_rate: number;
@@ -268,6 +273,14 @@ export function validateDoc(doc: QuoteDoc): string[] {
     if (l.gmPct != null && (l.gmPct < 0 || l.gmPct >= 1)) out.push(`${at}: GM must be between 0 and 1.`);
     if (typeof l.description !== 'string') out.push(`${at}: description must be text.`);
   });
+  if (doc.removed != null && (!Array.isArray(doc.removed) || doc.removed.some(r => typeof r !== 'string'))) out.push('removed must be a list of line refs.');
+  if (doc.removedInfo != null) {
+    if (!Array.isArray(doc.removedInfo)) out.push('removedInfo must be a list.');
+    else doc.removedInfo.forEach((x, i) => {
+      if (!x || typeof x !== 'object' || typeof x.ref !== 'string' || typeof x.description !== 'string' || (x.sell != null && !fin(x.sell)))
+        out.push(`removedInfo ${i + 1}: needs ref and description text and a numeric sell.`);
+    });
+  }
   for (const f of ['outboundFreight', 'preUse', 'dealerDiscount'] as const) if (doc[f] != null && (!fin(doc[f]) || (doc[f] as number) < 0)) out.push(`${f} must be a number ≥ 0.`);
   if (fin(doc.dealerDiscount) && doc.dealerDiscount >= 1) out.push('dealerDiscount must be below 100%.');
   if (doc.pvPerHourOverride != null && (!fin(doc.pvPerHourOverride) || doc.pvPerHourOverride < 0)) out.push('pvPerHourOverride must be a number ≥ 0.');

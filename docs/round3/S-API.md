@@ -186,3 +186,17 @@ export function reviseStatus(current: string | null | undefined, newDocType: str
 All S1–S12 items are implemented on `round3-s` with tests (see the commit list). Not applied: `db/migrations/004_round3_flags.sql`
 (new approval_rule enum values — the server can't store approvals for FAMILY_PV_DROP / MIN_GM / ZERO_MARKUP / BIG_DISCOUNT until it runs)
 and the seed rows for `min_gm_pct`, `max_discount_pct`, `std_parts_default_gm_pct` (engine defaults are used until then).
+
+## Round 4 additions
+
+- **`spec.items[].installDays`** (whole days 1–365, installed items only; anything else is a blocker). Unset = byte-identical to before.
+  Set: a `site_labor` line `laborOp: 'site_days_adjust'` (ref `${itemId}:install/install-days-adjustment`, `INSTALL_DAYS_OP`) makes the
+  item's install-task hours = men × days × `HOURS_PER_DAY` (kit.ts, rules crew.hoursPerDay = 10); its qty may be negative (validateDoc allows
+  that for this laborOp only; BIG_DISCOUNT ignores it). Travel uses exactly those days (nights, hotel, per diem, local commute, equipment
+  period/rate); travel/equipment detail gets `builtCrewDays` (the builder's days). `suggestedInstallHours` stays the builder's own, so fewer
+  days raises INSTALL_BELOW_SUGGESTED. Shared trip: each item with installDays gets its own line at the trip crew size; trip days = Σ installDays
+  (+ builder days for items without it). Builders take it via `BuildOpts.installDays` (buildFromSpec passes it).
+- **`doc.removedInfo?: { ref, description, category, sell }[]`** written by the editor's removeLine next to `doc.removed` (still the source of
+  truth). validateDoc checks its shape; stampFromBuild keeps entries whose ref is still removed.
+- **`planRebuild(old, spec, cat, settings, { restore?: string[] })`**: brings removed refs back; they show as `add` in specChanges and leave
+  removed / removedInfo in `next`.

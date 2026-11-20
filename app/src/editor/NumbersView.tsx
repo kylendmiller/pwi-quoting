@@ -4,8 +4,8 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import type { Priced, QuoteDoc, Settings, Flag } from '../../../src/engine/manual';
 import type { CategoryKey } from '../../../src/engine/rollup';
 import type { Catalog } from '../../../src/engine/kit';
-import { linesOf, changedPaths, editCell, revertCell, revertLine, deriveLine, deriveCtx, removeLine, restoreLine, planRebuild, applyPlan, setCrewDaysFallback,
-  S_READY, price, type EditorLine, type RebuildPlan } from './engineApi';
+import { linesOf, changedPaths, editCell, revertCell, revertLine, deriveLine, deriveCtx, removeLine, forgetRemoved, removedList, planRebuild, applyPlan, withInstallCrew,
+  price, type EditorLine, type RebuildPlan } from './engineApi';
 import { SummarySheet, type RefData } from './SummarySheet';
 import { KpiStrip, kpis } from './KpiStrip';
 import { SpecChips } from './SpecChips';
@@ -58,13 +58,25 @@ export function NumbersView(p: NumbersProps) {
     },
     revertRow: (cat: CategoryKey) => setLines(L.map(x => (x.category === cat && Object.keys(changedPaths(x)).length ? revertLine(x) : x)), 'Undo my changes in row'),
     remove: (key: string) => {
-      const r = removeLine(doc, key); if (!r.line) return;
+      const r = removeLine(doc, key, priced.lines.find(l => l.key === key)?.sell); if (!r.line) return;
       if (r.ref) removedCache.set(r.ref, r.line);
       p.setDoc(r.doc, `Remove ${r.line.description.split(' — ')[0]}`);
     },
-    restoreRemoved: (ref: string) => {
-      const l = removedCache.get(ref); if (!l) return;
-      p.setDoc(restoreLine(doc, l), `Restore ${l.description.split(' — ')[0]}`);
+    /** Restore = drop the ref from doc.removed and let the builder put its line back through the rebuild preview
+     *  (works after a reload: the line itself isn't stored, the spec rebuilds it). */
+    restoreRemoved: async (ref: string) => {
+      const e = removedList(doc, removedCache).find(x => x.ref === ref); if (!e) return;
+      const name = e.known ? e.description.split(' — ')[0] : ref;
+      const d = forgetRemoved(doc, ref);
+      if (!doc.spec) { p.setDoc(d, `Restore ${name}`); return; }
+      setBusy(true); setErr('');
+      try {
+        const plan = planRebuild(doc, doc.spec as any, await p.getCatalog(), settings as any, { restore: [ref] });
+        if (!plan.specChanges.some(c => c.ref === ref && c.change === 'add')) {
+          p.setDoc(d, `Forget removed ${name}`);
+          setErr(`The builder no longer makes "${name}" for this spec, so there is nothing to bring back. It was taken off the removed list.`);
+        } else setPending({ plan, label: `Restore ${name}` });
+      } catch (x: any) { setErr(x.message ?? String(x)); } finally { setBusy(false); }
     },
     add: (cat: CategoryKey, kind?: 'steel' | 'plate') => {
       const s: any = settings;
@@ -105,10 +117,12 @@ export function NumbersView(p: NumbersProps) {
     } catch (e: any) { setErr(e.message ?? String(e)); } finally { setBusy(false); }
   };
   const fromImport = (spec: any, label: string) => startRebuild(spec, label);
-  const onCrewDays = (men: number, days: number) => {
-    if (!(days >= 1 && days <= 365)) return;
-    if (S_READY.crewDays) startRebuild({ ...(doc.spec as any), items: (doc.spec as any).items.map((it: any) => (it.install ? { ...it, crewDays: days } : it)) }, `Crew days → ${days}`);
-    else p.setDoc(setCrewDaysFallback(doc, men, days, doc.family), `Crew ${men} men × ${days} days`);
+  /** U7: one install control. Men → spec.crewMen, days → spec.installDays (null = the builder's days again); both go
+   *  through the rebuild preview, so site hours, travel, lodging, per diem and equipment move together. */
+  const onCrew = (crew: { men?: number; days?: number | null }, label: string) => {
+    if (crew.days != null && !(Number.isInteger(crew.days) && crew.days >= 1 && crew.days <= 365)) { setErr('Days on site must be a whole number from 1 to 365.'); return; }
+    if (crew.men != null && !(Number.isInteger(crew.men) && crew.men >= 1 && crew.men <= 12)) { setErr('Crew must be a whole number of men.'); return; }
+    startRebuild(withInstallCrew(doc, crew), label);
   };
 
   const topFlags = p.openFlags.filter(f => flagRow(f, doc.lines) == null);
@@ -116,7 +130,7 @@ export function NumbersView(p: NumbersProps) {
   return (
     <div className="qe-root">
       <div className="qe-sticky"><KpiStrip k={k} saved={ks} hideCost={p.hideCost} /></div>
-      <SpecChips doc={doc} locked={locked} busy={busy} onSpec={startRebuild} onCrewDays={onCrewDays} />
+      <SpecChips doc={doc} locked={locked} busy={busy} onSpec={startRebuild} onCrew={onCrew} />
       {err && <div className="banner block">{err}</div>}
       {topFlags.map(f => <div key={f.rule} className="qe-flagline top">⚑ {FLAG_TEXT(f)} — needs a sales manager.{!locked && <button className="secondary sm" onClick={() => p.askManager(f)}>Ask manager</button>}</div>)}
       {notes.length > 0 && <div className="card qe-notes"><b>Check these (from the rebuild)</b><ul>{notes.map((n, i) => <li key={i}>{n}</li>)}</ul><button className="secondary sm" onClick={() => setNotes([])}>Done</button></div>}

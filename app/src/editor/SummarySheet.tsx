@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { Priced, QuoteDoc, Settings, Flag } from '../../../src/engine/manual';
 import type { CategoryKey } from '../../../src/engine/rollup';
-import { linesOf, changedPaths, quoteMoney, laborCostAssumed, pvHours, deriveFamily, type EditorLine } from './engineApi';
+import { linesOf, changedPaths, quoteMoney, laborCostAssumed, pvHours, deriveFamily, removedList, type EditorLine, type RemovedEntry } from './engineApi';
 import { ROWS, PEEK_ROWS, rowStats, peek, fmtMoney, fmtNum, fmtPct, type RowStats } from './smt';
 import { colsFor } from './tabs';
 import { Grid } from './Grid';
@@ -22,7 +22,7 @@ export interface SheetActions {
   askManager: (f: Flag) => void;
   vendorSearch?: (q: string) => Promise<any[]>;
   addVendor?: (p: any) => void;
-  restoreRemoved: (ref: string) => void;
+  restoreRemoved: (ref: string) => void | Promise<void>;
 }
 interface Props {
   doc: QuoteDoc; priced: Priced; settings: Settings; locked: boolean; hideCost: boolean;
@@ -36,7 +36,11 @@ export function SummarySheet({ doc, priced, settings, locked, hideCost, openFlag
   const stats = useMemo(() => rowStats(doc, priced), [doc, priced]);
   const shapes = useMemo(() => refData.shapes.map(s => s.shape), [refData]);
   const rowsRef = useRef<(HTMLDivElement | null)[]>([]);
-  const visible = stats.filter(s => showAll || s.lines.length || (s.def.key === 'costBased' && priced.totals.productionValue));
+  // lines the rep deleted (doc.removed + removedInfo): listed per row so they can be restored after a reload
+  const removed = useMemo(() => removedList(doc, removedCache), [doc, removedCache]);
+  const removedIn = (k: CategoryKey) => removed.filter(r => r.category === k);
+  const removedNoRow = removed.filter(r => r.category == null || !ROWS.some(x => x.key === r.category));
+  const visible = stats.filter(s => showAll || s.lines.length || removedIn(s.def.key).length || (s.def.key === 'costBased' && priced.totals.productionValue));
   const flagsFor = (k: CategoryKey) => openFlags.filter(f => flagRow(f, doc.lines) === k);
   const toggle = (k: CategoryKey, on?: boolean) => { const n = new Set(open); (on ?? !n.has(k)) ? n.add(k) : n.delete(k); setOpen(n); };
   const ro = priced.rollup, qm = quoteMoney(priced);
@@ -77,6 +81,7 @@ export function SummarySheet({ doc, priced, settings, locked, hideCost, openFlag
                 {s.def.install && <span className="qe-badge inst" title="Goes to Installation Charges (× 1.01), not Base">install</span>}
                 {s.edited > 0 && <span className="qe-badge ed" title="Values you changed on built lines">{s.edited} changed</span>}
                 {s.hand > 0 && <span className="qe-badge hand" title="Lines you added">{s.hand} added</span>}
+                {removedIn(k).length > 0 && <span className="qe-badge rem" title={removedIn(k).map(r => r.description).join('\n')}>{removedIn(k).length} removed</span>}
                 {fl.length > 0 && <span className="qe-badge flag" title={fl.map(FLAG_TEXT).join('\n')}>⚑ approval</span>}
                 {s.lines.some(l => l.basis?.flag) && <span className="qe-badge flag" title={s.lines.filter(l => l.basis?.flag).map(l => l.basis!.flag).join('\n')}>review</span>}
               </span>
@@ -88,10 +93,12 @@ export function SummarySheet({ doc, priced, settings, locked, hideCost, openFlag
             </div>
             {!isOpen && pk.length > 0 && <div className="qe-peek" onClick={() => toggle(k, true)}>{pk.join(' · ')}</div>}
             {fl.map(f => <FlagLine key={f.rule} f={f} onAsk={() => act.askManager(f)} locked={locked} />)}
-            {isOpen && <RowDetail s={s} doc={doc} priced={priced} locked={locked} hideCost={hideCost} act={act} shapes={shapes} hl={hl} setHl={setHl} settings={settings} removedCache={removedCache} />}
+            {isOpen && <RowDetail s={s} doc={doc} priced={priced} locked={locked} hideCost={hideCost} act={act} shapes={shapes} hl={hl} setHl={setHl} settings={settings} removed={removedIn(k)} />}
           </div>
         );
       })}
+      {removedNoRow.length > 0 && <div className="qe-row"><RemovedBox list={removedNoRow} locked={locked} onRestore={act.restoreRemoved}
+        note="Removed before this quote kept what the lines were — restore to see them again." /></div>}
       <div className="qe-sheet-tools">
         <label className="inline"><input type="checkbox" checked={showAll} onChange={e => setShowAll(e.target.checked)} /> show all {ROWS.length} rows</label>
         <button className="link" onClick={() => setOpen(new Set(visible.map(s => s.def.key)))}>expand all</button>
@@ -140,8 +147,8 @@ export function NumIn({ value, onCommit, disabled, suffix, width = 90 }: { value
 
 const MARKUP_ROWS: CategoryKey[] = ['structural', 'plate', 'miscSteel', 'xBracing', 'costBased', 'travel', 'equipment'];
 
-function RowDetail({ s, doc, priced, locked, hideCost, act, shapes, hl, setHl, settings, removedCache }: {
-  s: RowStats; doc: QuoteDoc; priced: Priced; locked: boolean; hideCost: boolean; act: SheetActions; shapes: string[]; hl: Set<string>; setHl: (s: Set<string>) => void; settings: Settings; removedCache: Map<string, EditorLine>;
+function RowDetail({ s, doc, priced, locked, hideCost, act, shapes, hl, setHl, settings, removed }: {
+  s: RowStats; doc: QuoteDoc; priced: Priced; locked: boolean; hideCost: boolean; act: SheetActions; shapes: string[]; hl: Set<string>; setHl: (s: Set<string>) => void; settings: Settings; removed: RemovedEntry[];
 }) {
   const k = s.def.key;
   const all = colsFor(s.def.tab).filter(c => !(hideCost && c.costOnly));
@@ -155,8 +162,6 @@ function RowDetail({ s, doc, priced, locked, hideCost, act, shapes, hl, setHl, s
   useEffect(() => { try { localStorage.setItem(storeKey, JSON.stringify(extra)); } catch { /* ignore */ } }, [extra]);
   const rows = s.lines.map(p => ({ line: docLines.find(l => l.key === p.key)!, priced: p })).filter(r => r.line);
   const edited = rows.filter(r => Object.keys(changedPaths(r.line)).length).length;
-  const removed = ((doc as any).removed ?? []) as string[];
-  const removedHere = removed.filter(r => removedCache.get(r)?.category === k);
   const pv = k === 'costBased' && (deriveFamily(doc) === 'freestanding' || priced.totals.productionValue > 0);
   const extras = all.filter(c => c.extra);
   return (
@@ -184,7 +189,7 @@ function RowDetail({ s, doc, priced, locked, hideCost, act, shapes, hl, setHl, s
         rowNote={l => [l.auto ? l.basis?.flag : undefined, !l.detail && s.def.measure === 'tons' ? 'No shape/weight on this line, so tons are low' : undefined].filter(Boolean).join(' · ') || undefined} />}
       {k === 'onsiteLabor' && doc.suggestedInstallHours != null && <div className="qe-sugg">Suggested install {fmtNum(doc.suggestedInstallHours, 1)} h → quoted {fmtNum(priced.totals.installHours, 1)} h
         {priced.totals.installHours + 0.05 < doc.suggestedInstallHours && <b className="bad"> · below suggested (needs approval)</b>}</div>}
-      {removedHere.length > 0 && <div className="qe-removed">Removed by you: {removedHere.map(r => <span key={r}>{removedCache.get(r)!.description.split(' — ')[0]} {!locked && <button className="link" onClick={() => act.restoreRemoved(r)}>restore</button>}</span>)}</div>}
+      {removed.length > 0 && <RemovedBox list={removed} locked={locked} onRestore={act.restoreRemoved} />}
       <div className="qe-detail-foot">
         <span>{rows.length} line{rows.length === 1 ? '' : 's'}</span>
         {s.def.measure === 'tons' && <span>{fmtNum(s.lb, 0)} lb · {fmtNum(s.lb / 2000, 2)} t</span>}
@@ -192,6 +197,26 @@ function RowDetail({ s, doc, priced, locked, hideCost, act, shapes, hl, setHl, s
         {!hideCost && <span>cost {s.costUnknown ? '—' : fmtMoney(s.cost)}</span>}
         <b>sell {fmtMoney(s.sell)}</b>
       </div>
+    </div>
+  );
+}
+
+/** "Removed by you (n)": built lines the rep deleted (kept deleted on every rebuild). Restore drops the ref and shows
+ *  the rebuild preview that brings the builder's line back. */
+function RemovedBox({ list, locked, onRestore, note }: { list: RemovedEntry[]; locked: boolean; onRestore: (ref: string) => void | Promise<void>; note?: string }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="qe-removed-box">
+      <button className="link" aria-expanded={open} onClick={() => setOpen(!open)}>Removed by you ({list.length}) {open ? '▾' : '▸'}</button>
+      {open && <>
+        {note && <div className="muted">{note}</div>}
+        <ul>{list.map(r => (
+          <li key={r.ref}>
+            <span className={r.known ? '' : 'muted'} title={r.ref}>{r.known ? r.description : `${r.ref} — line removed`}</span>
+            {r.sell != null && <span className="num muted">{fmtMoney(r.sell)}</span>}
+            {!locked && <button className="secondary sm" onClick={() => onRestore(r.ref)}>Restore</button>}
+          </li>))}</ul>
+      </>}
     </div>
   );
 }

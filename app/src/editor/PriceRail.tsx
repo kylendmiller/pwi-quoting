@@ -47,6 +47,8 @@ export function PriceRail(r: RailProps) {
       <div className="card">
         {r.dirty && <div className="qe-unsaved"><button className="link" onClick={() => setShowChanges(!showChanges)}>{r.changes.length || 'Some'} unsaved change{r.changes.length === 1 ? '' : 's'} {showChanges ? '▾' : '▸'}</button>
           {showChanges && <ul>{r.changes.slice(0, 40).map((c, i) => <li key={i}>{c.text}</li>)}{r.changes.length > 40 && <li>…{r.changes.length - 40} more</li>}</ul>}</div>}
+        {(r.doc.removed?.length ?? 0) > 0 && <div className="qe-removed-count muted" title="Built lines you deleted stay deleted on every rebuild. Open their Main Summary row → Removed by you → Restore.">
+          Removed by you: {r.doc.removed!.length} built line{r.doc.removed!.length === 1 ? '' : 's'}{r.dirty && r.changes.some(c => c.text.startsWith('Removed')) ? ' (some not saved yet)' : ''}</div>}
         {r.voids.map(v => <div key={v} className="banner block">Saving now voids the manager's approval: {v}</div>)}
         {r.openFlags.map(f => <div key={f.rule} className="banner flag">⚑ {FLAG_TEXT(f)}
           {r.isManager && !r.locked && !r.dirty && <div><button className="sm" onClick={() => r.onApprove(f.rule)}>Approve</button></div>}

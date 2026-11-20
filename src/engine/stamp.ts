@@ -58,5 +58,8 @@ export function stampFromBuild(doc0: QuoteDoc, built: QuoteDoc | null, ctx: Deri
     return out;
   });
   const removed = Array.isArray(doc.removed) ? [...new Set(doc.removed.filter(r => typeof r === 'string'))] : undefined;
-  return { ...doc, lines, ...(removed ? { removed } : {}) };
+  // removedInfo (round 4): keep one entry per ref that is still removed (a restored line drops out)
+  const keep = new Set(removed ?? []), seen = new Set<string>();
+  const removedInfo = Array.isArray(doc.removedInfo) ? doc.removedInfo.filter(x => x && keep.has(x.ref) && !seen.has(x.ref) && seen.add(x.ref)) : undefined;
+  return { ...doc, lines, ...(removed ? { removed } : {}), ...(removedInfo ? { removedInfo } : {}) };
 }
