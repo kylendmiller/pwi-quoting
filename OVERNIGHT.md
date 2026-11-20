@@ -24,7 +24,7 @@
       (groups = those in `reference/steel_price_groups.json`; seed with current values). All builders (`Kit.steel`, `plate`, `box`) price steel cost from it,
       falling back to today's catalog values. Add `tools/steel-cost-from-brief.md` documenting the exact JSON shape so Kyle's weekly brief can update it later.
       Calibration (item 3) re-prices old jobs' steel at this setting so old and new jobs compare fairly.
-- [ ] 3. **Calibration harness.** For every fixture whose product matches a builder, rebuild a spec from the fixture's geometry, price it, and write
+- [x] 3. **Calibration harness.** For every fixture whose product matches a builder, rebuild a spec from the fixture's geometry, price it, and write
       `docs/calibration.md`: job, product, sold base, built base, % gap, biggest category differences, likely cause. Add a test that fails if any job's gap
       moves more than 2 points from the table (so later changes can't silently drift).
 - [ ] 4. Tune **freestanding** to ±3% (all FSTR fixtures).
