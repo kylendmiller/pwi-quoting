@@ -72,13 +72,14 @@ Deno.serve(async (req: Request) => {
         return json({ quote: q, revision: r });
       }
       case 'save': {
-        const { revision_id, doc, doc_version, header } = body;
+        const { revision_id, doc_version, header } = body;
+        let doc = body.doc as QuoteDoc;
         const { data: r } = await admin.from('quote_revisions').select('*, quotes(*)').eq('id', revision_id).single();
         if (!r) return json({ error: 'Revision not found' }, 404);
         if (r.locked) return json({ error: 'This revision was sent and is locked. Start a new revision.' }, 409);
         if (r.doc_version !== doc_version) return json({ error: 'Someone else saved this quote. Reload to see their changes.' }, 409);
         if (!(r.quotes.salesperson_id === uid || isMgr)) return notYours();
-        await serverChecks(admin, doc as QuoteDoc, settings);
+        doc = await serverChecks(admin, doc as QuoteDoc, settings);
         // S2: family and production-value hours come from the spec and the lines, never from the browser.
         doc.family = deriveFamily(doc as QuoteDoc); doc.freestandingShopHours = pvHours(doc as QuoteDoc);
         const priced = priceManual(doc as QuoteDoc, settings);
@@ -173,18 +174,24 @@ async function loadSettings(admin: any): Promise<Settings> {
   return s as unknown as Settings;
 }
 
-/** The install suggestion and send-blockers are never trusted from the browser:
- *  rebuild from the saved spec with live prices. No spec → no suggestion (manual install needs approval). */
-async function serverChecks(admin: any, doc: QuoteDoc, settings: Settings) {
+/** The install suggestion, send-blockers and line evidence are never trusted from the browser:
+ *  rebuild from the saved spec with live prices. No spec → no suggestion (manual install needs approval).
+ *  S3: auto lines matched by ref get the server's own detail / basis / role / group and `edited` builder values;
+ *  everything else is marked source 'hand' (stampFromBuild). Returns the stamped doc. */
+async function serverChecks(admin: any, doc: QuoteDoc, settings: Settings): Promise<QuoteDoc> {
+  const { loadCatalog, buildFromSpec, stampFromBuild, ensureRefs, readSteelCost } = await engine();
   doc.suggestedInstallHours = null; doc.blockers = [];
-  if (!doc.spec) return;
+  if (!doc.spec) return stampFromBuild(doc, null);
+  doc = ensureRefs(doc);
   try {
-    const { loadCatalog, buildFromSpec } = await engine();
     const cat = await loadCatalog(admin, settings);
-    const b = buildFromSpec(doc.spec as any, cat, settings, { ...doc, lines: [] });
+    const b = buildFromSpec(doc.spec as any, cat, settings, { ...doc, lines: [], removed: [] });
     doc.suggestedInstallHours = b.doc.suggestedInstallHours ?? null;
     doc.blockers = b.blockers;
+    const sc = readSteelCost((settings as any).steel_cost).sc;
+    return stampFromBuild(doc, b.doc, { shape: cat.shape, steelCost: sc });
   } catch (e) {
     doc.blockers = [`Auto-build check failed: ${(e as Error).message}`];
+    return stampFromBuild(doc, null);
   }
 }
