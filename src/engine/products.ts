@@ -119,6 +119,7 @@ export function buildFallProtection(spec: FallProtectionSpec, cat: Catalog, f: F
 // ------------------------------------------------------------------------- VRC
 export interface VrcSpec { model: keyof typeof V.models; qty?: number; noPit?: boolean; hdColumns?: boolean; install: boolean; miles?: number; crewMen?: number; travelMode?: 'drive' | 'fly' | 'local' }
 export function buildVrc(spec: VrcSpec, cat: Catalog, f: Factors = { production: 0.73, install: 1.02 }, bo: BuildOpts = {}): BuildResult {
+  if (!spec.model) throw new Error(`Missing VRC model. Models: ${Object.keys(V.models).join(', ')}`);
   const m = (V.models as any)[spec.model]; if (!m) throw new Error(`Unknown VRC model ${spec.model}. Models: ${Object.keys(V.models).join(', ')}`);
   check('qty', spec.qty, 1, 10); if (spec.install || spec.miles != null) check('miles', spec.miles, 0, 3500, true);
   const n = spec.qty ?? 1, K = new Kit(cat, 'vrc', f);
@@ -142,6 +143,7 @@ export function buildVrc(spec: VrcSpec, cat: Catalog, f: Factors = { production:
 // ------------------------------------------------------------------------- catalog products
 export interface CatalogSpec { item: string; qty?: number; unitPrice?: number; description?: string; installHours?: number; install?: boolean; miles?: number; wording?: string }
 export function buildCatalogItem(spec: CatalogSpec, cat: Catalog, f: Factors = { production: 0.76, install: 1 }, bo: BuildOpts = {}): BuildResult {
+  if (typeof spec.item !== 'string' || !spec.item.trim()) throw new Error('Missing item (part number or description).');
   check('qty', spec.qty, 1, 500); check('unitPrice', spec.unitPrice, 0, 1e6); check('installHours', spec.installHours, 0, 2000);
   const n = spec.qty ?? 1, K = new Kit(cat, 'other', f);
   const hit = findStd(cat, spec.item);
