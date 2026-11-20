@@ -14,8 +14,8 @@ interface QuoteLine {               // existing fields kept; new optional fields
   ref?: string;                     // stable builder slot `${itemId}:${slot}` (S4), e.g. "freestanding-0-k3x9:girder/bridge-girder"
   source?: 'auto' | 'hand';         // server-stamped (S3). 'hand' lines keep client detail.
   edited?: Partial<Record<EditableField, unknown>>;  // auto lines only: field -> BUILDER value (server re-stamps it)
-  gmPct?: number;                   // std parts: catalog GM; cost = sell × (1 − gmPct) (S7)
-  gmAssumed?: boolean;              // gmPct came from settings.std_parts_default_gm_pct (catalog had none)
+  gmPct?: number;                   // std parts: catalog GM; cost = sell × (1 − gmPct) (S7). Never changes sell.
+  builtDetail?: LineDetail;         // auto line whose detail the rep changed via deriveLine: the builder's detail
 }
 interface QuoteDoc {                // new optional fields:
   removed?: string[];               // refs of auto lines the rep deleted (stay deleted on rebuild, S5)
@@ -54,6 +54,9 @@ export function validateDoc(doc: QuoteDoc): string[];   // [] = ok. Non-finite /
                                                         // markup < −100, unknown kind/category. Server rejects save (400) if not [].
 export function deriveFamily(doc: QuoteDoc): string;    // spec.items[0] builder fam when a spec exists, else doc.family (S2)
 export function pvHours(doc: QuoteDoc): number;         // freestanding PV shop hours the server will use (S2)
+//  UI: before calling priceManual for the live preview, set doc.freestandingShopHours = pvHours(doc) (and
+//  doc.family = deriveFamily(doc)) exactly as the server does; otherwise FAMILY_PV_DROP shows in the preview.
+export function quoteMoney(q: RollupResult['quote']): QuoteMoney;   // the S9 rounding rule
 
 // ───────── src/engine/parseNum.ts ─────────   (S8/U5; no eval, no Function)
 export function parseNum(text: string, opts?: { allowNegative?: boolean }): number | null;
@@ -94,6 +97,7 @@ export function lineLb(line: QuoteLine): number | undefined;                    
 export function assignItemIds(spec: QuoteSpec): QuoteSpec;  // gives every item a permanent `id` (kept if present)
 export function slotOf(line: QuoteLine, n?: number): string; // "role/stem" (+ "#n" for the nth duplicate)
 export function ensureRefs(doc: QuoteDoc): QuoteDoc;         // legacy docs: give auto lines refs from spec ids + slotOf
+export function inheritIds(spec: QuoteSpec, oldSpec: unknown): QuoteSpec; // pasted items w/o id take the old id at the same index if same type
 export interface Conflict {
   id: string;                       // `${ref}|${field}`
   ref: string; description: string; section: SectionKey;
@@ -106,6 +110,9 @@ export function buildFromSpec(spec, cat, settings, base: QuoteDoc): BuiltDoc;
 //  Keeps hand lines; keeps refs in base.removed removed; re-applies base auto lines' `edited` fields onto the
 //  same ref (yours wins, edited[f] re-stamped to the NEW builder value); conflicts listed. 'gone' edited lines are
 //  kept as hand lines (source 'hand', auto false). Unedited docs: identical output to before (refs added only).
+
+// ───────── src/engine/stamp.ts ─────────   (S3, used by the server; the UI never needs it)
+export function stampFromBuild(doc: QuoteDoc, built: QuoteDoc | null, ctx?: DeriveCtx): QuoteDoc;
 
 // ───────── src/engine/rebuildPlan.ts ─────────   (S5)
 export interface LineChange {
@@ -146,13 +153,15 @@ export interface DeltaLine { ref: string; description: string; category: Categor
 export function deltaDoc(confirmed: QuoteDoc, current: QuoteDoc, s: Settings):
   { doc: QuoteDoc; lines: DeltaLine[]; before: QuoteMoney; after: QuoteMoney; delta: QuoteMoney };
 //  doc = a printable QuoteDoc whose lines are the deltas (credits are negative unitSell material lines; labor as hour deltas).
-//  priceManual(doc).quote.total === delta.total (to the cent).
+//  priceManual(doc).quote.total === delta.total (within 2 cents of part rounding). Assumes the same dealer discount on both.
+export function reviseStatus(current: string | null | undefined, newDocType: string | null | undefined): 'won' | 'draft';
 ```
 
 ## Server (`server/quote-api.ts`) contract changes
 
 - `save`: rejects 400 `{ error, problems: string[] }` when `validateDoc` fails. The server derives `family` and `freestandingShopHours` itself (client values ignored), rebuilds from the saved spec, stamps `detail` / `basis` / `role` / `group` / `source` / `edited` builder values on auto lines by `ref`, marks unmatched lines `source: 'hand'`. Returns `{ revision, priced }`; **use `revision.doc` (stamped) and `priced.quote` from the response**. Approvals are deleted only after a successful versioned update.
-- `approve`: body now needs `doc_version`; 409 if the stored revision moved on.
+- `approve`: body now REQUIRES `doc_version` (400 without it, 409 if the stored revision moved on). Send the doc_version the manager is looking at.
+- `price` and `save` return 400 `{ error, problems }` when `validateDoc` fails (show `problems`).
 - `send`: response includes `priced` (server-priced): render the PDF from it.
 - `revise`: body `{ quote_id, from_revision_id?, doc_type? }`. A won quote stays `won`. CHANGE ORDER revisions get `priced.changeOrder` (the `deltaDoc` result vs the last CONFIRMATION revision) on save.
 - New approval rules need `db/migrations/004_round3_flags.sql` (written, NOT applied).
@@ -165,3 +174,15 @@ export function deltaDoc(confirmed: QuoteDoc, current: QuoteDoc, s: Settings):
 - Spec chips / ImportSpec: `planRebuild(doc, newSpec, catalog, settings)` → dialog → `applyPlan(plan, choices)`.
 - Deleting an auto line: push its `ref` to `doc.removed` (restore = remove it from the list).
 - Inline approvals: `priced.flags[i].section` / `.lineKeys` + `flagDef(rule).explain(detail)`.
+- Badges: use `line.source` ('auto' = server-verified, 'hand' = not) for "CONFIRMED – PWI CHART" style tags, never `line.auto` alone.
+  `line.edited` (field → builder value) drives amber cells and per-cell revert (`revertField`). `sectionLine.staleDetail` = the
+  description was retyped away from the size; show "edited".
+- GM: `priced.costBasis.shopAssumed / siteAssumed` → label "assumed labor cost"; std parts now carry cost (GM moved, sell did not).
+- Discount lines (U10 target price): a material line with negative `unitSell` (credit). It raises BIG_DISCOUNT / MIN_GM as needed.
+- deriveLine changes one line; it does NOT re-run paint runs, handling or PM/CAD that depend on steel weight. Use planRebuild for that.
+
+## Status (end of track S)
+
+All S1–S12 items are implemented on `round3-s` with tests (see the commit list). Not applied: `db/migrations/004_round3_flags.sql`
+(new approval_rule enum values — the server can't store approvals for FAMILY_PV_DROP / MIN_GM / ZERO_MARKUP / BIG_DISCOUNT until it runs)
+and the seed rows for `min_gm_pct`, `max_discount_pct`, `std_parts_default_gm_pct` (engine defaults are used until then).
