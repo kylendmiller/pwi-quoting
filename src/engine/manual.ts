@@ -31,6 +31,7 @@ export interface QuoteLine {
   ref?: string;                     // stable builder slot `${itemId}:${slot}` (same spec in → same refs out)
   source?: 'auto' | 'hand';         // stamped by the server: 'hand' = not matched to its own rebuild
   edited?: Partial<Record<EditableField, unknown>>;   // auto lines: field the rep changed → the BUILDER's value
+  builtDetail?: LineDetail;         // auto lines whose detail the rep changed (deriveLine): the builder's detail
 }
 
 /** Fields a rep can change on a line (what `edited` tracks and a rebuild preserves). */
