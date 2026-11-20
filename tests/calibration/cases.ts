@@ -38,8 +38,8 @@ export const CASES: CalCase[] = [
     note: 'Two bought-in motorized gantries ($45,200 −2%) added as catalog lines.' },
   { job: '28426', product: 'bridge', items: [{ type: 'bridge', support: 'bridge_only', runwayOalFt: 144, runwayElectrification: true, asceRail: true, spanFt: 44.08, capacityTons: 4, hookHeightFt: 14, liftFt: 20, motorized: true, voltage: '460V/3', control: 'radio', install: true, miles: 150 }],
     note: 'Bridge only on customer runway; new 30# rail (288\') + 145\' runway conductor bar.' },
-  { job: '29562', product: 'bridge', items: [{ type: 'bridge', support: 'bridge_only', runwayOalFt: 225, runwayElectrification: true, spanFt: 70, capacityTons: 10, hoistsPerBridge: 2, hookHeightFt: 20, liftFt: 20, motorized: true, voltage: '460V/3', control: 'radio', collisionAvoidance: true, install: true, miles: 400 }],
-    note: 'Box girder (189 plf) bridge, 2 hoists; 225\' 120 A runway bar. The 125\' runway completion package (40# rail) is not spec\'d.' },
+  { job: '29562', product: 'bridge', items: [{ type: 'bridge', support: 'bridge_only', runwayOalFt: 225, runwayElectrificationFt: 475, railFt: 500, spanFt: 70, capacityTons: 10, hoistsPerBridge: 2, hookHeightFt: 20, liftFt: 20, motorized: true, voltage: '460V/3', control: 'radio', collisionAvoidance: true, install: true, miles: 400 }],
+    note: 'Box girder (189 plf) bridge, 2 hoists; 225\' 120 A runway bar replaced + two 125\' runway completion packages (500\' rail, 250\' bar). Sold with 15 t hoists auto-derated to 10 t (wording says 10 t).' },
 
   // ------------------------------------------------------------------ mezzanine
   { job: '28527', product: 'mezzanine', items: [{ type: 'mezzanine', lengthFt: 27.67, widthFt: 23.83, deckHeightFt: 9.52, liveLoadPsf: 125, deck: 'bdeck_advantech', guardrailFt: 50, gates: [{ type: 'manual_rolling', qty: 1 }], bracing: 'knee', install: false }],

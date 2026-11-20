@@ -234,8 +234,12 @@ export class Kit {
   done() { for (const n of this.notes) if (/not found|not in/.test(n)) this.blockers.push(n); }
 }
 
+/** Conservative Ix estimate for a W shape from nominal depth and weight: 0.04·w·d² is below the AISC Ix of every
+ *  shape in W_SHAPES (the old 0.05 over-stated light-for-depth shapes, e.g. W24x55 by 17%, W30x90 by 12%). */
+export const IX_COEF = 0.04;
+export const ixOf = (shape: string) => { const m = /^W(\d+) x (\d+(?:\.\d+)?)$/.exec(shape); return m ? IX_COEF * Number(m[2]) * Number(m[1]) ** 2 : 0; };
 /** W-shape sizing by deflection + bending when a chart doesn't cover the case.
- *  Ix ≈ 0.05·w·d² (fits AISC W shapes within ~10%); Sx ≈ 2·Ix/d. Picks the lightest W from the steel list. */
+ *  Ix from ixOf() (conservative); Sx ≈ 2·Ix/d. Picks the lightest W from the steel list. */
 export function sizeBeam(cat: Catalog, opts: { spanFt: number; wPlf?: number; pointLb?: number; liveFrac?: number; deflLimit: number; maxDepthIn?: number; minDepthIn?: number; allowKsi?: number }) {
   const L = opts.spanFt * 12, E = 29e6, w = (opts.wPlf ?? 0) / 12, P = opts.pointLb ?? 0;
   const live = opts.liveFrac ?? 1;
@@ -251,12 +255,12 @@ export function sizeBeam(cat: Catalog, opts: { spanFt: number; wPlf?: number; po
     if (opts.maxDepthIn && d > opts.maxDepthIn) continue;
     if (opts.minDepthIn && d < opts.minDepthIn) continue;
     if (!cat.shape(name)) continue;
-    const I = 0.05 * wt * d * d, S = 2 * I / d;
+    const I = IX_COEF * wt * d * d, S = 2 * I / d;
     if (I >= Ireq && M / S <= allow && (!best || wt < best.w)) best = { shape: name, w: wt };
   }
   return best?.shape ?? null;
 }
-const W_SHAPES = ['W6 x 15', 'W6 x 20', 'W6 x 25', 'W8 x 18', 'W8 x 21', 'W8 x 24', 'W8 x 31', 'W8 x 35', 'W10 x 19', 'W10 x 22', 'W10 x 26', 'W10 x 30', 'W10 x 33', 'W10 x 39', 'W10 x 45',
+export const W_SHAPES = ['W6 x 15', 'W6 x 20', 'W6 x 25', 'W8 x 18', 'W8 x 21', 'W8 x 24', 'W8 x 31', 'W8 x 35', 'W10 x 19', 'W10 x 22', 'W10 x 26', 'W10 x 30', 'W10 x 33', 'W10 x 39', 'W10 x 45',
   'W12 x 19', 'W12 x 22', 'W12 x 26', 'W12 x 30', 'W12 x 35', 'W12 x 40', 'W12 x 45', 'W12 x 50', 'W12 x 53', 'W14 x 22', 'W14 x 26', 'W14 x 30', 'W14 x 34', 'W14 x 38', 'W14 x 43', 'W14 x 48',
   'W14 x 53', 'W14 x 61', 'W16 x 26', 'W16 x 31', 'W16 x 36', 'W16 x 40', 'W16 x 45', 'W16 x 50', 'W16 x 57', 'W16 x 67', 'W18 x 35', 'W18 x 40', 'W18 x 46', 'W18 x 50', 'W18 x 55', 'W18 x 60',
   'W18 x 65', 'W18 x 71', 'W18 x 76', 'W18 x 86', 'W21 x 44', 'W21 x 50', 'W21 x 57', 'W21 x 62', 'W21 x 68', 'W21 x 73', 'W21 x 83', 'W21 x 93', 'W21 x 101', 'W24 x 55', 'W24 x 62', 'W24 x 68',

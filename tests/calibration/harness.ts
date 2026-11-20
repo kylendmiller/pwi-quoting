@@ -1,6 +1,7 @@
 // Calibration harness: rebuild every sold job in CASES, price it with today's settings, compare
 // the base price (Main Summary D31) with the sold base. Sold steel and plate are re-priced at the
-// steel_cost seed so jobs sold at older steel prices compare fairly with today's builds.
+// steel_cost seed, and sold vendor items / standard parts at today's price lists, so jobs sold at
+// older prices compare fairly with today's builds.
 import { readFileSync } from 'node:fs';
 import { loadFixtures, num, raw, rows, formula, type Fixture } from '../fixtures';
 import { buildFromSpec } from '../../src/engine/buildSpec';
@@ -42,6 +43,28 @@ export function steelReprice(f: Fixture): number {
   return d * 1.01;
 }
 
+/** $ change in the sold base if its vendor items and standard parts were sold at today's price lists (incl. the 1%).
+ *  Rows whose part / description isn't in today's lists are left as sold. */
+export function listReprice(f: Fixture): number {
+  let d = 0;
+  const V = 'Hoist & Crane Vendor Items';
+  for (const r of rows(f, V)) {
+    const part = raw(f, V, `A${r}`), qty = num(f, V, `C${r}`), sold = num(f, V, `I${r}`);
+    if (typeof part !== 'string' || !qty || !sold) continue;
+    const p = testCatalog.vendor(part.trim()); if (!p) continue;
+    const now = p.list * (1 - testCatalog.discount(p.vendor).customer / 100) * qty;
+    d += now - sold;
+  }
+  const S = 'Standard Parts & Products';
+  for (const r of rows(f, S)) {
+    const desc = raw(f, S, `A${r}`), qty = num(f, S, `B${r}`), sold = num(f, S, `G${r}`);
+    if (typeof desc !== 'string' || !qty || !sold) continue;
+    const each = testCatalog.stdSell(desc); if (each == null) continue;
+    d += each * qty - sold;
+  }
+  return d * 1.01;
+}
+
 export interface CalRow {
   job: string; product: string; outlier?: string; note?: string;
   sold: number; soldAdj: number; built: number; gapPct: number;
@@ -60,7 +83,7 @@ export function runCase(c: CalCase, fx: Fixture): CalRow {
   const p = priceManual({ ...b.doc, freestandingShopHours: shop, pvPerHourOverride: null } as any, CAL_SETTINGS);
   const builtCat: Partial<Record<CategoryKey, number>> = {};
   for (const l of p.lines) builtCat[l.category] = (builtCat[l.category] ?? 0) + l.sell;
-  const sold = soldBase(fx), soldAdj = sold + (fx.aqt ? 0 : steelReprice(fx));
+  const sold = soldBase(fx), soldAdj = sold + (fx.aqt ? 0 : steelReprice(fx) + listReprice(fx));
   const built = p.rollup.basePrice;
   const diffs = fx.aqt ? [] : BASE_CATS.map(cat => ({ cat, sold: num(fx, 'Main Summary', `D${ROW[cat]}`), built: builtCat[cat] ?? 0 }))
     .filter(d => Math.abs(d.built - d.sold) > 1).sort((a, b) => Math.abs(b.built - b.sold) - Math.abs(a.built - a.sold));
@@ -94,7 +117,7 @@ export function likely(r: CalRow): string {
 }
 
 export function table(rowsIn: CalRow[], before?: Record<string, number>): string {
-  const head = `| Job | Product | Sold base | Sold base @ today's steel | Built base | Gap % |${before ? ' Before % |' : ''} Biggest category differences (built − sold) | Likely cause |\n|---|---|---:|---:|---:|---:|${before ? '---:|' : ''}---|---|`;
+  const head = `| Job | Product | Sold base | Sold base @ today's prices | Built base | Gap % |${before ? ' Before % |' : ''} Biggest category differences (built − sold) | Likely cause |\n|---|---|---:|---:|---:|---:|${before ? '---:|' : ''}---|---|`;
   const body = rowsIn.map(r => `| ${r.job} | ${r.product}${r.outlier ? ' (outlier)' : ''} | ${money(r.sold)} | ${money(r.soldAdj)} | ${money(r.built)} | ${r.gapPct >= 0 ? '+' : ''}${r.gapPct.toFixed(1)} |${before ? ` ${before[r.job] == null ? '—' : (before[r.job] >= 0 ? '+' : '') + before[r.job].toFixed(1)} |` : ''} ${cause(r)} | ${likely(r)} |`);
   return [head, ...body].join('\n');
 }
