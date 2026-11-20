@@ -1,0 +1,1479 @@
+{
+"columnPlf": [
+12.21,
+14.76,
+19.02,
+17.31,
+22.42,
+19.86,
+25.82,
+31.84,
+24.96,
+32.63,
+40.35,
+47.9,
+48.86,
+90.36
+],
+"columnChart": [
+{
+"heightFt": 10,
+"cap": [
+2280,
+4040,
+5180,
+6520,
+8300,
+9880,
+12700,
+15300,
+19600,
+25400,
+24000,
+25300,
+43500,
+83900
+]
+},
+{
+"heightFt": 10.5,
+"cap": [
+2070,
+3670,
+4700,
+5920,
+7530,
+8960,
+11500,
+13900,
+17800,
+23000,
+22900,
+24200,
+41800,
+82000
+]
+},
+{
+"heightFt": 11,
+"cap": [
+1890,
+3340,
+4280,
+5390,
+6860,
+8160,
+10500,
+12700,
+16200,
+21000,
+22000,
+23200,
+40100,
+80000
+]
+},
+{
+"heightFt": 11.5,
+"cap": [
+1730,
+3060,
+3920,
+4930,
+6280,
+7470,
+9590,
+11600,
+14800,
+19200,
+21100,
+22300,
+38600,
+78000
+]
+},
+{
+"heightFt": 12,
+"cap": [
+1590,
+2810,
+3600,
+4530,
+5760,
+6860,
+8810,
+10600,
+13600,
+17600,
+20300,
+21500,
+37200,
+76000
+]
+},
+{
+"heightFt": 12.5,
+"cap": [
+1460,
+2590,
+3320,
+4180,
+5310,
+6320,
+8120,
+9800,
+12500,
+16200,
+19500,
+20700,
+35900,
+74000
+]
+},
+{
+"heightFt": 13,
+"cap": [
+1350,
+2390,
+3070,
+3860,
+4910,
+5850,
+7510,
+9060,
+11600,
+15000,
+18800,
+19900,
+34600,
+72100
+]
+},
+{
+"heightFt": 13.5,
+"cap": [
+1250,
+2220,
+2840,
+3580,
+4550,
+5420,
+6960,
+8400,
+10700,
+13900,
+18200,
+19200,
+33500,
+70300
+]
+},
+{
+"heightFt": 14,
+"cap": [
+1170,
+2060,
+2640,
+3330,
+4240,
+5040,
+6470,
+7810,
+9990,
+12900,
+17500,
+18600,
+32400,
+68500
+]
+},
+{
+"heightFt": 14.5,
+"cap": [
+1090,
+1920,
+2470,
+3100,
+3950,
+4700,
+6030,
+7280,
+9310,
+12100,
+16600,
+18000,
+31400,
+66800
+]
+},
+{
+"heightFt": 15,
+"cap": [
+1010,
+1800,
+2300,
+2900,
+3690,
+4390,
+5640,
+6810,
+8700,
+11300,
+15500,
+17400,
+30400,
+65100
+]
+},
+{
+"heightFt": 15.5,
+"cap": [
+951,
+1680,
+2160,
+2720,
+3460,
+4110,
+5280,
+6370,
+8150,
+10600,
+14600,
+16800,
+29500,
+63500
+]
+},
+{
+"heightFt": 16,
+"cap": [
+null,
+1580,
+2020,
+2550,
+3240,
+3860,
+4960,
+5980,
+7650,
+9910,
+13700,
+15800,
+28600,
+62000
+]
+},
+{
+"heightFt": 16.5,
+"cap": [
+null,
+1480,
+1900,
+2400,
+3050,
+3630,
+4660,
+5630,
+7190,
+9320,
+12800,
+15000,
+27800,
+60500
+]
+},
+{
+"heightFt": 17,
+"cap": [
+null,
+1400,
+1790,
+2260,
+2870,
+3420,
+4390,
+5300,
+6770,
+8780,
+12100,
+14300,
+27000,
+59100
+]
+},
+{
+"heightFt": 17.5,
+"cap": [
+null,
+1320,
+1690,
+2130,
+2710,
+3230,
+4140,
+5000,
+6390,
+8290,
+11400,
+13600,
+26200,
+57700
+]
+},
+{
+"heightFt": 18,
+"cap": [
+null,
+1250,
+1600,
+2010,
+2560,
+3050,
+3920,
+4730,
+6040,
+7830,
+10800,
+12900,
+25500,
+56400
+]
+},
+{
+"heightFt": 18.5,
+"cap": [
+null,
+1180,
+1510,
+1910,
+2430,
+2890,
+3710,
+4470,
+5720,
+7410,
+10200,
+12300,
+24800,
+55100
+]
+},
+{
+"heightFt": 19,
+"cap": [
+null,
+null,
+null,
+1810,
+2300,
+2740,
+3510,
+4240,
+5420,
+7030,
+9700,
+11700,
+24200,
+53900
+]
+},
+{
+"heightFt": 19.5,
+"cap": [
+null,
+null,
+null,
+1720,
+2180,
+2600,
+3340,
+4030,
+5150,
+6670,
+9200,
+11200,
+23000,
+52700
+]
+},
+{
+"heightFt": 20,
+"cap": [
+null,
+null,
+null,
+1630,
+2080,
+2470,
+3170,
+3830,
+4890,
+6340,
+8700,
+10700,
+21900,
+51500
+]
+},
+{
+"heightFt": 20.5,
+"cap": [
+null,
+null,
+null,
+1550,
+1980,
+2350,
+3020,
+3640,
+4660,
+6030,
+8310,
+10200,
+21700,
+50500
+]
+},
+{
+"heightFt": 21,
+"cap": [
+null,
+null,
+null,
+1480,
+1880,
+2240,
+2880,
+3470,
+4440,
+5750,
+7920,
+9820,
+21100,
+49500
+]
+},
+{
+"heightFt": 21.5,
+"cap": [
+null,
+null,
+null,
+1410,
+1800,
+2140,
+2740,
+3310,
+4230,
+5490,
+7560,
+9420,
+20500,
+48600
+]
+},
+{
+"heightFt": 22,
+"cap": [
+null,
+null,
+null,
+1350,
+1720,
+2040,
+2620,
+3160,
+4040,
+5240,
+7220,
+9040,
+20000,
+47600
+]
+},
+{
+"heightFt": 22.5,
+"cap": [
+null,
+null,
+null,
+1290,
+1640,
+1950,
+2510,
+3020,
+3870,
+5010,
+6900,
+8690,
+19500,
+46800
+]
+},
+{
+"heightFt": 23,
+"cap": [
+null,
+null,
+null,
+1230,
+1570,
+1870,
+2400,
+2890,
+3700,
+4790,
+6600,
+8360,
+19000,
+45900
+]
+},
+{
+"heightFt": 23.5,
+"cap": [
+null,
+null,
+null,
+1180,
+1510,
+1790,
+2300,
+2770,
+3540,
+4590,
+6330,
+8050,
+18500,
+45100
+]
+},
+{
+"heightFt": 24,
+"cap": [
+null,
+null,
+null,
+1130,
+1440,
+1720,
+2200,
+2660,
+3400,
+4400,
+6060,
+7750,
+18000,
+44300
+]
+},
+{
+"heightFt": 24.5,
+"cap": [
+null,
+null,
+null,
+1090,
+1390,
+1650,
+2110,
+2550,
+3260,
+4220,
+5820,
+7470,
+17600,
+43500
+]
+},
+{
+"heightFt": 25,
+"cap": [
+null,
+null,
+null,
+1040,
+1330,
+1580,
+2030,
+2450,
+3130,
+4060,
+5590,
+7210,
+17200,
+42800
+]
+},
+{
+"heightFt": 25.5,
+"cap": [
+null,
+null,
+null,
+1000,
+1280,
+1520,
+1950,
+2350,
+3010,
+3900,
+5370,
+6960,
+16800,
+42100
+]
+},
+{
+"heightFt": 26,
+"cap": [
+null,
+null,
+null,
+966,
+1230,
+1460,
+1880,
+2260,
+2890,
+3750,
+5170,
+6730,
+16400,
+41400
+]
+},
+{
+"heightFt": 26.5,
+"cap": [
+null,
+null,
+null,
+930,
+1190,
+1410,
+1810,
+2180,
+2790,
+3610,
+4970,
+6500,
+16000,
+40800
+]
+},
+{
+"heightFt": 27,
+"cap": [
+null,
+null,
+null,
+896,
+1140,
+1360,
+1740,
+2100,
+2680,
+3480,
+4790,
+6290,
+15700,
+40100
+]
+},
+{
+"heightFt": 27.5,
+"cap": [
+null,
+null,
+null,
+863,
+1100,
+1310,
+1680,
+2020,
+2590,
+3350,
+4620,
+6090,
+15300,
+39500
+]
+},
+{
+"heightFt": 28,
+"cap": [
+null,
+null,
+null,
+833,
+1060,
+1260,
+1620,
+1950,
+2500,
+3230,
+4460,
+5900,
+15000,
+38900
+]
+},
+{
+"heightFt": 28.5,
+"cap": [
+null,
+null,
+null,
+804,
+1030,
+1220,
+1560,
+1880,
+2410,
+3120,
+4300,
+5720,
+14700,
+38400
+]
+}
+],
+"boms": [
+{
+"maxWheelLb": 6000,
+"items": [
+{
+"qty": 2,
+"vendor": "Service Caster Corp.",
+"part": "415-00045",
+"desc": "10\u201d x 3\u201d POLY DRIVE WHEEL, 40MM BORE (6,000# CAP)",
+"freight": 50,
+"cost": 240
+},
+{
+"qty": 2,
+"vendor": "Service Caster Corp.",
+"part": "415-00008",
+"desc": "10\" X 3\" SWIVEL CASTER, CROWNED DUCTILE (6,000# CAP)",
+"freight": 50,
+"cost": 255
+},
+{
+"qty": 2,
+"vendor": "PWI",
+"part": null,
+"desc": "DRIVE WHEEL WELDMENT",
+"freight": 1,
+"cost": 300
+},
+{
+"qty": 2,
+"vendor": "China",
+"part": "425-00021",
+"desc": "#60H Roller Chain, 5ft long",
+"freight": 10,
+"cost": 40
+},
+{
+"qty": 2,
+"vendor": "NIA",
+"part": "520-00008",
+"desc": "HINGE SHAFT",
+"freight": 5,
+"cost": 25
+},
+{
+"qty": 2,
+"vendor": "NIA",
+"part": "520-00018",
+"desc": "GANTRY DRIVE WHEEL SHAFT (40MM X 200MM)",
+"freight": 5,
+"cost": 55
+},
+{
+"qty": 4,
+"vendor": "NIA",
+"part": "522-00024",
+"desc": "DRIVE SHAFT SPACER (40MM X 6MM)",
+"freight": 5,
+"cost": 20
+},
+{
+"qty": 2,
+"vendor": "NIA",
+"part": "522-00025",
+"desc": "DRIVE SHAFT SPACER (40MM X 12MM)",
+"freight": 5,
+"cost": 20
+},
+{
+"qty": 4,
+"vendor": "NIA",
+"part": "522-00026",
+"desc": "DRIVE CASTER BEARING SLEEVE (80MM X 20MM)",
+"freight": 5,
+"cost": 150
+},
+{
+"qty": 2,
+"vendor": "PWI",
+"part": null,
+"desc": "3D PRINTED COVER",
+"freight": 2,
+"cost": 50
+},
+{
+"qty": 4,
+"vendor": "DKS BEARING (CHINA)",
+"part": "BS2-2208-2RS_VT143",
+"desc": "40MM SPHERICAL SEALED ROLLER BEARING",
+"freight": 61.1,
+"cost": 47
+},
+{
+"qty": 2,
+"vendor": "TORK PRODUCTS",
+"part": "60BTB16",
+"desc": "16T #60 Type B Taper-Lock Sprocket",
+"freight": 8,
+"cost": 22
+},
+{
+"qty": 2,
+"vendor": "TORK PRODUCTS",
+"part": "1610 30MM",
+"desc": "30 mm Taper-Lock Bushing",
+"freight": 8,
+"cost": 9
+},
+{
+"qty": 2,
+"vendor": "TORK PRODUCTS",
+"part": "60BTB21",
+"desc": "21T #60 Type B Taper-Lock Sprocket",
+"freight": 8,
+"cost": 29
+},
+{
+"qty": 2,
+"vendor": "TORK PRODUCTS",
+"part": "2012 40MM",
+"desc": "40 mm Taper-Lock Bushing",
+"freight": 8,
+"cost": 16
+},
+{
+"qty": 1,
+"vendor": "CONDUCTIX",
+"part": "XA-142120405031",
+"desc": "CORD REEL",
+"freight": 50,
+"cost": 825
+},
+{
+"qty": 0,
+"vendor": "REDSUN",
+"part": "425-00086",
+"desc": "K47-63.3 Ratio .75KW, A",
+"freight": 185,
+"cost": 365
+},
+{
+"qty": 0,
+"vendor": "REDSUN",
+"part": "425-00087",
+"desc": "K47-63.3 Ratio .75KW, B",
+"freight": 185,
+"cost": 365
+},
+{
+"qty": 1,
+"vendor": "SEW",
+"part": "425-00101",
+"desc": "K47-63.3 Ratio .75KW, A",
+"freight": 100,
+"cost": 1530
+},
+{
+"qty": 1,
+"vendor": "SEW",
+"part": "425-00102",
+"desc": "K47-63.3 Ratio .75KW, B",
+"freight": 100,
+"cost": 1530
+},
+{
+"qty": 0,
+"vendor": "SEW",
+"part": "425-00099",
+"desc": "K47-63.3 Ratio .gear box only, A",
+"freight": 75,
+"cost": 1200
+},
+{
+"qty": 0,
+"vendor": "SEW",
+"part": "425-00100",
+"desc": "K47-63.3 Ratio .gear box only, B",
+"freight": 75,
+"cost": 1200
+},
+{
+"qty": 0,
+"vendor": "TORK PRODUCTS",
+"part": "111951.00.",
+"desc": "Single Phase 1 HP Leeson Brake Moto",
+"freight": 75,
+"cost": 1150
+}
+],
+"label": "6K Wheel Load BOM"
+},
+{
+"maxWheelLb": 10000,
+"items": [
+{
+"qty": 2,
+"vendor": "SUNRAY, INC",
+"part": "415-00046",
+"desc": "10\u201d x 3\u201d POLY DRIVE WHEEL (11,200# CAP)",
+"freight": 65,
+"cost": 620
+},
+{
+"qty": 2,
+"vendor": "RWM CASTER",
+"part": "415-00041",
+"desc": "10\" X 3\" SWIVEL NYLATRON CASTER (10,000# CAP)",
+"freight": 65,
+"cost": 480
+},
+{
+"qty": 2,
+"vendor": "PWI",
+"part": null,
+"desc": "DRIVE WHEEL WELDMENT",
+"freight": 1,
+"cost": 300
+},
+{
+"qty": 2,
+"vendor": "China",
+"part": "425-00021",
+"desc": "#60H Roller Chain, 5ft long",
+"freight": 10,
+"cost": 40
+},
+{
+"qty": 2,
+"vendor": "NIA",
+"part": "520-00008",
+"desc": "HINGE SHAFT",
+"freight": 5,
+"cost": 25
+},
+{
+"qty": 2,
+"vendor": "NIA",
+"part": "520-00018",
+"desc": "GANTRY DRIVE WHEEL SHAFT (40MM X 200MM)",
+"freight": 5,
+"cost": 55
+},
+{
+"qty": 4,
+"vendor": "NIA",
+"part": "522-00024",
+"desc": "DRIVE SHAFT SPACER (40MM X 6MM)",
+"freight": 5,
+"cost": 20
+},
+{
+"qty": 2,
+"vendor": "NIA",
+"part": "522-00025",
+"desc": "DRIVE SHAFT SPACER (40MM X 12MM)",
+"freight": 5,
+"cost": 20
+},
+{
+"qty": 4,
+"vendor": "NIA",
+"part": "522-00026",
+"desc": "DRIVE CASTER BEARING SLEEVE (80MM X 20MM)",
+"freight": 5,
+"cost": 150
+},
+{
+"qty": 2,
+"vendor": "PWI",
+"part": null,
+"desc": "3D PRINTED COVER",
+"freight": 2,
+"cost": 50
+},
+{
+"qty": 4,
+"vendor": "DKS BEARING (CHINA)",
+"part": "BS2-2208-2RS_VT143",
+"desc": "40MM SPHERICAL SEALED ROLLER BEARING",
+"freight": 61.1,
+"cost": 47
+},
+{
+"qty": 2,
+"vendor": "TORK PRODUCTS",
+"part": "60BTB16",
+"desc": "16T #60 Type B Taper-Lock Sprocket",
+"freight": 8,
+"cost": 22
+},
+{
+"qty": 2,
+"vendor": "TORK PRODUCTS",
+"part": "1610 30MM",
+"desc": "30 mm Taper-Lock Bushing",
+"freight": 8,
+"cost": 9
+},
+{
+"qty": 2,
+"vendor": "TORK PRODUCTS",
+"part": "60BTB21",
+"desc": "21T #60 Type B Taper-Lock Sprocket",
+"freight": 8,
+"cost": 29
+},
+{
+"qty": 2,
+"vendor": "TORK PRODUCTS",
+"part": "2012 40MM",
+"desc": "40 mm Taper-Lock Bushing",
+"freight": 8,
+"cost": 16
+},
+{
+"qty": 1,
+"vendor": "CONDUCTIX",
+"part": "XA-142120405031",
+"desc": "CORD REEL",
+"freight": 50,
+"cost": 825
+},
+{
+"qty": 0,
+"vendor": "REDSUN",
+"part": "425-00086",
+"desc": "K47-63.3 Ratio .75KW, A",
+"freight": 185,
+"cost": 365
+},
+{
+"qty": 0,
+"vendor": "REDSUN",
+"part": "425-00087",
+"desc": "K47-63.3 Ratio .75KW, B",
+"freight": 185,
+"cost": 365
+},
+{
+"qty": 1,
+"vendor": "SEW",
+"part": "425-00101",
+"desc": "K47-63.3 Ratio .75KW, A",
+"freight": 100,
+"cost": 1530
+},
+{
+"qty": 1,
+"vendor": "SEW",
+"part": "425-00102",
+"desc": "K47-63.3 Ratio .75KW, B",
+"freight": 100,
+"cost": 1530
+},
+{
+"qty": 0,
+"vendor": "SEW",
+"part": "425-00099",
+"desc": "K47-63.3 Ratio .gear box only, A",
+"freight": 75,
+"cost": 1200
+},
+{
+"qty": 0,
+"vendor": "SEW",
+"part": "425-00100",
+"desc": "K47-63.3 Ratio .gear box only, B",
+"freight": 75,
+"cost": 1200
+},
+{
+"qty": 0,
+"vendor": "TORK PRODUCTS",
+"part": "111951.00.",
+"desc": "Single Phase 1 HP Leeson Brake Moto",
+"freight": 75,
+"cost": 1150
+}
+],
+"label": "10K Wheel Load BOM"
+},
+{
+"maxWheelLb": 16000,
+"items": [
+{
+"qty": 2,
+"vendor": "RWM CASTER",
+"part": "415-00042",
+"desc": "10\" X 4\" SWIVEL NYLATRON CASTER (16,500# CAP)",
+"freight": 25,
+"cost": 708
+},
+{
+"qty": 4,
+"vendor": "SERVICE CASTER",
+"part": "415-00002",
+"desc": "12\" X 5\" POLY DRIVE WHEEL, 60MM BORE, 7,500 LB. CAPACITY",
+"freight": 20,
+"cost": 391
+},
+{
+"qty": 2,
+"vendor": "PWI",
+"part": null,
+"desc": "DRIVE WHEEL WELDMENT",
+"freight": 1,
+"cost": 325
+},
+{
+"qty": 2,
+"vendor": "China",
+"part": "425-00022",
+"desc": "#80H ROLLER CHAIN",
+"freight": 5,
+"cost": 60
+},
+{
+"qty": 4,
+"vendor": "NIA",
+"part": "522-00018",
+"desc": "10 TON GANTRY DRIVE WHEEL BEARING SLEEVE",
+"freight": 10,
+"cost": 170
+},
+{
+"qty": 2,
+"vendor": "NIA",
+"part": "520-00013",
+"desc": "10 TON GANTRY DRIVE WHEEL SHAFT",
+"freight": 10,
+"cost": 170
+},
+{
+"qty": 2,
+"vendor": "NIA",
+"part": "520-00014",
+"desc": "HINGE SHAFT",
+"freight": 5,
+"cost": 23
+},
+{
+"qty": 6,
+"vendor": "NIA",
+"part": "522-00019",
+"desc": "60MM DRIVE SHAFT SPACER",
+"freight": 1,
+"cost": 12
+},
+{
+"qty": 4,
+"vendor": "DKS BEARING (CHINA)",
+"part": "BS2-2212-2RS/VT143",
+"desc": "60MM SPHERICAL SEALED ROLLER BEARING, air freight and tarriff included ",
+"freight": 65,
+"cost": 50
+},
+{
+"qty": 2,
+"vendor": "MC-MASTER",
+"part": "98455A674",
+"desc": "110MM INTERNAL RETAINING RING",
+"freight": 3,
+"cost": 4
+},
+{
+"qty": 4,
+"vendor": "Tork Products",
+"part": "80BTB18",
+"desc": "80 Chain Sprocket, 18 Tooth, Type B",
+"freight": 8,
+"cost": 57
+},
+{
+"qty": 2,
+"vendor": "Tork Products",
+"part": "2012 40MM",
+"desc": "40mm Bore Taper Lock Bushing for Sprocket",
+"freight": 8,
+"cost": 45
+},
+{
+"qty": 1,
+"vendor": "CONDUCTIX",
+"part": "XA-142120405031",
+"desc": "CORD REEL",
+"freight": 50,
+"cost": 825
+},
+{
+"qty": 0,
+"vendor": "REDSUN",
+"part": "425-00088",
+"desc": "K67-76.37 Ratio 1.5KW, A",
+"freight": 252,
+"cost": 504
+},
+{
+"qty": 0,
+"vendor": "REDSUN",
+"part": "425-00089",
+"desc": "K67-76.37 Ratio 1.5KW, B",
+"freight": 252,
+"cost": 504
+},
+{
+"qty": 0,
+"vendor": "SEW",
+"part": null,
+"desc": "K67-76.37 Ratio 1.5KW, A",
+"freight": 100,
+"cost": 2250
+},
+{
+"qty": 0,
+"vendor": "SEW",
+"part": null,
+"desc": "K67-76.37 Ratio 1.5KW, B",
+"freight": 100,
+"cost": 2250
+},
+{
+"qty": 1,
+"vendor": "SEW",
+"part": null,
+"desc": "K67- Ratio 1.5KW, A",
+"freight": 100,
+"cost": 2400
+},
+{
+"qty": 1,
+"vendor": "SEW",
+"part": null,
+"desc": "K67- Ratio 1.5KW, B",
+"freight": 100,
+"cost": 2400
+},
+{
+"qty": 2,
+"vendor": "PWI",
+"part": null,
+"desc": "3D PRINTED COVER",
+"freight": 1,
+"cost": 50
+}
+],
+"label": "16K Wheel Load BOM"
+},
+{
+"maxWheelLb": 99999,
+"items": [
+{
+"qty": 2,
+"vendor": "SUNRAY, INC",
+"part": "415-00037",
+"desc": "12\" X 9\" POLY DRIVE WHEEL (37,000# CAP)",
+"freight": 100,
+"cost": 1810
+},
+{
+"qty": 2,
+"vendor": "PWI",
+"part": null,
+"desc": "DRIVE WHEEL WELDMENT",
+"freight": 1,
+"cost": 400
+},
+{
+"qty": 2,
+"vendor": "China",
+"part": "425-00023",
+"desc": "#100H ROLLER CHAIN",
+"freight": 5,
+"cost": 65
+},
+{
+"qty": 4,
+"vendor": "NIA",
+"part": "522-00021",
+"desc": "GANTRY DRIVE WHEEL BEARING SLEEVE (37,000 LB. CAP)",
+"freight": 10,
+"cost": 190
+},
+{
+"qty": 2,
+"vendor": "NIA",
+"part": "520-00017",
+"desc": "GANTRY DRIVE WHEEL SHAFT (30,000 LB CAP)",
+"freight": 10,
+"cost": 190
+},
+{
+"qty": 2,
+"vendor": "NIA",
+"part": "520-00014",
+"desc": "HINGE SHAFT",
+"freight": 2,
+"cost": 23
+},
+{
+"qty": 4,
+"vendor": "NIA",
+"part": "522-00022",
+"desc": "70MM DRIVE SHAFT SPACER (A)",
+"freight": 1,
+"cost": 12
+},
+{
+"qty": 2,
+"vendor": "NIA",
+"part": "522-00023",
+"desc": "70MM DRIVE SHAFT SPACER (B)",
+"freight": 1,
+"cost": 12
+},
+{
+"qty": 4,
+"vendor": "DKS BEARING (CHINA)",
+"part": "BS2-2214-2RS/VT143",
+"desc": "70MM SPHERICAL SEALED ROLLER BEARING, air freight and tarriff included ",
+"freight": 60,
+"cost": 60
+},
+{
+"qty": 2,
+"vendor": "Tork Products",
+"part": "2517 50MM",
+"desc": "50mm Bore Taper Lock Bushing for Sprocket",
+"freight": 10,
+"cost": 43
+},
+{
+"qty": 2,
+"vendor": "Tork Products",
+"part": "2517-2.25",
+"desc": "2.25\" Bore Taper Lock Bushing for Sprocket",
+"freight": 10,
+"cost": 68
+},
+{
+"qty": 2,
+"vendor": "Tork Products",
+"part": "100BTB20",
+"desc": "100 Chain Sprocket, 20 Tooth, Type B",
+"freight": 15,
+"cost": 175
+},
+{
+"qty": 2,
+"vendor": "Tork Products",
+"part": "100BTB16",
+"desc": "100 Chain Sprocket, 16 Tooth, Type B",
+"freight": 15,
+"cost": 105
+},
+{
+"qty": 1,
+"vendor": "CONDUCTIX",
+"part": "XA-142120405031",
+"desc": "CORD REEL",
+"freight": 50,
+"cost": 825
+},
+{
+"qty": 0,
+"vendor": "REDSUN",
+"part": "425-00097",
+"desc": "K77-58.34 Ratio 3KW, A",
+"freight": 370,
+"cost": 735
+},
+{
+"qty": 0,
+"vendor": "REDSUN",
+"part": "425-00098",
+"desc": "K77-58.34 Ratio 3KW, B",
+"freight": 370,
+"cost": 735
+},
+{
+"qty": 1,
+"vendor": "SEW",
+"part": null,
+"desc": "K77-58.34 Ratio 3KW, A",
+"freight": 125,
+"cost": 2647
+},
+{
+"qty": 1,
+"vendor": "SEW",
+"part": null,
+"desc": "K77-58.34 Ratio 3KW, B",
+"freight": 125,
+"cost": 2647
+},
+{
+"qty": 2,
+"vendor": "PWI",
+"part": null,
+"desc": "3D Printed Cover",
+"freight": 1,
+"cost": 50
+}
+],
+"label": "24K Wheel Load BOM"
+}
+],
+"_source": "SMT 11.3.26 Gantry tab (BETA): box-column chart (max girder force per column by height \u00d7 PLF), wheel-load BOMs, std parts rows 32-42, labor PLF with minimums.",
+"girderLenBrackets": [
+15,
+20,
+25,
+30,
+40,
+50,
+60,
+65
+],
+"columnLenBrackets": [
+8,
+10,
+12,
+16,
+20,
+25,
+30,
+35,
+40
+],
+"braceLenBrackets": [
+8,
+10,
+12,
+16,
+20,
+24
+],
+"costMarkupPct": 33
+}

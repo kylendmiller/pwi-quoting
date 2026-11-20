@@ -1,6 +1,6 @@
 ---
-name: pwi-quote
-description: Turn a spoken or typed PWI job description (freestanding crane, bridge, gantry, mezzanine…) into a link that builds the full quote in the PWI quote app. Use when a PWI salesperson describes a project to quote.
+name: "pwi-quote"
+description: "Turn a spoken or typed PWI job description (freestanding, bridge, gantry, monorail, jib, mezzanine, VRC, fall protection, catalog items) into a link that builds the full quote in the PWI quote app. Use when a PWI salesperson describes a project to quote."
 ---
 
 # PWI Quote
@@ -20,10 +20,10 @@ Only ever call the company **PWI** or **PWI Corp**.
 | FSTRUL1 | Ultra-Lite, 1 t |
 | FSTRHL | Hyper-Lite |
 
-"Top runner" is any FSTR.
+"Top runner" is any FSTR. If they attached a drawing, read the dimensions off it.
 
 **Dimensions**
-- "30 wide by 80 long" means span 30, runway 80. Width is always the span.
+- "30 wide by 80 long" means span 30, runway 80. Width is always the span. Decimals are fine (20'8" = 20.67).
 - **"X feet tall" or "X high" is OVERALL height** → `overallHeightFt`.
 - Use `hookHeightFt` only when they say "under the hook" or "hook height". Never fill both.
 
@@ -43,11 +43,11 @@ Only ever call the company **PWI** or **PWI Corp**.
 
 Ask in **one** round of multiple-choice questions (AskUserQuestion when you have it), with the most common answer first.
 
-Ask for these only when missing:
+Ask for these only when missing (crane wording below; other products: their own size fields):
 - product
 - capacity
-- span
-- runway length
+- span / length
+- runway length (freestanding and building runway)
 - a height
 - whether the bridge is **manual or motorized** (FSTR can be either; skip it if the code or their words already say it)
 - **customer name**
@@ -93,13 +93,15 @@ If you cannot run code, do NOT hand-type base64. Instead, give the JSON in a ```
 }
 ```
 
+A job with several products is one spec with several items.
+
 **Freestanding fields**
 
 Required:
 
 | Field | Values |
 |---|---|
-| `series` | `UL` / `M` / `GM` / `HL` |
+| `series` | `UL` Ultra-Lite / `M` motorized-standard top running / `GM` girder motorized / `HL` Hyper-Lite |
 | `capacityTons` | 0.25–10 |
 | `spanFt` | 5–60 |
 | `runwayOalFt` | 8–400 |
@@ -110,8 +112,8 @@ Required:
 | `miles` | one-way from Nappanee; required whenever installed or shipped |
 
 Optional, only if said:
-- `systems`, `bridgesPerSystem` (1–2), `hoistsPerBridge` (1–2), `columnsPerSystem`, `liftFt`
-- `trolley`, `control`
+- `systems`, `bridgesPerSystem` (1–2), `hoistsPerBridge` (1–2), `columnsPerSystem` (only if the drawing shows it), `liftFt`
+- `trolley` (defaults to bridgeDrive), `control`
 - `collisionAvoidance`, `asceRail`, `doubleGirder`, `foundation` (`slab` / `foundation`)
 - `colors { columns, runways, bridge }`
 - `crewMen`, `travelMode` (`drive` / `fly` / `local`)
@@ -121,15 +123,36 @@ Optional, only if said:
 
 The auto-builder only handles the ranges above. For anything bigger, or for specials (door interlocks, 50' bays, tapered columns), tell the rep it must be quoted by hand. Still give the link: they get the wording and can add the lines.
 
-**Other products**
+**Every other product builds automatically too.** Pick the `type`, fill what was said, default the rest. Each item may also carry `tag`, `install`, `miles`, `crewMen`, `travelMode`. Several installed items on one job share **one** trip automatically.
 
-Bridge, gantry, monorail, jib, mezzanine, stairs, VRC and fall protection don't build automatically yet. Include each one as an item with `type`, `tag` and a full `wording` string in PWI spec style:
-- `(qty) - MODEL TITLE`
-- General Specs
-- the component sections
+**Bridge crane** — `type: "bridge"` (same fields as freestanding, plus):
+- `support`: `building_runway` (default — runway on the building's columns) / `crane_columns` (new PWI columns) / `bridge_only` (existing runway)
+- `hanging`: `top_running` (default) / `underhung`
+- `buildingBayFt` (building column spacing, default 20), `runwayElectrification` (bridge_only)
+- `capacityTons` up to 20; `runwayOalFt` not needed for bridge_only
 
-The app keeps the wording and tells the rep to add the lines by hand.
+**Gantry** — `type: "gantry"`: `capacityTons` (≤10), `spanFt` (≤65), `heightUnderBeamFt` or `hookHeightFt`, `motorized` (default true), `qty`, `hoists`, `liftFt`, `voltage`, `control`, `floorTrackFt` (0 = rolls on floor), `colors.gantry`
+
+**Monorail** — `type: "monorail"`: `lengthFt`, `capacityTons` (≤10), `support` (`freestanding` / `ceiling` / `building_brackets`), `overallHeightFt` or `hookHeightFt`, optional `frame` (`single_post` / `goal_post`), `frameWidthFt`, `supportSpacingFt`, `systems`, `hoists`, `trolley`, `electrification` (`conductor` / `festoon`), `voltage`, `control`, `colors`
+
+**Mezzanine** — `type: "mezzanine"`: `lengthFt`, `widthFt`, `deckHeightFt`, optional `liveLoadPsf` (125 storage default), `deck` (`bdeck_advantech` default / `bdeck_resindek` / `grating` / `treadplate` / `bdeck_only` / `none`), `guardrail` (`osha` / `ibc` / `removable`), `guardrailFt`, `stairs`, `stairType` (`straight` / `switchback`), `stairPrice` (StairZone sell per stair — **without it the quote can't be sent**), `gates: [{type, qty}]` (`manual_rolling` / `manual_pivot` / `pneumatic_pivot` / `motorized_rolling` / `motorized_rollup` / `safety`), `bracing` (`knee` / `x` / `building` / `none`), `primerOnly`, `stamped`, `colors.structure`
+
+**Jib** — `type: "jib"`: `capacityTons` (≤5), `spanFt` (reach, ≤30), `overallHeightFt` or `heightUnderBoomFt`, `mount` (`floor` default / `foundationless` / `wall`), `rotation` (180/270/360), `hoist` (default true), `trolley`, `liftFt`, `voltage`, `qty`
+
+**Fall protection (AnchorPoint)** — `type: "fall_protection"`: `lengthFt`, `supportSpacingFt` (default 20; >20 uses 10" truss), `people` (1–2), `trolleys`, `srl` (20/30/50), `harnesses`, `systems`
+
+**VRC (Apex)** — `type: "vrc"`: `model` = `PWSD0505` 5×5 / `PWSD0606` 6×6 / `PWSD0510` 5×10 / `PWSD0610` 6×10 / `PWSD0812` 8×12 / `PWHD1010` heavy duty 10×10, `qty`, `noPit`, `hdColumns`
+
+**Anything in the price lists** (frame rotators, below-the-hook, AERO work cells, parts) — `type: "catalog"`: `item` (part number or name), `qty`, optional `unitPrice` and `description` if it isn't in the lists, `installHours` if installed.
+
+Ask only for what each product truly needs (size, capacity, height, installed or not). Stairs and work platforms alone still go as an item with a `wording` string; the app keeps it for hand lines.
 
 **Changes later**
 
 "Make it 100 feet long" → send the whole updated spec as a new link or block. The rep pastes it into **Update from Claude** on that quote, which rebuilds it and keeps the lines they added by hand.
+
+## Example
+
+> "FSTRM2, 2 ton, 60 foot runway, 30 span, 16 under hook, 460, installed in Elkhart for Acme"
+
+Everything required is there. Ask nothing. Spec: series M, 2 t, OAL 60, span 30, hookHeightFt 16, motorized, 460V/3, install, miles ≈ 25, customer Acme. Reply: "FSTRM2, 2 t, 30' × 60', 16' under hook, motorized, radio, installed Elkhart (~25 mi). Assumed radio, 1 bridge, 1 hoist." + the link.

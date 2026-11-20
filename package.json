@@ -7,7 +7,7 @@
     "typecheck": "tsc --noEmit",
     "dev": "vite",
     "build": "vite build",
-    "bundle:api": "esbuild server/quote-api.ts --bundle --format=esm --platform=neutral --external:npm:* --outfile=dist/quote-api/index.js"
+    "bundle:api": "node tools/bundle-api.mjs"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",

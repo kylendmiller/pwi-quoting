@@ -1,0 +1,108 @@
+{
+ "_source": "SMT 11.3.26 List!N14:O139 + VRC tab (price = total; 20% of total is on-site install, 30% shop, 50% components)",
+ "models": {
+  "PWSD0505": {
+   "name": "Standard Duty - 5'x5'",
+   "specs": [
+    "Maximum Load Lifting Capacity: 2,000 LB",
+    "Hoist Lifting Design - Starke 2 Ton Hoist (230v or 460v Power Supply)",
+    "Lifting Speed: 26 fpm",
+    "Includes Flush Floor Design For Carriage Entry",
+    "Starke S3KLAS Secondary Safety Brake",
+    "Load Cell Chain Slack Sensor Included (Provides Overweight Shutdown)",
+    "Carriage Weight: 1,450 LB",
+    "Carriage Gates: Swing Gate W/ Latch",
+    "Perimeter Gates: Swing Gate W/ Latch"
+   ],
+   "total": 56925,
+   "noPitDeduct": -2150,
+   "hdColumns": 0
+  },
+  "PWSD0606": {
+   "name": "Standard Duty - 6'x6'",
+   "specs": [
+    "Maximum Load Lifting Capacity: 2,500 LB",
+    "Hoist Lifting Design - Starke 3 Ton Hoist (230v or 460v Power Supply)",
+    "Lifting Speed: 21 fpm",
+    "Includes Flush Floor Design For Carriage Entry",
+    "(2) Starke S3KLAS Secondary Safety Brake",
+    "Load Cell Chain Slack Sensor Included (Provides Overweight Shutdown)",
+    "Carriage Weight: 1700 LB",
+    "Carriage Gates: Railroad Gates",
+    "Perimeter Gates: Powered Overhead Sectional Gates"
+   ],
+   "total": 68425,
+   "noPitDeduct": -2300,
+   "hdColumns": 0
+  },
+  "PWSD0510": {
+   "name": "Standard Duty - 5'x10'",
+   "specs": [
+    "Maximum Load Lifting Capacity: 3,000 LB",
+    "460v Power Supply",
+    "Lifting Speed: 15 fpm (VFD for Smooth Engagement)",
+    "HD Roller Chain Lift Design",
+    "(2) Starke S3KLAS Secondary Safety Brake",
+    "Load Cell Chain Slack Sensor Included (Provides Overweight Shutdown)",
+    "Carriage Weight: 2,000 LB",
+    "Carriage Gates: Automatic Overhead Gates",
+    "Perimeter Gates: Powered Overhead Sectional Gates"
+   ],
+   "total": 94185,
+   "noPitDeduct": 0,
+   "hdColumns": 5750
+  },
+  "PWSD0610": {
+   "name": "Standard Duty - 6'x10'",
+   "specs": [
+    "Maximum Load Lifting Capacity: 3,000 LB",
+    "460v Power Supply",
+    "Lifting Speed: 15 fpm (VFD for Smooth Engagement)",
+    "HD Roller Chain Lift Design",
+    "(2) Starke S3KLAS Secondary Safety Brake",
+    "Load Cell Chain Slack Sensor Included (Provides Overweight Shutdown)",
+    "Carriage Weight: 2,000 LB",
+    "Carriage Gates: Automatic Overhead Gates",
+    "Perimeter Gates: Powered Overhead Sectional Gates"
+   ],
+   "total": 97175,
+   "noPitDeduct": 0,
+   "hdColumns": 5750
+  },
+  "PWSD0812": {
+   "name": "Standard Duty - 8'x12'",
+   "specs": [
+    "Maximum Load Lifting Capacity: 3,500 LB",
+    "460v Power Supply",
+    "Lifting Speed: 15 fpm (VFD for Smooth Engagement)",
+    "HD Roller Chain Lift Design",
+    "(2) Starke S3KLAS Secondary Safety Brake",
+    "Load Cell Chain Slack Sensor Included (Provides Overweight Shutdown)",
+    "Carriage Weight: 2,900 LB",
+    "Carriage Gates: Automatic Overhead Gates",
+    "Perimeter Gates: Powered Overhead Sectional Gates"
+   ],
+   "total": 111837.5,
+   "noPitDeduct": 0,
+   "hdColumns": 5750
+  },
+  "PWHD1010": {
+   "name": "Heavy Duty - 10'x10'",
+   "specs": [
+    "Maximum Load Lifting Capacity: 6,000 LB",
+    "460v Power Supply",
+    "Lifting Speed: 15 fpm (VFD for Smooth Engagement)",
+    "HD Roller Chain Lift Design",
+    "(4) Starke S3KLAS Secondary Safety Brake",
+    "Load Cell Chain Slack Sensor Included (Provides Overweight Shutdown)",
+    "Carriage Weight: 3,500 LB",
+    "Carriage Gates: Automatic Overhead Gates",
+    "Perimeter Gates: Powered Overhead Sectional Gates",
+    "Large Gearbox Assembly For Heavy Use"
+   ],
+   "total": 122762.5,
+   "noPitDeduct": 0,
+   "hdColumns": 5750
+  }
+ }
+}

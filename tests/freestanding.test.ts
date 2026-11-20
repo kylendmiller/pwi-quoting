@@ -19,6 +19,8 @@ export const testCatalog: Catalog = {
   shape: n => { const s = shapes.find((x: any) => x.shape === n); return s ? { lbPerFt: s.lb_per_ft, pricePerLb: groups[s.group].price_per_lb } : null; },
   plate: { pricePerLb: 1.35, markupPct: 21, dropFactor: 1.1 }, structuralMarkupPct: 26,
   decalSell: n => decals.find((d: any) => d.item === n)?.price ?? null,
+  stdAll: () => parts.map((x: any) => ({ description: x.description, part: x.part, sell: x.sell, hours: x.shop_hours_each ?? 0, info: x.vendor, section: x.section })),
+  rate: item => ({ 'Standard Paint Full Booth Run': 1983.75, 'Custom Color Paint Full Booth Run': 2530, 'Primer Full Booth Run': 1587, 'Hotels (one room per person)': 170, 'Per diem costs': 75 } as any)[item] ?? null,
   equip: item => { const e = equipment.find((x: any) => x.item.trim() === item); return e ? { daily: e.daily, weekly: e.weekly ?? e.daily * 5, monthly: e.monthly ?? e.daily * 20 } : null; },
 };
 const S = { shop_rate: 140, onsite_rate: 113, pm_rate: 95, cad_rate: 120, pe_rate: 180, freestanding_pv_per_shop_hour: 38.6, one_pct_adder: { on: true }, sales_tax_rate: 0.07, banned_strings: [] as string[] };

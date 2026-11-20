@@ -320,5 +320,6 @@ function Review({ quote, doc, header, priced, quoteId, locked }: any) {
   </>;
 }
 const LABELS: Record<string, string> = { heightBasis: 'Height', columnsPerSystem: 'Columns', doubleGirder: 'Girder', asceRail: 'Rail', steelSource: 'Steel sizes', foundation: 'Foundation',
-  liftFt: 'Lift', hoistFamily: 'Hoist', colors: 'Paint', crewMen: 'Crew', travelMode: 'Travel', crewDays: 'Days on site', equipment: 'Equipment', freight: 'Freight' };
+  liftFt: 'Lift', hoistFamily: 'Hoist', colors: 'Paint', crewMen: 'Crew', travelMode: 'Travel', crewDays: 'Days on site', equipment: 'Equipment', freight: 'Freight',
+  members: 'Members', layout: 'Layout', vrcPrice: 'VRC price', girder: 'Girder', legs: 'Legs', beam: 'Beam', grid: 'Column grid', deck: 'Deck', columns: 'Columns', series: 'Series', support: 'Support' };
 const label = (f: string) => LABELS[f] ?? f;

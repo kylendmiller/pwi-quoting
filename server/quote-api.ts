@@ -3,13 +3,26 @@
 // prices the quote with the shared engine, writes flags, and enforces approvals and locks.
 // @ts-ignore deno import
 import { createClient } from 'npm:@supabase/supabase-js@2';
-import { priceManual, sendBlocked, type QuoteDoc, type Settings } from '../src/engine/manual';
-import { buildFromSpec } from '../src/engine/buildSpec';
-import { loadCatalog } from '../src/engine/catalogLoader';
+import type { QuoteDoc, Settings } from '../src/engine/manual';
+import type * as Engine from './engine-entry';
+
+// The pricing engine is the exact file the app ships (/engine/engine-<hash>.js on the Netlify site).
+// Supabase won't import modules by URL, so it is fetched on first use, checked against the SHA-256 pinned
+// at build time (tools/bundle-api.mjs), and evaluated. A mismatch refuses to run.
+declare const __ENGINE_URL__: string, __ENGINE_SHA__: string;
+let enginePromise: Promise<typeof Engine> | null = null;
+const engine = () => enginePromise ??= (async () => {
+  const code = await (await fetch(__ENGINE_URL__)).text();
+  const d = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(code));
+  const got = [...new Uint8Array(d)].map(x => x.toString(16).padStart(2, '0')).join('');
+  if (got !== __ENGINE_SHA__) { enginePromise = null; throw new Error('Pricing engine file does not match this server version. Redeploy.'); }
+  new Function(code)();
+  return (globalThis as any).PWIEngine;
+})();
 
 declare const Deno: { env: { get(k: string): string | undefined }; serve(h: (r: Request) => Promise<Response>): void };
 
-const ENGINE_VERSION = 'manual-1+fs2';
+const ENGINE_VERSION = 'manual-1+all1';
 const cors = { 'access-control-allow-origin': '*', 'access-control-allow-headers': 'authorization, content-type, apikey, x-client-info', 'access-control-allow-methods': 'POST, OPTIONS' };
 const json = (b: unknown, status = 200) => new Response(JSON.stringify(b), { status, headers: { ...cors, 'content-type': 'application/json' } });
 
@@ -31,6 +44,7 @@ Deno.serve(async (req: Request) => {
   if (!['sales', 'manager', 'admin'].includes(role)) return json({ error: 'Your account has no access yet. Ask an admin.' }, 403);
 
   const body = await req.json();
+  const { priceManual, sendBlocked } = await engine();
   const settings = await loadSettings(admin);
   const ev = (quote_id: string, revision_id: string | null, event: string, data: unknown = {}) =>
     admin.from('quote_events').insert({ quote_id, revision_id, actor: uid, event, data });
@@ -161,6 +175,7 @@ async function serverChecks(admin: any, doc: QuoteDoc, settings: Settings) {
   doc.suggestedInstallHours = null; doc.blockers = [];
   if (!doc.spec) return;
   try {
+    const { loadCatalog, buildFromSpec } = await engine();
     const cat = await loadCatalog(admin, settings);
     const b = buildFromSpec(doc.spec as any, cat, settings, { ...doc, lines: [] });
     doc.suggestedInstallHours = b.doc.suggestedInstallHours ?? null;

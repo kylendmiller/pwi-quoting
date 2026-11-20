@@ -1,13 +1,13 @@
 import type { Catalog } from './freestanding';
 
-const PREFIXES = ['STK', 'SCT', 'STT', 'SCP', 'S802', 'SCA', 'SMW', 'STW', 'SHT', 'SMT'];
+const PREFIXES = ['STK', 'SCT', 'STT', 'SCU', 'SCP', 'S802', 'SCA', 'SMW', 'STW', 'SHT', 'SMT', 'SPT', 'S400', 'S300', 'S2B', 'SET'];
 let cached: { at: number; cat: Catalog } | null = null;
 
 /** Price lists for the auto-builder, read from the live database (cached 5 min). `db` is any supabase-js client. */
 export async function loadCatalog(db: any, settings: any): Promise<Catalog> {
   if (cached && Date.now() - cached.at < 300_000) return cached.cat;
   const [parts, vp, disc, shapes, groups, rates] = await Promise.all([
-    db.from('std_parts').select('description,sell,shop_hours_each').eq('active', true),
+    db.from('std_parts').select('section,description,vendor,part,sell,shop_hours_each').eq('active', true),
     db.from('vendor_parts').select('*').or(PREFIXES.map(p => `part.like.${p}*`).join(',')).limit(5000),
     db.from('vendor_discounts').select('*'),
     db.from('steel_shapes').select('*'),
@@ -27,6 +27,7 @@ export async function loadCatalog(db: any, settings: any): Promise<Catalog> {
     plate: { pricePerLb: Number(settings.plate_price_per_lb ?? 1.35), markupPct: Number(settings.plate_markup_pct ?? 21), dropFactor: Number(settings.plate_drop_factor ?? 1.1) },
     structuralMarkupPct: Number(settings.structural_markup_pct ?? 26),
     decalSell: n => { const r = R.find((x: any) => x.item === n); return r ? Number(r.price) : null; },
+    stdAll: () => P.map((x: any) => ({ description: x.description, part: x.part, sell: Number(x.sell), hours: Number(x.shop_hours_each ?? 0), info: x.vendor, section: x.section })),
     rate: item => { const r = R.find((x: any) => x.kind !== 'equipment' && x.item.trim() === item); return r ? Number(r.price) : null; },
     equip: item => {
       const r = R.find((x: any) => x.kind === 'equipment' && x.item.trim() === item); if (!r) return null;

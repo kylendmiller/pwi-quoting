@@ -18,6 +18,7 @@ export function registerPdfAssets(base: string) {
   Font.registerHyphenationCallback(w => [w]);
   registered = true;
 }
+const PDF_IMAGES = new Set(['fstr', 'bridge', 'gantry']); // files in public/pdf — other names are skipped
 const asset = (p: string) => BASE + p;
 
 const ORANGE = '#FF6800', BLACK = '#000000';
@@ -70,7 +71,7 @@ function Wording({ blocks }: { blocks: Block[] }) {
       case 'b2': return <View key={i} style={st.row} wrap={false}><Text style={st.dot}>•</Text><Text style={{ flex: 1 }}>{b.text}</Text></View>;
       case 'kv': return <View key={i} style={st.row} wrap={false}><Text style={[st.o, { marginLeft: 4.8 }]}>o</Text><Text style={{ width: 114.3 }}>{b.k}</Text><Text style={{ flex: 1, fontWeight: 400 }}>{b.v}</Text></View>;
       case 'p': return <Text key={i} style={st.p}>{b.text}</Text>;
-      case 'img': return <Image key={i} src={asset(`pdf/${b.name}.jpg`)} style={{ width: 460, height: 165, marginTop: 10, marginLeft: 27 }} />;
+      case 'img': return !PDF_IMAGES.has(b.name) ? null : <Image key={i} src={asset(`pdf/${b.name}.jpg`)} style={{ width: 460, height: 165, marginTop: 10, marginLeft: 27 }} />;
       case 'gap': return <View key={i} style={{ height: 6 }} />;
     }
   })}</>;
