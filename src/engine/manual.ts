@@ -120,7 +120,16 @@ function pvExpected(doc: QuoteDoc): number {
 }
 export type Lint = { level: 'error' | 'warning'; message: string };
 
+/** The customer price block, rounded ONCE: every part to the cent, total = the sum of the rounded parts (S9).
+ *  App rail, saved DB columns and the PDF all show these numbers. */
+export interface QuoteMoney { base: number; installation: number; freight: number; preUse: number; tax: number; total: number }
+export function quoteMoney(q: RollupResult['quote']): QuoteMoney {
+  const base = r2(q.base), installation = r2(q.installation), freight = r2(q.freight), preUse = r2(q.preUse ?? 0), tax = r2(q.tax);
+  return { base, installation, freight, preUse, tax, total: r2(base + installation + freight + preUse + tax) };
+}
+
 export interface Priced {
+  quote: QuoteMoney;
   lines: PricedLine[];
   rollup: RollupResult;
   totals: { cost: number; sell: number; grossMargin: number; grossMarginPct: number; shopHours: number; installHours: number; cadHours: number; productionValue: number };
@@ -202,6 +211,7 @@ export function priceManual(doc: QuoteDoc, s: Settings): Priced {
   if (/class\s*d\b/i.test(doc.wording)) flags.push({ rule: 'CLASS_D', detail: {} });
 
   return {
+    quote: quoteMoney(ro.quote),
     // S6: priced lines reference doc lines by key; detail / basis / edits live only in the doc (no double storage).
     lines: lines.map(({ detail: _d, basis: _b, edited: _e, builtDetail: _bd, ...l }) => ({ ...l, cost: r2(l.cost), sell: r2(l.sell) })),
     rollup: ro,

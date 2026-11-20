@@ -83,7 +83,7 @@ Deno.serve(async (req: Request) => {
         // S2: family and production-value hours come from the spec and the lines, never from the browser.
         doc.family = deriveFamily(doc as QuoteDoc); doc.freestandingShopHours = pvHours(doc as QuoteDoc);
         const priced = priceManual(doc as QuoteDoc, settings);
-        const t = priced.totals, ro = priced.rollup.quote;
+        const t = priced.totals, ro = priced.quote;   // S9: one rounding rule — parts to the cent, total = sum of parts
         // keep only approvals whose covered numbers are unchanged
         const { data: appr } = await admin.from('approvals').select('*').eq('revision_id', revision_id);
         for (const a of appr ?? []) {
@@ -91,7 +91,7 @@ Deno.serve(async (req: Request) => {
           if (!f || (await hash(f.detail)) !== a.covered_hash) await admin.from('approvals').delete().eq('id', a.id);
         }
         const { data: upd, error } = await admin.from('quote_revisions').update({
-          doc, priced, flags: priced.flags, base_price: ro.base, installation: ro.installation, freight: ro.freight, pre_use: ro.preUse ?? 0,
+          doc, priced, flags: priced.flags, base_price: ro.base, installation: ro.installation, freight: ro.freight, pre_use: ro.preUse,
           sales_tax: ro.tax, total: ro.total, gross_margin_pct: t.grossMarginPct, shop_hours: t.shopHours, install_hours: t.installHours,
           cad_hours: t.cadHours, engine_version: ENGINE_VERSION, doc_version: r.doc_version + 1, updated_at: new Date().toISOString(),
         }).eq('id', revision_id).eq('doc_version', doc_version).select().single();
@@ -129,8 +129,8 @@ Deno.serve(async (req: Request) => {
         if (sendBlocked(priced, ok)) return json({ error: 'Not ready to send', lint: priced.lint, flags: priced.flags.filter(f => !ok.includes(f.rule)) }, 422);
         await admin.from('quote_revisions').update({ locked: true, sent_at: new Date().toISOString(), sent_by: uid }).eq('id', revision_id);
         await admin.from('quotes').update({ status: 'sent', updated_at: new Date().toISOString() }).eq('id', r.quote_id);
-        await ev(r.quote_id, revision_id, 'sent', { doc_type: r.doc_type });
-        return json({ ok: true });
+        await ev(r.quote_id, revision_id, 'sent', { doc_type: r.doc_type, total: priced.quote.total });
+        return json({ ok: true, priced });             // S9: render the customer PDF from this (server-priced) result
       }
       case 'revise': {             // copy the latest revision into a new editable one
         const { quote_id, doc_type } = body;
