@@ -15,8 +15,8 @@ type Builder = (spec: any, cat: Catalog, f: Factors, bo: BuildOpts) => BuildResu
 /** Every product the app can build. `fam` picks the production / install factor in settings. */
 export const BUILDERS: Record<string, { fam: string; build: Builder; def: [number, number] }> = {
   freestanding: { fam: 'freestanding', def: [0.56, 1.02], build: (s, c, f, b) => buildCrane({ ...drive(s), support: 'freestanding' }, c, f, b) },
-  // bridge production 0.68 → 0.58 (tuned 11/20): builder shop $ ran 15–23% over sold on 28192, 28426, 29562 (all three).
-  bridge: { fam: 'bridge', def: [0.58, 1.0], build: (s, c, f, b) => buildCrane({ support: 'building_runway', ...drive(s) }, c, f, b) },
+  // bridge production stays 0.68: once built-part hours stopped being double-priced (11/20), builder shop $ ÷ sold = 0.89 / 0.81 / 0.84 / 1.43 on 28192 / 28426 / 29562 / 28772.
+  bridge: { fam: 'bridge', def: [0.68, 1.0], build: (s, c, f, b) => buildCrane({ support: 'building_runway', ...drive(s) }, c, f, b) },
   gantry: { fam: 'gantry', def: [0.69, 1.09], build: buildGantry },
   monorail: { fam: 'monorail', def: [0.7, 1.02], build: buildMonorail },
   // mezzanine production 0.83 → 0.60 (tuned 11/20): builder shop $ ÷ sold = 0.55 on 28527 and 0.66 on 27893.

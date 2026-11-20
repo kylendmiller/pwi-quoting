@@ -260,8 +260,10 @@ export function pickHoist(cat: Catalog, cap: number, lift: number, v: string, tr
     return codes.find(x => x.t >= need - 1e-9)?.c;
   };
   if (cap <= 3) {
-    const code = pickCode('STK', cap, 10); if (!code) return undefined;
-    return cat.vendorParts(`STK${code}`).filter(p => p.part.includes(`-${v}-3PH-${trolley === 'motorized' ? 'C' : 'B'}`) && liftOf(p.part) >= lift).sort((a, b) => liftOf(a.part) - liftOf(b.part))[0]?.part;
+    const code = pickCode('STK', cap, 10);
+    const stk = code ? cat.vendorParts(`STK${code}`).filter(p => p.part.includes(`-${v}-3PH-${trolley === 'motorized' ? 'C' : 'B'}`) && liftOf(p.part) >= lift).sort((a, b) => liftOf(a.part) - liftOf(b.part))[0]?.part : undefined;
+    if (stk) return stk;
+    // no STK chain hoist at this lift → SMW wire rope (sold 28772: 2 t bridge with 30' lift on an SMW0322-30)
   }
   const fam2 = doubleGirder ? 'STW' : 'SMW'; const code = pickCode(fam2, cap, 1); if (!code) return undefined;
   return cat.vendorParts(`${fam2}${code}`).filter(p => p.part.includes(`-${v}`) && liftOf(p.part) >= lift && !/V$/.test(p.part)).sort((a, b) => liftOf(a.part) - liftOf(b.part))[0]?.part;

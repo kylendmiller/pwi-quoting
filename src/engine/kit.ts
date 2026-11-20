@@ -152,11 +152,14 @@ export class Kit {
   matSell() {
     return this.lines.filter(l => l.kind === 'material').reduce((a, l) => a + (l.unitSell != null && l.unitCost == null ? l.unitSell * l.qty : (l.unitCost ?? 0) * l.qty * (1 + (l.markupPct ?? 0) / 100)), 0);
   }
-  /** Shop labor: SMT-method hours × production factor; adds built-part hours and the handling rule. */
+  /** Shop labor: SMT-method hours × production factor, plus the handling rule. Built-part hours are tracked, not priced. */
   shop(ops: [string, number][], opts: { handling?: boolean; builtParts?: boolean } = {}) {
     const O = R.shopOps;
     const list = [...ops];
-    if (opts.builtParts !== false) list.push(['PWI built standard parts', this.builtHrs]);
+    // SMT Labor row 49 "PWI Built Items" only counts these hours (no $ column) — the standard-part sell price already
+    // carries the labor. Pricing them again double-counted (fixed 11/20). They stay in smtShopHours for scheduling.
+    if (opts.builtParts === true) list.push(['PWI built standard parts', this.builtHrs]);
+    else this.smtShopHours += this.builtHrs;
     if (opts.handling !== false) list.push(['Handling / shipping', Math.max(O.handling.min, Math.round(O.handling.pctOfMaterialSell * this.matSell() / O.handling.perHour))]);
     for (const [d, h] of list) {
       this.smtShopHours += h;

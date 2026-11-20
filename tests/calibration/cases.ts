@@ -41,6 +41,13 @@ export const CASES: CalCase[] = [
   { job: '29562', product: 'bridge', items: [{ type: 'bridge', support: 'bridge_only', runwayOalFt: 225, runwayElectrificationFt: 475, railFt: 500, spanFt: 70, capacityTons: 10, hoistsPerBridge: 2, hookHeightFt: 20, liftFt: 20, motorized: true, voltage: '460V/3', control: 'radio', collisionAvoidance: true, install: true, miles: 400 }],
     note: 'Box girder (189 plf) bridge, 2 hoists; 225\' 120 A runway bar replaced + two 125\' runway completion packages (500\' rail, 250\' bar). Sold with 15 t hoists auto-derated to 10 t (wording says 10 t).' },
 
+  { job: '28772', product: 'bridge', items: [
+    { type: 'bridge', support: 'building_runway', systems: 2, bridgesPerSystem: 2, runwayOalFt: 229, buildingBayFt: 25, spanFt: 47.3, capacityTons: 5, hookHeightFt: 20, liftFt: 30, motorized: true, voltage: '460V/3', control: 'radio', collisionAvoidance: true, railFt: 950, runwayElectrificationFt: 225, install: true, miles: 150 },
+    { type: 'bridge', support: 'bridge_only', spanFt: 47.3, capacityTons: 2, hookHeightFt: 20, liftFt: 30, motorized: true, voltage: '460V/3', control: 'radio', install: true, miles: 150 },
+    { type: 'catalog', item: 'PWIJ-UL-WMC-200020', description: 'Ultralite wall-mounted jib, 2000 lb × 20\' (sold cost line)', unitPrice: 4527, qty: 8 },
+    { type: 'catalog', item: 'STK1026-20-230V-3PH-A', qty: 8 }, { type: 'catalog', item: 'SHT100', qty: 8 }, { type: 'catalog', item: 'S2B1SP', qty: 8 }],
+    note: 'New building: 2 runways × 229\' on the building steel, 4 × 5 t + 1 × 2 t bridges (47\'), 950\' rail; 8 bought-in Ultralite wall jibs with hoists added as catalog lines.' },
+
   // ------------------------------------------------------------------ mezzanine
   { job: '28527', product: 'mezzanine', items: [{ type: 'mezzanine', lengthFt: 27.67, widthFt: 23.83, deckHeightFt: 9.52, liveLoadPsf: 125, deck: 'bdeck_advantech', guardrailFt: 50, gates: [{ type: 'manual_rolling', qty: 1 }], bracing: 'knee', install: false }],
     note: 'Sold with 2 columns + wall ledger; builder grids freestanding.' },
@@ -83,7 +90,6 @@ export const SKIPPED: [string, string][] = [
   ['27823', '22,000 sq ft mezzanine on a bought-in joist package (NMBS) with structure by others'],
   ['28323', '7-system multi-bay crane package (not modeled yet)'], ['28723', 'Runway completion + 6 double-girder box bridges (not modeled yet)'],
   ['28738', 'StructuralSpace grating pit platform (11.5" deck) — not a Guardian work platform set, below the mezzanine builder\'s 4\' minimum deck'],
-  ['28772', '2 building runways, 5 bridges + 8 wall jibs (not modeled yet)'],
   ['29629', 'AQT template — no sold price'], ['27685', 'AQT template — no sold price'], ['28726', 'AQT template — no sold price'], ['28083', 'AQT template — no sold price'],
   ['28893', 'AQT template — no sold price'], ['28013', 'AQT template — no sold price'], ['28945', 'AQT template — no sold price'],
 ];

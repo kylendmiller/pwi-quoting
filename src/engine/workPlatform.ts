@@ -104,8 +104,11 @@ export function buildWorkPlatform(spec: WorkPlatformSpec, cat: Catalog, f: Facto
     ['Form end channels / prep parts', S.endChannels * n], ['Assemble bench components / hook points', S.benchComponents * n],
     [`Assemble (2) work platforms${box ? ' (box truss)' : ''}`, S.assemblePlatformsPer50ft * adj * n * (box ? 2 : 1)],
     ['Assembly after paint', S.afterPaint * n], ['Loading and handling', S.loading * n], ['All cutting charges', S.cutting * n],
-    ...hrs.map(([d, h]) => [`Accessories — ${d}`, h] as [string, number]),
   ], { handling: false, builtParts: false });
+  // Accessory hours (tab column E / Labor row 48) are counted, not priced — the option prices carry their labor.
+  const accHrs = hrs.reduce((a, [, h]) => a + h, 0);
+  K.smtShopHours += accHrs;
+  if (accHrs > 0) A.push({ field: 'accessoryHours', value: Math.round(accHrs * 10) / 10, why: 'Shop hours for options and accessories (scheduling only — their prices already include the labor, as on the SMT)' });
 
   // ---------- install (estimate; no sold WP installs to calibrate)
   const X = W.site, cws = (cw.standard ?? 0) + (cw.pivot ?? 0) + (cw.expandable ?? 0) + (cw.aluminum ?? 0);
