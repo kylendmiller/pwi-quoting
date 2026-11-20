@@ -22,7 +22,7 @@ const engine = () => enginePromise ??= (async () => {
 
 declare const Deno: { env: { get(k: string): string | undefined }; serve(h: (r: Request) => Promise<Response>): void };
 
-const ENGINE_VERSION = 'manual-1+all1';
+const ENGINE_VERSION = 'manual-1+cal1';
 const cors = { 'access-control-allow-origin': '*', 'access-control-allow-headers': 'authorization, content-type, apikey, x-client-info', 'access-control-allow-methods': 'POST, OPTIONS' };
 const json = (b: unknown, status = 200) => new Response(JSON.stringify(b), { status, headers: { ...cors, 'content-type': 'application/json' } });
 
