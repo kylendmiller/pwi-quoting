@@ -34,7 +34,7 @@ export interface QuoteSpec {
   project?: string;
   location?: string;
   customer?: { name?: string; city?: string; state?: string; contact?: { name?: string; email?: string; phone?: string } };
-  items: ({ type: string; tag?: string; wording?: string } & Record<string, any>)[];
+  items: ({ type: string; id?: string; tag?: string; wording?: string } & Record<string, any>)[];
 }
 
 /** Accepts raw JSON, JSON with chat text / code fences around it, or a full app link (#/new?s=…). */
@@ -57,9 +57,65 @@ export function decodeB64(s: string): string {
   return new TextDecoder().decode(Uint8Array.from(bin, c => c.charCodeAt(0)));
 }
 
+// ───────── S4: stable line refs ─────────
+// ref = `${itemId}:${slot}`. itemId is a permanent id stored on the spec item (assigned once, then saved with the spec);
+// travel / lodging / equipment lines use itemId 'trip' whether one item or several share the trip. slot is the line's
+// role plus a stable name (description stem, labor op, travel kind, equipment purpose), "#n" for the nth duplicate.
+const TRIP_ROLES = new Set(['travel_time', 'lodging', 'per_diem', 'airfare', 'rental_car', 'tool_return', 'lift', 'telehandler', 'forklift', 'generator', 'equipment', 'rental_delivery']);
+const slug = (t: string) => t.toLowerCase().replace(/\([^)]*\)/g, ' ').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 40) || 'line';
+function hash6(t: string) { let h = 2166136261; for (let i = 0; i < t.length; i++) { h ^= t.charCodeAt(i); h = Math.imul(h, 16777619); } return (h >>> 0).toString(36).slice(0, 6); }
+/** Gives every spec item a permanent `id` (kept when present). Deterministic from the item's content and position,
+ *  so the server and the browser assign the same id to a legacy spec; once saved, the id never changes. */
+export function assignItemIds<T extends { items: any[] }>(spec: T): T {
+  const used = new Set(spec.items.map(it => it?.id).filter((x): x is string => typeof x === 'string' && !!x));
+  let changed = false;
+  const items = spec.items.map((it, i) => {
+    if (typeof it?.id === 'string' && it.id) return it;
+    let id = `${String(it?.type ?? 'item').replace(/[^a-z0-9_]/gi, '')}-${i}-${hash6(JSON.stringify(it ?? {}))}`, n = 2;
+    while (used.has(id)) id = `${id.replace(/~\d+$/, '')}~${n++}`;
+    used.add(id); changed = true;
+    return { ...it, id };
+  });
+  return changed ? { ...spec, items } : spec;
+}
+/** The slot name of a line (without the duplicate counter). */
+export function slotBase(l: { role?: string; description: string; detail?: any }): string {
+  const role = l.role ?? 'other', d = l.detail;
+  if (d?.type === 'vendor') return role;
+  if (d?.type === 'equipment') return `equip-${d.purpose}${d.purpose === 'extra' ? '-' + slug(d.item) : ''}`;
+  if (d?.type === 'travel') return `travel-${d.what}`;
+  if (d?.type === 'paint') return `paint-${d.run}`;
+  if (d?.type === 'labor') return `${role}/${slug(d.op)}`;
+  return `${role}/${slug(l.description.split(' — ')[0])}`;
+}
+/** Slot with the duplicate counter: n = 1 → base, n = 2 → base#2 … */
+export const slotOf = (l: { role?: string; description: string; detail?: any }, n = 1) => n > 1 ? `${slotBase(l)}#${n}` : slotBase(l);
+const isTripLine = (l: { role?: string; item?: number }) => l.item === -1 || (!!l.role && TRIP_ROLES.has(l.role));
+/** Stamps refs on lines in order, counting duplicates per item id. Lines that already have a ref keep it. */
+function stampRefs<L extends { ref?: string; role?: string; description: string; detail?: any; item?: number }>(lines: L[], idOf: (l: L) => string | undefined): L[] {
+  const seen = new Map<string, number>();
+  for (const l of lines) if (l.ref) seen.set(l.ref, 1);
+  return lines.map(l => {
+    if (l.ref) return l;
+    const id = isTripLine(l) ? 'trip' : idOf(l); if (!id) return l;
+    const b = `${id}:${slotBase(l)}`; const n = (seen.get(b) ?? 0) + 1; seen.set(b, n);
+    return { ...l, ref: n > 1 ? `${b}#${n}` : b };
+  });
+}
+/** Legacy docs (saved before refs): give the auto lines refs from the spec's item ids, the way a build would. */
+export function ensureRefs(doc: QuoteDoc): QuoteDoc {
+  const sp = doc.spec as QuoteSpec | undefined;
+  if (!sp || !Array.isArray(sp.items) || !doc.lines.some(l => l.auto && !l.ref)) return sp && Array.isArray(sp.items) ? { ...doc, spec: assignItemIds(sp) } : doc;
+  const spec = assignItemIds(sp);
+  const auto = stampRefs(doc.lines.filter(l => l.auto), l => (l.item != null && l.item >= 0 ? spec.items[l.item]?.id : undefined));
+  let k = 0;
+  return { ...doc, spec, lines: doc.lines.map(l => (l.auto ? auto[k++] : l)) };
+}
+
 export interface BuiltDoc { doc: QuoteDoc; notes: string[]; blockers: string[]; assumptions: (Assumption & { item: number })[] }
 
-export function buildFromSpec(spec: QuoteSpec, cat0: Catalog, settings: any, base: QuoteDoc): BuiltDoc {
+export function buildFromSpec(spec0: QuoteSpec, cat0: Catalog, settings: any, base: QuoteDoc): BuiltDoc {
+  const spec = assignItemIds(spec0);
   // Steel cost comes from one dated setting (settings.steel_cost) when present; otherwise the catalog's group prices.
   const steel = readSteelCost(settings.steel_cost);
   const cat = steel.sc ? withSteelCost(cat0, steel.sc) : cat0;
@@ -84,11 +140,12 @@ export function buildFromSpec(spec: QuoteSpec, cat0: Catalog, settings: any, bas
       return;
     }
     let r: BuildResult;
-    try { r = B.build(it, cat, { production: pf[B.fam] ?? B.def[0], install: inf[B.fam] ?? B.def[1] }, { skipTravel: shared && !!it.install }); }
+    const { id: _id, ...bare } = it as any;
+    try { r = B.build(bare, cat, { production: pf[B.fam] ?? B.def[0], install: inf[B.fam] ?? B.def[1] }, { skipTravel: shared && !!it.install }); }
     catch (e: any) { blockers.push(`${label}${e.message ?? e}`); return; }
     const group = `${spec.items.length > 1 ? `Item ${i + 1}` : 'Item'}${it.tag ? ` (${it.tag})` : ''} — ${it.type.replace(/_/g, ' ')}`;
-    const tag = (l: any) => ({ ...l, auto: true, item: i, group });
-    lines = lines.concat(r.lines.map(tag) as any);
+    const tag = (l: any) => ({ ...l, auto: true, source: 'auto', item: i, group });
+    lines = lines.concat(stampRefs(r.lines.map(tag), () => it.id) as any);
     wording.push(it.wording ?? r.wording);
     notes.push(...r.notes.map(n => label + n));
     blockers.push(...r.blockers.map(n => label + n));
@@ -103,7 +160,7 @@ export function buildFromSpec(spec: QuoteSpec, cat0: Catalog, settings: any, bas
   if (shared && trip.workHrs > 0) {
     const K = new Kit(cat, 'other', { production: 1, install: 1 });
     K.travel(trip);
-    lines = lines.concat(K.lines.map(l => ({ ...l, auto: true, item: -1, group: `Shared trip (${installed.length} installed items)` })) as any);
+    lines = lines.concat(stampRefs(K.lines.map(l => ({ ...l, auto: true, source: 'auto' as const, item: -1, group: `Shared trip (${installed.length} installed items)` })), () => 'trip') as any);
     assumptions.push(...K.A.map(a => ({ ...a, item: -1 })));
     notes.push(`One shared trip for ${installed.length} installed items (${Math.round(trip.workHrs)} on-site hours).`);
   }
@@ -116,6 +173,7 @@ export function buildFromSpec(spec: QuoteSpec, cat0: Catalog, settings: any, bas
     outboundFreight: Math.round(freight),
     preUse, showPreUse: preUse > 0,
     spec, assumptions, buildNotes: notes, blockers,
+    ...(sc ? { steelCostDate: sc.effective } : {}),
   } as QuoteDoc;
   return { doc, notes, blockers, assumptions };
 }

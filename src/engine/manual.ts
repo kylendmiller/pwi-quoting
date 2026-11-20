@@ -27,7 +27,15 @@ export interface QuoteLine {
   group?: string;                   // label for that item: "Item 1 (Bay A) — bridge", "Shared trip"
   basis?: Basis;                    // why: chart + row, calc + unity, rule, catalog pick, assumption field
   detail?: LineDetail;              // the numbers behind the price, typed per kind
+  // ---- round 3 S: stable refs, provenance, edits (see docs/round3/S-API.md)
+  ref?: string;                     // stable builder slot `${itemId}:${slot}` (same spec in → same refs out)
+  source?: 'auto' | 'hand';         // stamped by the server: 'hand' = not matched to its own rebuild
+  edited?: Partial<Record<EditableField, unknown>>;   // auto lines: field the rep changed → the BUILDER's value
 }
+
+/** Fields a rep can change on a line (what `edited` tracks and a rebuild preserves). */
+export type EditableField = 'qty' | 'unitCost' | 'markupPct' | 'unitSell' | 'description' | 'category' | 'kind';
+export const EDITABLE_FIELDS: EditableField[] = ['qty', 'unitCost', 'markupPct', 'unitSell', 'description', 'category', 'kind'];
 
 export interface QuoteDoc {
   family: string;                   // main product family of the quote
@@ -46,6 +54,8 @@ export interface QuoteDoc {
   assumptions?: { field: string; value: unknown; why: string; alt?: unknown; altLabel?: string; item?: number }[];
   buildNotes?: string[];
   blockers?: string[];              // set by the server's rebuild: must be resolved before sending
+  removed?: string[];               // refs of auto lines the rep deleted: they stay deleted on rebuild
+  steelCostDate?: string;           // steel_cost.effective the auto lines were built at
 }
 
 export interface Settings {
