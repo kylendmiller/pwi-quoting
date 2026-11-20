@@ -57,13 +57,13 @@ export const CASES: CalCase[] = [
     note: 'Two gantries (58\' and 48\'), 2 × 3 t hoists each; sold quote deducted cord reels and InMotion radios ($6.7k).' },
 
   // ------------------------------------------------------------------ monorail
-  { job: '29061', product: 'monorail', items: [{ type: 'monorail', lengthFt: 45, capacityTons: 1.5, support: 'freestanding', frame: 'single_post', overallHeightFt: 20, hoists: 3, trolley: 'manual', electrification: 'conductor', voltage: '460V/3', control: 'radio', install: false }],
-    note: 'No hoists/trolleys (customer supplied components).' },
+  { job: '29061', product: 'monorail', items: [{ type: 'monorail', lengthFt: 45, capacityTons: 1.5, support: 'freestanding', frame: 'single_post', overallHeightFt: 20, hoists: 3, components: false, electrification: 'conductor', voltage: '460V/3', control: 'radio', install: false }],
+    note: 'No Components job: hoists/trolleys by the customer.' },
   { job: '27952', product: 'monorail', items: [
-    { type: 'monorail', systems: 2, lengthFt: 121, capacityTons: 1, support: 'freestanding', frame: 'goal_post', frameWidthFt: 10.3, overallHeightFt: 20, hookHeightFt: 16.92, liftFt: 20, hoists: 1, trolley: 'manual', voltage: '460V/3', control: 'pendant', install: false },
-    { type: 'monorail', systems: 2, lengthFt: 75, capacityTons: 1, support: 'freestanding', frame: 'goal_post', frameWidthFt: 10.6, overallHeightFt: 20, hookHeightFt: 16.92, liftFt: 20, hoists: 1, trolley: 'motorized', voltage: '460V/3', control: 'pendant', install: false },
-    { type: 'jib', capacityTons: 0.5, spanFt: 15, heightUnderBoomFt: 10, mount: 'foundationless', rotation: 180, voltage: '460V/3', install: false }],
-    note: 'Two dual-parallel monorails on shared goal-post frames (121\' and 75\') + a HyperLite jib (bought in at $5,586).' },
+    { type: 'monorail', lengthFt: 121, capacityTons: 1, support: 'freestanding', parallelBeams: 2, frameWidthFt: 30, overallHeightFt: 20, hookHeightFt: 16.92, liftFt: 20, hoists: 2, trolley: 'manual', voltage: '460V/3', control: 'pendant', install: false },
+    { type: 'monorail', lengthFt: 75, capacityTons: 1, support: 'freestanding', parallelBeams: 2, frameWidthFt: 30, overallHeightFt: 20, hookHeightFt: 16.92, liftFt: 20, hoists: 2, trolley: 'motorized', voltage: '460V/3', control: 'pendant', install: false },
+    { type: 'catalog', item: 'hyperlite-jib', description: 'HyperLite foundationless jib crane (bought in, sold cost line)', unitPrice: 5586, qty: 1 }],
+    note: 'Two dual-parallel monorails (beams 10\' apart) hung from 30\'-wide goal-post frames (sold headers 8 × 30\' + 2 × 25\'), 121\' and 75\' long, + a bought-in HyperLite jib ($5,586).' },
 
   // ------------------------------------------------------------------ jib
   { job: '28728', product: 'jib', items: [{ type: 'jib', qty: 2, capacityTons: 0.25, spanFt: 11, overallHeightFt: 13.75, mount: 'foundationless', rotation: 360, liftFt: 15, voltage: '460V/3', install: false },

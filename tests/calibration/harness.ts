@@ -43,7 +43,7 @@ export function steelReprice(f: Fixture): number {
   return d * 1.01;
 }
 
-/** $ change in the sold base if its vendor items and standard parts were sold at today's price lists (incl. the 1%).
+/** $ change in the sold base if its vendor items, standard parts and paint booth runs were sold at today's price lists / rates (incl. the 1%).
  *  Rows whose part / description isn't in today's lists are left as sold. */
 export function listReprice(f: Fixture): number {
   let d = 0;
@@ -61,6 +61,14 @@ export function listReprice(f: Fixture): number {
     if (typeof desc !== 'string' || !qty || !sold) continue;
     const each = testCatalog.stdSell(desc); if (each == null) continue;
     d += each * qty - sold;
+  }
+  // paint booth runs at today's rates (standard template run names only)
+  const PA = 'Painting', rate: [RegExp, string][] = [[/^Standard Paint Full Booth Run/i, 'Standard Paint Full Booth Run'], [/^Primer Full Booth Run/i, 'Primer Full Booth Run'], [/^Custom Color Paint Full Booth Run/i, 'Custom Color Paint Full Booth Run']];
+  for (const r of rows(f, PA)) {
+    const desc = String(raw(f, PA, `A${r}`) ?? ''), qty = num(f, PA, `B${r}`), sold = num(f, PA, `D${r}`);
+    const hit = rate.find(([re]) => re.test(desc.trim())); if (!hit || !qty || !sold) continue;
+    const now = testCatalog.rate?.(hit[1]); if (now == null) continue;
+    d += now * qty - sold;
   }
   return d * 1.01;
 }
