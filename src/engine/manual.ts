@@ -32,6 +32,7 @@ export interface QuoteLine {
   source?: 'auto' | 'hand';         // stamped by the server: 'hand' = not matched to its own rebuild
   edited?: Partial<Record<EditableField, unknown>>;   // auto lines: field the rep changed → the BUILDER's value
   builtDetail?: LineDetail;         // auto lines whose detail the rep changed (deriveLine): the builder's detail
+  gmPct?: number;                   // std parts: catalog gross margin (std_parts.gm_pct); cost = sell × (1 − gmPct). Never moves sell.
 }
 
 /** Fields a rep can change on a line (what `edited` tracks and a rebuild preserves). */
@@ -63,6 +64,9 @@ export interface Settings {
   shop_rate: number; onsite_rate: number; pm_rate: number; cad_rate: number; pe_rate: number;
   freestanding_pv_per_shop_hour: number; one_pct_adder: { on: boolean }; sales_tax_rate: number;
   labor_cost_shop?: number; labor_cost_site?: number;      // internal cost per hour for margin
+  std_parts_default_gm_pct?: number;                       // std parts with no gm_pct in the catalog (default 0.30)
+  min_gm_pct?: number;                                     // MIN_GM approval floor (default 0.25)
+  max_discount_pct?: number;                               // BIG_DISCOUNT approval above this (default 0.10)
   banned_strings: string[];
 }
 
@@ -122,6 +126,8 @@ export interface Priced {
   totals: { cost: number; sell: number; grossMargin: number; grossMarginPct: number; shopHours: number; installHours: number; cadHours: number; productionValue: number };
   flags: Flag[];
   lint: Lint[];
+  /** How cost (and so GM) was worked out — the editor labels assumed numbers. */
+  costBasis: { shopLaborPerHr: number; siteLaborPerHr: number; shopAssumed: boolean; siteAssumed: boolean; stdPartsGmLines: number; stdPartsGmAssumed: number };
 }
 
 const r2 = (x: number) => Math.round(x * 100) / 100;
@@ -134,10 +140,18 @@ export function priceManual(doc: QuoteDoc, s: Settings): Priced {
   };
   const shopCost = s.labor_cost_shop ?? s.shop_rate * 0.59;   // SMT margin calc assumes 41% GM on shop labor
   const siteCost = s.labor_cost_site ?? s.onsite_rate * 0.53; // and 47% on on-site labor
+  const defGm = s.std_parts_default_gm_pct ?? 0.3;
+  let gmLines = 0, gmAssumed = 0;
   const lines: PricedLine[] = doc.lines.map(l => {
     if (l.kind === 'material' || l.kind === 'travel' || l.kind === 'equipment') {
-      const cost = (l.unitCost ?? 0) * l.qty;
-      const sell = l.unitSell != null && l.unitCost == null ? l.unitSell * l.qty : cost * (1 + (l.markupPct ?? 0) / 100);
+      const sellPath = l.unitSell != null && l.unitCost == null;
+      let cost = (l.unitCost ?? 0) * l.qty;
+      const sell = sellPath ? l.unitSell! * l.qty : cost * (1 + (l.markupPct ?? 0) / 100);
+      // S7: a standard part sold at catalog sell costs sell × (1 − GM) — not $0 (which showed 100% GM). Sell is untouched.
+      if (sellPath && (l.gmPct != null || l.detail?.type === 'std' || l.category === 'stdParts')) {
+        const gm = l.gmPct != null && Number.isFinite(l.gmPct) ? l.gmPct : defGm;
+        cost = sell * (1 - gm); gmLines++; if (l.gmPct == null) gmAssumed++;
+      }
       return { ...l, cost, sell, hours: 0 };
     }
     const sell = rateLine(l.qty, rateFor[l.kind]);
@@ -194,6 +208,7 @@ export function priceManual(doc: QuoteDoc, s: Settings): Priced {
     totals: { cost: r2(cost), sell: r2(sell), grossMargin: r2(sell - cost), grossMarginPct: sell ? (sell - cost) / sell : 0, shopHours, installHours, cadHours, productionValue: r2(productionValue) },
     flags,
     lint: lintWording(doc, s),
+    costBasis: { shopLaborPerHr: shopCost, siteLaborPerHr: siteCost, shopAssumed: s.labor_cost_shop == null, siteAssumed: s.labor_cost_site == null, stdPartsGmLines: gmLines, stdPartsGmAssumed: gmAssumed },
   };
 }
 

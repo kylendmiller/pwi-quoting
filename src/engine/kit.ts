@@ -11,6 +11,7 @@ import R from './rules/freestanding_rules.json';
 export interface Catalog {
   stdSell(description: string): number | null;
   stdHours(description: string): number;                 // shop hours built into a standard part
+  stdGm?(description: string): number | null;            // std_parts.gm_pct (fraction) — sets the part's cost (S7)
   vendor(part: string): { list: number; description: string; vendor: string } | null;
   vendorParts(prefix: string): { part: string; list: number; description: string }[];
   discount(vendor: string): { pwi: number; customer: number };
@@ -134,7 +135,9 @@ export class Kit {
     const sell = this.cat.stdSell(description);
     if (sell == null) { this.notes.push(`Standard part not found: ${description}`); return; }
     const hrs = this.cat.stdHours(description);
-    this.push({ kind: 'material', category, description, qty, unitSell: sell }, { ...meta, detail: { type: 'std', sellEach: sell, builtHrsEach: hrs } });
+    const gm = this.cat.stdGm?.(description);
+    const okGm = gm != null && Number.isFinite(gm) && gm >= 0 && gm < 1 ? gm : undefined;
+    this.push({ kind: 'material', category, description, qty, unitSell: sell, ...(okGm != null ? { gmPct: okGm } : {}) }, { ...meta, detail: { type: 'std', sellEach: sell, builtHrsEach: hrs } });
     this.builtHrs += qty * hrs;
   }
   /** Hoist & Crane Vendor Items line: list × (1 − PWI disc) cost, sold at list × (1 − customer disc). */
