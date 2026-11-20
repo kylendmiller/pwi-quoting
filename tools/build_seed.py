@@ -30,6 +30,9 @@ settings = {
   'quote_valid_days': (15, 'Quote validity'),
   'steel_cost': (json.load(open('src/engine/rules/steel_cost.default.json')), 'Dated steel $/lb by price group — update weekly from the steel brief (tools/steel-cost-from-brief.md)'),
   'banned_strings': (["Paul's Welding", 'xx', ' OR ', '?'], 'Wording that blocks sending'),
+  'min_gm_pct': (0.25, 'Gross margin below this needs a sales manager (MIN_GM)'),
+  'max_discount_pct': (0.10, 'Discount (dealer % + credit lines) above this needs a sales manager (BIG_DISCOUNT)'),
+  'std_parts_default_gm_pct': (0.30, 'GM used to cost a standard part whose std_parts.gm_pct is blank'),
 }
 for k, (v, d) in settings.items():
     out.append(f"insert into settings(key,value,description) values ({q(k)}, {q(json.dumps(v))}::jsonb, {q(d)}) on conflict (key) do update set value=excluded.value, description=excluded.description;")

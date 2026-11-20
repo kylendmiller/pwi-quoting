@@ -11,6 +11,7 @@ const disc: Record<string, [number, number]> = { Starke: [50, 5], 'Street Crane'
 export const testCatalog: Catalog = {
   stdSell: d => parts.find((p: any) => p.description === d)?.sell ?? null,
   stdHours: d => parts.find((p: any) => p.description === d)?.shop_hours_each ?? 0,
+  stdGm: d => parts.find((p: any) => p.description === d)?.gm_pct ?? null,
   vendor: part => allV.find(p => p.part === part) ?? null,
   vendorParts: prefix => allV.filter(p => p.part.startsWith(prefix)),
   discount: v => ({ pwi: disc[v]?.[0] ?? 0, customer: disc[v]?.[1] ?? 0 }),

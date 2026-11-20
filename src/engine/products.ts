@@ -2,6 +2,7 @@
 // (frame rotators, below-the-hook devices, AERO work cells, anything in the price lists).
 import V from './rules/vrc_rules.json';
 import { Kit, check, keep, volt, ftIn, hgt, tons, ixOf, type Catalog, type Factors } from './kit';
+import type { QuoteLine } from './manual';
 import { pickHoist, type BuildResult, type BuildOpts } from './crane';
 
 const result = (K: Kit, wording: string, job: any, geometry: Record<string, number | string> = {}): BuildResult => {
@@ -36,8 +37,10 @@ export function buildJib(spec: JibSpec, cat: Catalog, f: Factors = { production:
   const boom = W_BY_I.find(w => ixOf(w) >= Ireq && cat.shape(w)) ?? 'W24 x 104';
   const mast = cap <= 0.5 ? 'ST 8 x 8 x 1/4' : cap <= 1 ? 'ST 10 x 10 x 3/8' : cap <= 2 ? 'ST 12 x 12 x 3/8' : 'ST 14 x 14 x 3/8';
   K.A.push({ field: 'members', value: `${mast} mast / ${boom} boom`, why: `${tons(cap)} t at ${s.spanFt}' reach, tip deflection ≤ L/150 → ${boom}; mast ${mast} — engineering to confirm`, alt: mount === 'floor' ? 'foundationless' : 'floor' });
-  if (mount !== 'wall') K.steel('Jib mast', mast, n, Math.ceil(overall - 1));
-  K.steel('Jib boom', boom, n, Math.ceil(s.spanFt + 1));
+  const Iboom = ixOf(boom), defl = Iboom ? Math.round(Ireq / Iboom * 1000) / 1000 : undefined;
+  if (mount !== 'wall') K.steel('Jib mast', mast, n, Math.ceil(overall - 1), { role: 'mast', basis: { source: 'rule', text: `${mast} mast for ${tons(cap)} t (≤½ t ST8, ≤1 t ST10, ≤2 t ST12, else ST14)`, assumption: 'members', flag: 'Engineering to confirm' } });
+  K.steel('Jib boom', boom, n, Math.ceil(s.spanFt + 1), { role: 'boom', basis: { source: 'calc', text: `Cantilever ${s.spanFt}' with 1.25× rated load, tip deflection ≤ L/150 → lightest W with enough Ix`, assumption: 'members',
+    ...(defl != null ? { unity: defl, checks: [{ name: 'tip deflection L/150', unity: defl }] } : {}), ...(defl != null && defl > 0.98 ? { flag: `Unity ${defl.toFixed(2)} over PWI's 0.98 limit` } : !Iboom || Ireq > Iboom ? { flag: 'Past the boom list — engineering must size' } : {}) } });
   if (mount === 'floor') { K.plate('Mast base plate', n, 1.25, 30, 30); K.plate('Base gussets', 8 * n, 0.5, 8, 18); K.std('3/4" Epoxy Anchors', 8 * n); }
   else if (mount === 'foundationless') { K.plate('Foundationless base plate', n, 1, 60, 60); K.plate('Base gussets', 8 * n, 0.5, 10, 24); K.std('3/4" Concrete Wedge Anchor', 16 * n); }
   else { K.plate('Wall / column bracket plates', 2 * n, 1, 18, 24); K.std('3/4" Structural Bolt and Nut', 8 * n); }
@@ -125,11 +128,14 @@ export function buildVrc(spec: VrcSpec, cat: Catalog, f: Factors = { production:
   const n = spec.qty ?? 1, K = new Kit(cat, 'vrc', f);
   const total = (m.total + (spec.noPit ? m.noPitDeduct : 0) + (spec.hdColumns ? m.hdColumns : 0)) * n;
   // SMT VRC tab: 20% of the price is on-site install, the rest is the VRC line (30% shop / 50% components inside it)
-  K.sell(`Apex ${spec.model} ${m.name} VRC${spec.noPit ? ' (no pit)' : ''}${spec.hdColumns ? ' with HD columns' : ''}`, n, Math.round((spec.install ? total * 0.8 : total * 0.8) / n * 100) / 100, 'vrc');
+  K.sell(`Apex ${spec.model} ${m.name} VRC${spec.noPit ? ' (no pit)' : ''}${spec.hdColumns ? ' with HD columns' : ''}`, n, Math.round((spec.install ? total * 0.8 : total * 0.8) / n * 100) / 100, 'vrc',
+    { role: 'vrc', basis: { source: 'fixed', text: `80% of the ${spec.model} SMT VRC tab price (the other 20% is install)`, assumption: 'vrcPrice' } });
   K.smtShopHours = Math.round(total * 0.3 / 100);
   if (spec.install) {
     K.site = Math.round(total * 0.2 / 113 * 10) / 10;
-    (K as any).lines.push({ key: `vrc${Date.now()}`, family: 'vrc', kind: 'site_labor', category: 'onsiteLabor', description: `VRC on-site install (SMT: 20% of VRC price)`, qty: K.site, laborOp: 'site_other' });
+    (K as any).lines.push({ key: `vrc${Date.now()}`, family: 'vrc', kind: 'site_labor', category: 'onsiteLabor', description: `VRC on-site install (SMT: 20% of VRC price)`, qty: K.site, laborOp: 'site_other',
+      role: 'install', basis: { source: 'fixed', text: `20% of VRC price $${Math.round(total).toLocaleString('en-US')} ÷ $113/h (SMT VRC tab)`, assumption: 'vrcPrice' },
+      detail: { type: 'labor', where: 'site', op: 'VRC install', smtRow: 'Labor F73 VRCs On-site Install', baseHrs: K.site, factor: 1, factorName: 'install', hours: K.site } } satisfies QuoteLine);
     K.workHrs = K.site;
     if (!bo.skipTravel) K.travel({ workHrs: K.site, miles: spec.miles ?? 0, workTopFt: 16, heaviestPickLb: 3500, crewMen: spec.crewMen, travelMode: spec.travelMode });
   }
@@ -156,7 +162,9 @@ export function buildCatalogItem(spec: CatalogSpec, cat: Catalog, f: Factors = {
   if (K.builtHrs) K.shop([], { handling: true });
   const job = { workTopFt: 12, heaviestPickLb: 500 };
   if (spec.install && spec.installHours) {
-    (K as any).lines.push({ key: `cat${Date.now()}`, family: 'other', kind: 'site_labor', category: 'onsiteLabor', description: `Install ${title}`, qty: spec.installHours, laborOp: 'site_other' });
+    (K as any).lines.push({ key: `cat${Date.now()}`, family: 'other', kind: 'site_labor', category: 'onsiteLabor', description: `Install ${title}`, qty: spec.installHours, laborOp: 'site_other',
+      role: 'install', basis: { source: 'spec', text: `${spec.installHours} install hours given on the spec` },
+      detail: { type: 'labor', where: 'site', op: `Install ${title}`, smtRow: 'Labor G9:G44 On Site Labor', baseHrs: spec.installHours, factor: 1, factorName: 'install', hours: spec.installHours } } satisfies QuoteLine);
     K.site = spec.installHours; K.workHrs = spec.installHours;
     if (!bo.skipTravel) K.travel({ workHrs: spec.installHours, miles: spec.miles ?? 0, ...job });
   }

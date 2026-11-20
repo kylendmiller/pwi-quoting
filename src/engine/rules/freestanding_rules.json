@@ -208,6 +208,16 @@
    "pctOfMaterialSell": 0.015,
    "perHour": 85,
    "min": 5
+  },
+  "sizeTaper": {
+   "_why": "Wide calibration round 3 (docs/round3/TUNING.md): crane shop $ built/sold median 1.19 on bridge jobs with > $100k of material (n=7) and 0.92-1.0 below; big jobs carry fewer shop hours per SMT op. Shop hours x 1 up to $100k material sell, straight line to x 0.80 at $200k, flat after. Freestanding + bridge only.",
+   "families": [
+    "freestanding",
+    "bridge"
+   ],
+   "fromMatSell": 100000,
+   "toMatSell": 200000,
+   "minMult": 0.8
   }
  },
  "siteOps": {

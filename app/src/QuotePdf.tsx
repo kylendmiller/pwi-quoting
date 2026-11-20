@@ -2,7 +2,7 @@
 // Sales Main Template quotes point-for-point (measured from sold quote 29140, US Letter).
 // tests/pdf.test.tsx renders it and compares it to that reference, so layout can't drift.
 import { Document, Page, Text, View, Image, Svg, Path, StyleSheet, Font, pdf } from '@react-pdf/renderer';
-import type { Priced, QuoteDoc } from '../../src/engine/manual';
+import { quoteMoney, type Priced, type QuoteDoc } from '../../src/engine/manual';
 import { parseWording, type Block } from '../../src/engine/wordingFormat';
 import SHIELD from './pwiShield.json';
 
@@ -79,11 +79,14 @@ function Wording({ blocks }: { blocks: Block[] }) {
 
 export function QuoteDocPdf({ quote, rev, doc, priced, me, number }: { quote: any; rev: any; doc: QuoteDoc; priced: Priced; me: { full_name: string; title: string }; number: string }) {
   if (!registered) registerPdfAssets('/');
-  const q = priced.rollup.quote;
+  // S9: the customer numbers are priced.quote (each part rounded once, total = sum of the parts) — from the server's
+  // `send` response when sending. Older priced results without `quote` fall back to the same rule on the rollup.
+  const q = priced.quote ?? quoteMoney(priced.rollup.quote);
+  const showPre = priced.rollup?.quote ? priced.rollup.quote.preUse != null : !!doc.showPreUse;
   const isQuote = rev.doc_type === 'QUOTATION';
   const rows: [string, number | null][] = [['Base Price (per above specs)', q.base], ['Installation Charges', q.installation], ['Outbound Freight Charges', q.freight],
-    q.preUse != null ? ['Pre-Use Inspections and Load Tests', q.preUse] : ['', null], ['Sales Tax', q.tax]];
-  const total = rows.reduce((s, [, v]) => s + Math.round(v ?? 0), 0);     // total = sum of the printed (rounded) rows
+    showPre ? ['Pre-Use Inspections and Load Tests', q.preUse] : ['', null], ['Sales Tax', q.tax]];
+  const total = q.total;     // never re-summed from the printed rows
   const head: [string, string][] = [['Date:', longDate(new Date(rev.sent_at ?? Date.now()))], ['Company:', quote.customers?.name ?? ''], ['Attention:', quote.contacts?.name ?? ''],
     ['Project:', quote.project_name ?? ''], ['Job Location:', quote.job_location ?? ''], ['PO Number:', (doc as any).poNumber ?? ''], ['Job #:', quote.job_id ?? '']];
   const blocks = parseWording(doc.wording);

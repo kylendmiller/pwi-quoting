@@ -13,7 +13,7 @@ export async function api<T = any>(action: string, payload: Record<string, unkno
     body: JSON.stringify({ action, ...payload }),
   });
   const body = await res.json().catch(() => ({}));
-  if (!res.ok) throw Object.assign(new Error(body.error ?? `Error ${res.status}`), { body });
+  if (!res.ok) throw Object.assign(new Error(body.error ?? `Error ${res.status}`), { body, status: res.status });
   return body as T;
 }
 

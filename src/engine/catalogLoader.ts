@@ -8,7 +8,7 @@ let cached: { at: number; cat: Catalog } | null = null;
 export async function loadCatalog(db: any, settings: any): Promise<Catalog> {
   if (cached && Date.now() - cached.at < 300_000) return cached.cat;
   const [parts, vp, disc, shapes, groups, rates] = await Promise.all([
-    db.from('std_parts').select('section,description,vendor,part,sell,shop_hours_each').eq('active', true),
+    db.from('std_parts').select('section,description,vendor,part,sell,shop_hours_each,gm_pct').eq('active', true),
     db.from('vendor_parts').select('*').or(PREFIXES.map(p => `part.like.${p}*`).join(',')).limit(5000),
     db.from('vendor_discounts').select('*'),
     db.from('steel_shapes').select('*'),
@@ -21,6 +21,7 @@ export async function loadCatalog(db: any, settings: any): Promise<Catalog> {
   const cat: Catalog = {
     stdSell: d => { const p = P.find((x: any) => x.description === d); return p ? Number(p.sell) : null; },
     stdHours: d => Number(P.find((x: any) => x.description === d)?.shop_hours_each ?? 0),
+    stdGm: d => { const g = P.find((x: any) => x.description === d)?.gm_pct; return g == null ? null : Number(g); },
     vendor: part => { const p = V.find((x: any) => x.part === part); return p ? { list: Number(p.list), description: p.description, vendor: p.vendor } : null; },
     vendorParts: prefix => V.filter((x: any) => x.part.startsWith(prefix)).map((x: any) => ({ part: x.part, list: Number(x.list), description: x.description })),
     discount: v => ({ pwi: Number(D[v]?.pwi_discount_pct ?? 0), customer: Number(D[v]?.customer_discount_pct ?? 0) }),

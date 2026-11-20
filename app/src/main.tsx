@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import './styles.css';
 import { supabase } from './supabase';
@@ -72,4 +72,7 @@ function App() {
   );
 }
 
-createRoot(document.getElementById('root')!).render(<App />);
+// #/harness — editor test page built from the reference price lists (dev builds, or VITE_HARNESS=1 builds only).
+const Harness = import.meta.env.DEV || import.meta.env.VITE_HARNESS === '1' ? React.lazy(() => import('./editor/Harness')) : null;
+const isHarness = () => !!Harness && location.hash.startsWith('#/harness');
+createRoot(document.getElementById('root')!).render(isHarness() && Harness ? <Suspense fallback={null}><Harness /></Suspense> : <App />);

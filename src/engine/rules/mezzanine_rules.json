@@ -50,6 +50,8 @@
   "saddleClipsPerSqft": 0.525,
   "saddleClipCost": 0.7
  },
+ "_guardrailDefault": "Wide calibration round 3: sold OSHA rail ft / mezzanine perimeter median 0.60 (n=13 sold mezzanines, range 0.36-1.0) - mezzanines back onto walls. Default (no guardrailFt on the spec) = 90% of perimeter less openings; only partly moved toward 0.60 because the same jobs run structural 21% light (lower moved the family total the wrong way). Rep sets the real open sides.",
+ "guardrailDefaultPctOfPerimeter": 0.9,
  "guardrailPerFtCost": {
   "osha": 39.93,
   "ibc": 109.29,

@@ -3,8 +3,9 @@
 // sold SMT quotes (rules/freestanding_rules.json) with AQT sizing charts for steel.
 import CH from './rules/aqt_sizing_charts.json';
 import PC from './rules/pwi_bridge_charts.json';
-import { Kit, RULES as R, W_SHAPES, ixOf, pick, depthIn, STD_COLORS, check, keep, volt, ftIn, hgt, tons, type Catalog, type Assumption, type Factors } from './kit';
+import { Kit, RULES as R, W_SHAPES, ixOf, pick, depthIn, STD_COLORS, check, keep, volt, ftIn, hgt, tons, calcBasis, type Catalog, type Assumption, type Factors } from './kit';
 import type { QuoteLine } from './manual';
+import type { Basis } from './lineDetail';
 
 export type Support = 'freestanding' | 'building_runway' | 'crane_columns' | 'bridge_only';
 export interface CraneSpec {
@@ -77,9 +78,20 @@ function pwiGirder(cap: number, span: number, double: boolean): string | null {
   const r = rows.filter(r => r[0] === c).sort((a, b) => a[1] - b[1]).find(r => r[1] >= span - 1e-9);
   return r ? r[2] : null;
 }
+/** Which chart cell chartPick() read, for the editor's basis ("5 t column × overallHeightFt ≤ 20'"). */
+function chartCell(rows: any[], keyName: string, x: number, cap: number, what = 'column'): string {
+  const c = (CH.capacities as number[]).find(v => v >= cap - 1e-9); const row = rows.find(r => r[keyName] >= x - 1e-9);
+  return row && c != null ? `${c} t ${what} × ${keyName.replace(/Ft$/, '')} ≤ ${row[keyName]}' (asked ${cap} t, ${+x.toFixed(1)}')` : 'off chart';
+}
+function pwiCell(cap: number, span: number, double: boolean): string {
+  const rows = (double ? PC.double : PC.motor) as [number, number, string][];
+  const c = [...new Set(rows.map(r => r[0]))].sort((a, b) => a - b).find(v => v >= cap - 1e-9);
+  const r = rows.filter(r => r[0] === c).sort((a, b) => a[1] - b[1]).find(r => r[1] >= span - 1e-9);
+  return r ? `${c} t × span ≤ ${r[1]}' (asked ${cap} t, ${span}')` : 'off chart';
+}
 const chartMax = (rows: any[]) => { const r = rows[rows.length - 1].byCap; const ks = Object.keys(r).map(Number).sort((a, b) => a - b); return r[String(ks[ks.length - 1])]; };
 
-export function buildCrane(spec: CraneSpec, cat: Catalog, f: Factors = { production: 0.56, install: 1.02 }, bo: BuildOpts = {}): BuildResult {
+export function buildCrane(spec: CraneSpec, cat: Catalog, f: Factors = { production: 0.6, install: 1.02 }, bo: BuildOpts = {}): BuildResult {
   const s = normalize(spec), s0 = spec;
   const fam = s.support === 'freestanding' ? 'freestanding' : 'bridge';
   const K = new Kit(cat, fam, f), A = K.A;
@@ -124,9 +136,10 @@ export function buildCrane(spec: CraneSpec, cat: Catalog, f: Factors = { product
     else if (p !== 'box') girder = chartPick(CH.girder_by_span, 'spanFt', s.spanFt, cap);
     if (girder) A.push({ field: 'girder', value: girder, why: `${cap} t × ${s.spanFt}' span${doubleGirder ? ' (double girder, each)' : ''} → ${girder} from the ${girderSrc}${girderSrc === 'AQT chart' ? ' (not on the PWI bridge chart)' : ' — CONFIRMED PWI CHART'}` });
   }
-  let boxPlf = 0;
+  let boxPlf = 0, boxDepth = 0, girderUnity: ReturnType<typeof sizeGirder>['check'] | undefined;
   if (girder === null && s.series !== 'UL' && s.series !== 'HL') {
     const g = sizeGirder(cat, s.spanFt, cap, doubleGirder);
+    girderUnity = g.check; boxDepth = g.depthIn;
     if (g.shape) { girder = g.shape; A.push({ field: 'girder', value: girder, why: `${s.spanFt}' span at ${cap} t is past the PWI bridge chart — sized at L/${R.boxGirder.deflLimit} (rated load + hoist + self weight) as the lightest W ≤ ${R.boxGirder.maxWDepthIn}" deep; engineering to confirm` }); }
     else { boxPlf = g.boxPlf; A.push({ field: 'girder', value: `box ${boxPlf} plf`, why: `No W shape ≤ ${R.boxGirder.maxWDepthIn}" deep meets L/${R.boxGirder.deflLimit} at ${s.spanFt}' / ${cap} t → plate box girder ${g.depthIn}" deep, ${boxPlf} plf (Ireq ≈ ${Math.round(g.Ireq)} in⁴); engineering to confirm` }); }
   }
@@ -142,17 +155,30 @@ export function buildCrane(spec: CraneSpec, cat: Catalog, f: Factors = { product
   const foundation = s.foundation ?? (builtUp || s.support === 'crane_columns' ? 'foundation' : 'slab');
   if (hasCols && !s.foundation) A.push({ field: 'foundation', value: foundation, why: foundation === 'foundation' ? 'Columns set on concrete foundations by others, epoxy anchors and grouted base plates' : 'Gusseted base plates on a 6" slab', alt: foundation === 'slab' ? 'foundation' : 'slab' });
 
+  // ---------- editor basis (why each member) — read-only, no effect on picks ----------
+  const colBasis: Basis = builtUp
+    ? { source: 'rule', text: s.support === 'crane_columns' ? `Tapered 3-plate crane column, ${builtUpPlf} plf for ${cap} t (sold 28192 / 28970)` : `Built-up plate column ${builtUpPlf} plf for ${cap} t (${!column ? 'past the AQT column chart' : overall > R.columnType.maxChartHeightFt + 2 ? `taller than the ${R.columnType.maxChartHeightFt}' chart` : `≥ ${R.columnType.builtUpFromCap} t`})`, chart: 'freestanding_rules columnType.builtUpPlfByCap', assumption: 'steelSource', flag: 'Engineering to confirm' }
+    : { source: 'chart', chart: 'AQT column_by_overall_height', row: chartCell(CH.column_by_overall_height, 'overallHeightFt', overall, cap), text: `${column} from the AQT column chart at ${overall.toFixed(1)}' overall, ${cap} t; ${colLen}' long (overall − runway depth${rail ? ' − rail' : ''} − top plate, rounded up to ${R.height.roundColumnToFt}')`, assumption: 'steelSource' };
+  const runBasis: Basis = { source: 'chart', chart: 'AQT runway_by_bay', row: chartCell(CH.runway_by_bay, 'bayFt', bayFt, cap, 'runway'), text: `${runway} from the AQT runway chart for ${bayFt.toFixed(1)}' bays at ${cap} t; ${piecesPerLine} piece${piecesPerLine > 1 ? 's' : ''}/line × ${pieceFt}' (${perPiece} bay${perPiece > 1 ? 's' : ''} per piece)`, assumption: s.support === 'building_runway' ? 'buildingBayFt' : 'columnsPerSystem',
+    ...(K.blockers.some(b => /past the AQT runway chart/.test(b)) ? { flag: 'Past the runway chart — placeholder until engineering sizes it' } : {}) };
+  let girdBasis: Basis | undefined;
+  if (girder && girderSrc === 'PWI bridge chart') girdBasis = { source: 'chart', chart: `PWI bridge chart (${doubleGirder ? 'double' : 'motor'})`, row: pwiCell(cap, s.spanFt, doubleGirder), text: `${girder} from the PWI Sizing Wizard bridge chart, ${cap} t × ${s.spanFt}' span${doubleGirder ? ', each of 2 girders' : ''}; cut ${Math.ceil(s.spanFt + 2)}' (span + 2')`, assumption: 'girder' };
+  else if (girder && girderUnity == null) girdBasis = { source: 'chart', chart: 'AQT girder_by_span', row: chartCell(CH.girder_by_span, 'spanFt', s.spanFt, cap, 'girder'), text: `${girder} from the AQT girder chart (not on the PWI bridge chart), ${cap} t × ${s.spanFt}' span`, assumption: 'girder', flag: 'AQT chart fallback — not a confirmed PWI chart size' };
+  else if (girder) girdBasis = calcBasis(`${girder} sized at L/${R.boxGirder.deflLimit} (rated load + hoist + self weight) and 24 ksi bending, past the PWI bridge chart`, girderUnity, 'girder');
+  else if (boxPlf) { const cb = calcBasis(`Plate box girder ${boxDepth}" deep, ${boxPlf} plf, sized to L/${R.boxGirder.deflLimit} and 24 ksi (webs ignored — conservative)`, girderUnity, 'girder');
+    girdBasis = { ...cb, flag: `Plate box girder — engineering to confirm${cb.flag ? `; ${cb.flag}` : ''}` }; }
+
   // ---------- structural + plate ----------
-  if (hasCols) { if (builtUp) K.box('Built-up plate columns', cols, builtUpPlf, colLen); else K.steel('Columns', column!, cols, colLen); }
-  if (hasRunway) K.steel('Runways', runway!, 2 * piecesPerLine * n, pieceFt);
-  const girderLb = girder ? K.steel(doubleGirder ? 'Bridge girders (double)' : 'Bridge girder', girder, bridges * (doubleGirder ? 2 : 1), Math.ceil(s.spanFt + 2)) * (doubleGirder ? 2 : 1)
-    : boxPlf ? K.box(doubleGirder ? 'Plate box girders (double)' : 'Plate box girder', bridges * (doubleGirder ? 2 : 1), boxPlf, Math.ceil(s.spanFt + 2)) * (doubleGirder ? 2 : 1) : 0;
+  if (hasCols) { if (builtUp) K.box('Built-up plate columns', cols, builtUpPlf, colLen, { role: 'column', basis: colBasis }); else K.steel('Columns', column!, cols, colLen, { role: 'column', basis: colBasis }); }
+  if (hasRunway) K.steel('Runways', runway!, 2 * piecesPerLine * n, pieceFt, { role: 'runway', basis: runBasis });
+  const girderLb = girder ? K.steel(doubleGirder ? 'Bridge girders (double)' : 'Bridge girder', girder, bridges * (doubleGirder ? 2 : 1), Math.ceil(s.spanFt + 2), { role: 'girder', basis: girdBasis }) * (doubleGirder ? 2 : 1)
+    : boxPlf ? K.box(doubleGirder ? 'Plate box girders (double)' : 'Plate box girder', bridges * (doubleGirder ? 2 : 1), boxPlf, Math.ceil(s.spanFt + 2), { role: 'girder', basis: girdBasis }) * (doubleGirder ? 2 : 1) : 0;
   const BR = (R as any).bracing ?? { tubeFromColumns: 6, tubeFromCap: 3 };
   const bracing = s.support === 'freestanding' && (s.bracing ?? (columnType === 'tube' && (colsPer >= BR.tubeFromColumns || cap >= BR.tubeFromCap)));
-  if (bracing) K.steel('Bracing', 'ST 3 x 3 x 1/4', 6 * n, 20);
+  if (bracing) K.steel('Bracing', 'ST 3 x 3 x 1/4', 6 * n, 20, { role: 'brace', basis: { source: 'rule', text: s.bracing != null ? 'Bracing requested on the spec' : `Tube columns with ${colsPer} columns / ${cap} t → 6 ST 3×3×1/4 × 20' braces per system (≥ ${BR.tubeFromColumns} columns or ≥ ${BR.tubeFromCap} t)` } });
   if (hasCols) {
     const bp = (R.basePlate as [number, number, number][]).find(([m]) => cap <= m) ?? [0, 1, 24];
-    K.plate('Column base plates', cols, bp[1], bp[2], bp[2]);
+    K.plate('Column base plates', cols, bp[1], bp[2], bp[2], { basis: { source: 'rule', text: `Base plate ${bp[1]}" × ${bp[2]}" × ${bp[2]}" for ≤ ${bp[0]} t (freestanding_rules basePlate)`, assumption: 'foundation' } });
     K.plate('Column top plates', cols, cap <= 1 ? 0.375 : 0.5, cap <= 3 ? 10 : 18, cap <= 3 ? 14 : 12);
     if (columnType === 'tube') K.plate('Column gussets', cols * 4, cap <= 1 ? 0.25 : 0.3125, 5, 12);
   }
@@ -169,7 +195,8 @@ export function buildCrane(spec: CraneSpec, cat: Catalog, f: Factors = { product
   if (hasCols) {
     const anc = (R.anchors as any[]).find(a => cap <= a.maxCap && (a.wording !== 'foundation' || foundation === 'foundation')) ?? R.anchors[1];
     const anchorRule = foundation === 'foundation' ? R.anchors[2] : anc.wording === 'foundation' ? R.anchors[1] : anc;
-    K.std(anchorRule.part, cols * anchorRule.perColumn); for (const p of anchorRule.plus ?? []) K.std(p.part, cols * p.perColumn);
+    const ab: Basis = { source: 'rule', text: `${anchorRule.perColumn} per column × ${cols} columns (${foundation === 'foundation' ? 'on foundations' : `slab, ≤ ${anc.maxCap} t`})`, assumption: 'foundation' };
+    K.std(anchorRule.part, cols * anchorRule.perColumn, 'stdParts', { role: 'anchor', basis: ab }); for (const p of anchorRule.plus ?? []) K.std(p.part, cols * p.perColumn, 'stdParts', { basis: ab });
   }
   const boltCount = 8 * cols + 16 * bridges + (s.support === 'building_runway' ? 8 * supports : 0);
   K.std(cap >= 2 ? '3/4" Structural Bolt and Nut' : '5/8" Structural Bolt and Nut', boltCount);
@@ -199,12 +226,12 @@ export function buildCrane(spec: CraneSpec, cat: Catalog, f: Factors = { product
   const hoistPart = pickHoist(cat, classD ? cap * CD.hoistCapFactor : cap, lift, v, s.trolley, doubleGirder);
   if (classD) A.push({ field: 'serviceClass', value: 'D', why: `Class D (heavy service): hoist sized at ${CD.hoistCapFactor}× rated capacity and derated to ${cap} t (sold 29562, 28723)`, alt: 'C' });
   if (cap > 3) A.push({ field: 'hoistFamily', value: `Starke ${doubleGirder ? 'STW' : 'SMW'} wire rope`, why: '≥5 t sold jobs used wire rope (SMW single girder 29331/28192; STW double girder 29523)' });
-  if (hoistPart) K.vend(hoistPart, hoists); else K.notes.push(`No hoist found for ${cap} t / ${lift}' / ${v} — pick in editor.`);
+  if (hoistPart) K.vend(hoistPart, hoists, { role: 'hoist', basis: { source: 'catalog', text: `Smallest stocked ${cap <= 3 && /^STK/.test(hoistPart) ? 'STK chain' : 'wire rope'} hoist ≥ ${classD ? `${cap * CD.hoistCapFactor} t (class D ${CD.hoistCapFactor}×)` : `${cap} t`}, lift ≥ ${lift}', ${v}, ${s.trolley} trolley; ${hoists} = ${bridges} bridge${bridges > 1 ? 's' : ''} × ${s.hoistsPerBridge ?? 1}`, assumption: 'liftFt' } }); else K.notes.push(`No hoist found for ${cap} t / ${lift}' / ${v} — pick in editor.`);
   if (motor) {
     const W = R.endTruckWheelbase; const wb = Math.max(W.minIn, Math.ceil(s.spanFt * 12 / W.spanInPerWbIn / W.stepIn) * W.stepIn);
     const pre = under ? pick([[2, 'SCU-110-100'], [5, 'SCU-130-100'], [999, 'SCU-170-100']] as [number, string][], cap) : pick([...(R.endTruck as [number, string][]).filter(([c]) => c <= 10), [15, 'STT-250-150'], [999, 'STT-500-100']] as [number, string][], cap);
     const et = cat.vendorParts(pre).map(p => ({ ...p, wb: Number(p.part.split('-').pop()) })).filter(p => p.wb >= wb).sort((a, b) => a.wb - b.wb)[0];
-    if (et) K.vend(et.part, bridges); else K.notes.push(`End truck ${pre}-${wb} not found.`);
+    if (et) K.vend(et.part, bridges, { role: 'end_truck', basis: { source: 'catalog', text: `${pre} series for ${cap} t ${under ? 'underhung' : 'top running'}; wheelbase ≥ ${wb}" (span ${s.spanFt}' × 12 ÷ ${W.spanInPerWbIn}, step ${W.stepIn}", min ${W.minIn}") → ${et.wb}"` } }); else K.notes.push(`End truck ${pre}-${wb} not found.`);
     K.vend(pick((v === '460V' ? [[3, 'SCP-0246'], [5, 'SCP-0346'], [10, 'SCP-0446'], [15, 'SCP-0746'], [999, 'SCP-1046']] : R.panel230) as [number, string][], cap), bridges);
   }
   if (s.control === 'radio') { K.vend(`S802-2R-${(motor ? 1 : 0) + (s.trolley === 'motorized' ? 1 : 0) + 1}M-SD`, bridges); K.std('Radio Receiving Units Pairing Charge', bridges * 2); }
@@ -265,7 +292,9 @@ export function buildCrane(spec: CraneSpec, cat: Catalog, f: Factors = { product
 
 /** Girder past the AQT chart: lightest W (≤ maxWDepthIn) meeting L/600 under rated load + hoist + self weight and
  *  24 ksi bending, else a plate box girder sized for the same I (and 24 ksi bending). W-shape Ix from ixOf() (conservative). */
-export function sizeGirder(cat: Catalog, spanFt: number, cap: number, double: boolean): { shape: string | null; boxPlf: number; depthIn: number; Ireq: number } {
+export function sizeGirder(cat: Catalog, spanFt: number, cap: number, double: boolean): { shape: string | null; boxPlf: number; depthIn: number; Ireq: number; check: { unity: number; checks: { name: string; unity: number }[] } } {
+  const r3 = (x: number) => Math.round(x * 1000) / 1000;
+  const chk = (defl: number, bend: number) => ({ unity: r3(Math.max(defl, bend)), checks: [{ name: `deflection L/${R.boxGirder.deflLimit}`, unity: r3(defl) }, { name: 'bending 24 ksi (15% impact)', unity: r3(bend) }] });
   const B = R.boxGirder, L = spanFt * 12, E = 29e6, lim = L / B.deflLimit;
   const P = (cap * 2000 + cap * B.hoistLbPerTon + 300) / (double ? 2 : 1);
   const Ireq = (w: number) => P * L ** 3 / (48 * E * lim) + 5 * (w / 12) * L ** 4 / (384 * E * lim);
@@ -273,7 +302,7 @@ export function sizeGirder(cat: Catalog, spanFt: number, cap: number, double: bo
   const cands = W_SHAPES.map(n => ({ n, d: depthIn(n), wt: Number(/x (\d+(?:\.\d+)?)/.exec(n)?.[1] ?? 0) })).filter(x => x.d <= B.maxWDepthIn && cat.shape(x.n)).sort((a, b) => a.wt - b.wt);
   for (const c of cands) {
     const I = ixOf(c.n), M = P * 1.15 * L / 4 + (c.wt / 12) * L * L / 8;
-    if (I >= Ireq(c.wt) && M / (2 * I / c.d) <= 24000) return { shape: c.n, boxPlf: 0, depthIn: c.d, Ireq: Ireq(c.wt) };
+    if (I >= Ireq(c.wt) && M / (2 * I / c.d) <= 24000) return { shape: c.n, boxPlf: 0, depthIn: c.d, Ireq: Ireq(c.wt), check: chk(Ireq(c.wt) / I, M / (2 * I / c.d) / 24000) };
   }
   const d = Math.min(B.maxDepthIn, Math.max(B.minDepthIn, Math.round(L * B.depthInPerSpanIn)));
   let plf = 150, I = 0;
@@ -282,7 +311,9 @@ export function sizeGirder(cat: Catalog, spanFt: number, cap: number, double: bo
     I = Math.max(Ireq(plf), M * (d / 2) / 24000);          // deflection or bending, whichever needs more (webs ignored: conservative)
     const Af = 2 * I / (d * d); plf = Math.round(B.lbPerIn2Ft * (2 * Af + 2 * d * B.webIn) * B.fabFactor);
   }
-  return { shape: null, boxPlf: plf, depthIn: d, Ireq: I };
+  // the box is sized so its I equals the governing need (deflection or bending) at the last iteration's plf
+  const Mf = P * 1.15 * L / 4 + (plf / 12) * L * L / 8;
+  return { shape: null, boxPlf: plf, depthIn: d, Ireq: I, check: chk(Ireq(plf) / I, Mf * (d / 2) / I / 24000) };
 }
 
 export function pickHoist(cat: Catalog, cap: number, lift: number, v: string, trolley: string, doubleGirder: boolean): string | undefined {

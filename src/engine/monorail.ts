@@ -50,7 +50,7 @@ export function buildMonorail(spec: MonorailSpec, cat: Catalog, f: Factors = { p
   A.push({ field: 'beam', value: beam, why: `Monorail beam for ${tons(cap)} t over ${spanFt.toFixed(1)}' spans (AQT runway chart) — engineering to confirm` });
   const perPiece = spanFt * 2 <= 40 ? 2 : 1, piecesPer = Math.ceil(spans / perPiece), pieceFt = Math.ceil(spanFt * perPiece + 0.5);
   const beams = beamsPer * n;
-  K.steel(beamsPer === 2 ? 'Monorail beams (2 parallel)' : 'Monorail beam', beam, piecesPer * beams, pieceFt);
+  K.steel(beamsPer === 2 ? 'Monorail beams (2 parallel)' : 'Monorail beam', beam, piecesPer * beams, pieceFt, { role: 'beam', basis: { source: 'chart', chart: 'AQT runway_by_bay', row: `${cap} t × ${spanFt.toFixed(1)}' span`, text: `${beam} from the AQT runway chart for ${spanFt.toFixed(1)}' spans at ${tons(cap)} t; ${piecesPer} piece${piecesPer > 1 ? 's' : ''} × ${pieceFt}' per beam line`, assumption: 'beam', flag: 'Engineering to confirm' } });
   K.plate('Beam splice plates', 2 * piecesPer * beams, 0.375, 10, 12);
   let cols = 0, colLen = 0, headers = 0;
   if (support === 'freestanding') {
@@ -59,7 +59,7 @@ export function buildMonorail(spec: MonorailSpec, cat: Catalog, f: Factors = { p
     if (frame === 'single_post' && /^ST (4|5|6) /.test(col)) col = 'ST 8 x 8 x 1/4';
     colLen = Math.ceil((overall - depthIn(beam) / 12 - (frame === 'goal_post' ? 1.2 : 0)) * 2) / 2;
     cols = (frame === 'goal_post' ? 2 : 1) * supports;
-    K.steel('Columns', col, cols, colLen);
+    K.steel('Columns', col, cols, colLen, { role: 'column', basis: { source: 'chart', chart: 'AQT column_by_overall_height', row: `${capCol} t × ${overall}' overall`, text: `${col} from the AQT column chart at ${overall}' overall${frame === 'single_post' ? `, sized as ${capCol} t (cantilevered T-post ×3)` : ''}; ${cols} = ${frame === 'goal_post' ? 2 : 1} per support × ${supports}`, assumption: 'supportSpacingFt' } });
     if (frame === 'goal_post') {
       headers = supports;
       const hdr = chart(CH.girder_by_span, 'spanFt', s.frameWidthFt ?? 10, cap) ?? 'W12 x 30';
