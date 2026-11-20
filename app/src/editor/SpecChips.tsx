@@ -93,7 +93,7 @@ export function InstallControl({ men, days, siteHours, locked, onMen, onDays }: 
       <span>men ×</span>
       <input disabled={locked} value={d ?? days ?? ''} size={2} onChange={e => setD(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') { onDays(Number(d)); setD(null); } if (e.key === 'Escape') setD(null); }} onBlur={() => { if (d != null && Number(d) !== days) onDays(Number(d)); setD(null); }} />
       <span>days{m != null || d != null ? <> × {HOURS_PER_DAY} h = <b>{Math.round(hrs)} h</b> on site</> : <> · <b>{Math.round(siteHours * 10) / 10} h</b> on site</>}{days ? <small className="muted"> · {Math.ceil(days / 5)} wk</small> : null}</span>
-      {!S_READY.crewDays && <small className="muted" title="Track S engine update pending: until then a days change adds an 'Install adjustment' hours line and travel/equipment stay as built.">days → hours only*</small>}
+      {!S_READY.crewDays && <small className="muted" title="The job spec has no crew-days field yet, so a days change adds an 'Install adjustment' hours line; travel and equipment stay as built. Change men to rebuild travel.">days → hours only*</small>}
     </div>
   );
 }

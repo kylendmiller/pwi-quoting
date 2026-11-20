@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { Priced, QuoteDoc, Settings, Flag } from '../../../src/engine/manual';
 import type { CategoryKey } from '../../../src/engine/rollup';
-import { linesOf, changedPaths, quoteMoney, laborCostAssumed, type EditorLine } from './engineApi';
+import { linesOf, changedPaths, quoteMoney, laborCostAssumed, pvHours, deriveFamily, type EditorLine } from './engineApi';
 import { ROWS, PEEK_ROWS, rowStats, peek, fmtMoney, fmtNum, fmtPct, type RowStats } from './smt';
 import { colsFor } from './tabs';
 import { Grid } from './Grid';
@@ -37,7 +37,7 @@ export function SummarySheet({ doc, priced, settings, locked, hideCost, openFlag
   const shapes = useMemo(() => refData.shapes.map(s => s.shape), [refData]);
   const rowsRef = useRef<(HTMLDivElement | null)[]>([]);
   const visible = stats.filter(s => showAll || s.lines.length || (s.def.key === 'costBased' && priced.totals.productionValue));
-  const flagsFor = (k: CategoryKey) => openFlags.filter(f => flagRow(f as any) === k);
+  const flagsFor = (k: CategoryKey) => openFlags.filter(f => flagRow(f, doc.lines) === k);
   const toggle = (k: CategoryKey, on?: boolean) => { const n = new Set(open); (on ?? !n.has(k)) ? n.add(k) : n.delete(k); setOpen(n); };
   const ro = priced.rollup, qm = quoteMoney(priced);
   const totalLb = stats.reduce((a, s) => a + s.lb, 0);
@@ -81,7 +81,7 @@ export function SummarySheet({ doc, priced, settings, locked, hideCost, openFlag
                 {s.lines.some(l => l.basis?.flag) && <span className="qe-badge flag" title={s.lines.filter(l => l.basis?.flag).map(l => l.basis!.flag).join('\n')}>review</span>}
               </span>
               <span className="num">{measure(s)}</span>
-              {!hideCost && <span className="num">{s.lines.length ? (s.costPending ? <i title="Standard-part cost arrives with the engine update (std_parts gm_pct)">pending</i> : s.costUnknown ? <span className="muted" title="Sold at a list sell price; no cost is kept on these lines">—</span> : fmtMoney(s.cost)) : ''}</span>}
+              {!hideCost && <span className="num">{s.lines.length ? (s.costUnknown ? <span className="muted" title="Sold at a list sell price; no cost is kept on these lines">—</span> : fmtMoney(s.cost)) : ''}</span>}
               <span className="num b">{s.sell || s.lines.length ? fmtMoney(s.sell) : ''}</span>
               {!hideCost && <span className="num">{s.gmPct == null ? '' : fmtMoney(s.gm)}</span>}
               {!hideCost && <span className={`num ${s.gmPct != null && s.gmPct < 0.15 ? 'bad' : ''}`} title={s.estCost ? 'Labor cost is the SMT standard labor cost, not payroll' : undefined}>{s.gmPct == null ? (s.costUnknown && s.sell ? '—' : '') : fmtPct(s.gmPct)}{s.estCost && s.gmPct != null && laborCostAssumed(priced) ? <sup>std</sup> : null}</span>}
@@ -157,7 +157,7 @@ function RowDetail({ s, doc, priced, locked, hideCost, act, shapes, hl, setHl, s
   const edited = rows.filter(r => Object.keys(changedPaths(r.line)).length).length;
   const removed = ((doc as any).removed ?? []) as string[];
   const removedHere = removed.filter(r => removedCache.get(r)?.category === k);
-  const pv = k === 'costBased' && (doc.family === 'freestanding' || priced.totals.productionValue > 0);
+  const pv = k === 'costBased' && (deriveFamily(doc) === 'freestanding' || priced.totals.productionValue > 0);
   const extras = all.filter(c => c.extra);
   return (
     <div className="qe-detail">
@@ -177,7 +177,7 @@ function RowDetail({ s, doc, priced, locked, hideCost, act, shapes, hl, setHl, s
       </div>
       {s.def.key === 'structural' && <BasisBox doc={doc} lines={docLines} active={hl} onPick={keys => setHl(new Set(keys))} />}
       {s.def.tab === 'vendor' && !locked && act.vendorSearch && <VendorAdd search={act.vendorSearch} onPick={p => act.addVendor?.(p)} />}
-      {pv && <div className="qe-pv">Freestanding Production Value: {fmtNum(effectiveShop(doc), 1)} shop h × $
+      {pv && <div className="qe-pv">Freestanding Production Value: {fmtNum(pvHours(doc), 1)} shop h × $
         <NumIn disabled={locked} width={64} value={doc.pvPerHourOverride ?? settings.freestanding_pv_per_shop_hour} onCommit={v => act.patchDoc({ pvPerHourOverride: v === settings.freestanding_pv_per_shop_hour ? null : v }, 'PV $/shop h')} />
         /h = <b>${fmtMoney(priced.totals.productionValue)}</b> <span className="muted">(100% margin, in Base)</span></div>}
       {rows.length > 0 && <Grid rows={rows} cols={cols} locked={locked} onEdit={act.edit} onRevert={act.revert} onDelete={act.remove} highlight={hl} shapes={s.def.tab === 'structural' ? shapes : undefined}
@@ -189,13 +189,12 @@ function RowDetail({ s, doc, priced, locked, hideCost, act, shapes, hl, setHl, s
         <span>{rows.length} line{rows.length === 1 ? '' : 's'}</span>
         {s.def.measure === 'tons' && <span>{fmtNum(s.lb, 0)} lb · {fmtNum(s.lb / 2000, 2)} t</span>}
         {s.def.measure === 'hours' && <span>{fmtNum(s.hours, 1)} h</span>}
-        {!hideCost && <span>cost {s.costUnknown ? 'pending' : fmtMoney(s.cost)}</span>}
+        {!hideCost && <span>cost {s.costUnknown ? '—' : fmtMoney(s.cost)}</span>}
         <b>sell {fmtMoney(s.sell)}</b>
       </div>
     </div>
   );
 }
-const effectiveShop = (doc: QuoteDoc) => doc.lines.filter(l => l.kind === 'shop_labor').reduce((a, l) => a + l.qty, 0);
 
 function VendorAdd({ search, onPick }: { search: (q: string) => Promise<any[]>; onPick: (p: any) => void }) {
   const [q, setQ] = useState(''); const [hits, setHits] = useState<any[]>([]);

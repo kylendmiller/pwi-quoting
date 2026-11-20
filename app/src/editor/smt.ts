@@ -2,7 +2,7 @@
 // plus the per-row numbers (tons / hours, cost, sell, GM) and the one-line "peek" under a collapsed row.
 import type { CategoryKey } from '../../../src/engine/rollup';
 import type { Priced, PricedLine, QuoteDoc } from '../../../src/engine/manual';
-import { stdCostKnown, changedPaths, type EditorLine } from './engineApi';
+import { stdCostKnown, changedPaths, joinLines, type EditorLine } from './engineApi';
 
 export type TabKind = 'structural' | 'plate' | 'std' | 'vendor' | 'cost' | 'paint' | 'shop' | 'site' | 'pmcad' | 'travel' | 'equipment';
 export interface RowDef { key: CategoryKey; row: number; label: string; tab: TabKind; tabName: string; install?: boolean; measure: 'tons' | 'hours' | 'runs' | 'none' }
@@ -37,15 +37,16 @@ export const rowOf = (k: CategoryKey) => ROWS.find(r => r.key === k)!;
 
 export interface RowStats {
   def: RowDef; lines: PricedLine[]; cost: number; sell: number; gm: number; gmPct: number | null;
-  costPending: boolean;                  // std parts: cost arrives with the engine update (gm_pct)
   lb: number; noWeight: number; hours: number; runs: number; edited: number; hand: number; costUnknown: boolean; estCost: boolean;
 }
 const isWeight = (l: PricedLine) => { const t = l.detail?.type; return t === 'steel' || t === 'plate' || t === 'box'; };
 export const lbOf = (l: { detail?: any; qty: number }) => { const d: any = l.detail; return d && (d.type === 'steel' || d.type === 'plate' || d.type === 'box') ? d.lbEach * l.qty : 0; };
 
+/** Per Main Summary row. Priced lines are joined with their doc line (detail / basis live only on the doc, S6). */
 export function rowStats(doc: QuoteDoc, priced: Priced): RowStats[] {
+  const J = joinLines(doc, priced);
   return ROWS.map(def => {
-    const lines = priced.lines.filter(l => l.category === def.key);
+    const lines = J.filter(l => l.category === def.key);
     let cost = lines.reduce((a, l) => a + l.cost, 0), sell = lines.reduce((a, l) => a + l.sell, 0);
     if (def.key === 'costBased' && priced.totals.productionValue) sell += priced.totals.productionValue;
     const costUnknown = lines.some(l => !stdCostKnown(l));
@@ -53,8 +54,7 @@ export function rowStats(doc: QuoteDoc, priced: Priced): RowStats[] {
     const gm = sell - cost;
     const docLines = doc.lines as EditorLine[];
     return {
-      def, lines, cost, sell, gm, gmPct: costUnknown || !sell ? null : gm / sell,
-      costPending: costUnknown && ['stdParts', 'ultraLitePcr', 'stairStringerPcr'].includes(def.key),
+      def, lines, cost, sell, gm, gmPct: costUnknown || sell <= 0 ? null : gm / sell,   // a row driven negative by a credit line has no GM %
       lb: lines.reduce((a, l) => a + lbOf(l), 0),
       noWeight: def.measure === 'tons' ? lines.filter(l => !isWeight(l)).length : 0,
       hours: lines.reduce((a, l) => a + l.hours, 0),

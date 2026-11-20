@@ -11,7 +11,7 @@ export type Tag = { text: string; cls: 'ok' | 'calc' | 'review' | 'chart' | 'rul
 export function tagFor(l: EditorLine): Tag {
   const b = l.basis;
   if (isChanged(l, 'detail.shape')) return { text: 'REP OVERRIDE', cls: 'override' };
-  if (!l.auto) return { text: 'ADDED BY HAND', cls: 'hand' };
+  if (!l.auto || l.source === 'hand') return { text: 'ADDED BY HAND', cls: 'hand' };   // source: server-verified provenance (S3)
   if (!b) return { text: 'NO BASIS', cls: 'review' };
   if (b.flag || (b.unity != null && b.unity > 0.98)) return { text: 'REVIEW', cls: 'review' };
   if (b.source === 'chart' && /PWI/i.test(b.chart ?? '')) return { text: 'CONFIRMED – PWI CHART', cls: 'ok' };

@@ -64,7 +64,7 @@ const COLS: Record<TabKind, Col[]> = {
     { id: 'sellEa', label: 'Sell ea', w: 82, get: l => l.unitSell ?? null, show: money2, path: l => (l.unitCost == null ? 'unitSell' : null), input: 'num' },
     C.sell(),
     { id: 'bh', label: 'Built h', title: 'PWI-built shop hours inside these parts (scheduling only, not priced again)', w: 60, get: l => (d(l).builtHrsEach != null ? d(l).builtHrsEach * l.qty : null), show: v => (v == null ? '' : fmtNum(v, 1)) },
-    { id: 'cost', label: 'Cost', w: 82, costOnly: true, get: (_, p) => p.cost, show: (v, l) => (stdCostKnown(l) ? money(v) : 'pending') },
+    { id: 'cost', label: 'Cost', w: 82, costOnly: true, title: 'Standard parts: sell × (1 − catalog GM); the default GM when the catalog has none', get: (_, p) => p.cost, show: (v, l) => (stdCostKnown(l) ? money(v) : '—') },
     C.gm(),
     C.costEa(true), C.mk(), C.item(),
   ],

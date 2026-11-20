@@ -1,7 +1,7 @@
 // Always-visible smell-test numbers (U4), with the change since the last save.
 import type { Priced, QuoteDoc } from '../../../src/engine/manual';
 import { lbOf, fmtMoney, fmtNum } from './smt';
-import { quoteMoney } from './engineApi';
+import { quoteMoney, joinLines } from './engineApi';
 
 export interface Kpis {
   total: number; base: number; gmPct: number; tons: number; noWeight: number; sellPerLb: number | null; shopH: number; hPerTon: number | null;
@@ -16,7 +16,7 @@ export function crewOf(doc: QuoteDoc): { men: number | null; days: number | null
 }
 
 export function kpis(doc: QuoteDoc, p: Priced): Kpis {
-  const steel = p.lines.filter(l => STEEL.includes(l.category));
+  const steel = joinLines(doc, p).filter(l => STEEL.includes(l.category));
   const lb = steel.reduce((a, l) => a + lbOf(l), 0);
   const steelSell = steel.filter(l => l.detail).reduce((a, l) => a + l.sell, 0);
   const matCost = p.lines.filter(l => l.kind === 'material').reduce((a, l) => a + l.cost, 0);

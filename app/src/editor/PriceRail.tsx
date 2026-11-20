@@ -2,10 +2,10 @@
 import { useState } from 'react';
 import type { Priced, Flag, Lint, QuoteDoc, Settings } from '../../../src/engine/manual';
 import { fmtMoney } from './smt';
-import { FLAG_TEXT } from './flags';
+import { FLAG_TEXT, FLAG_LABEL } from './flags';
 import type { Change } from './changes';
 import { TargetPrice } from './TargetPrice';
-import { quoteMoney } from './engineApi';
+import { quoteMoney, showsPreUse } from './engineApi';
 
 export interface RailProps {
   priced: Priced; doc: QuoteDoc; settings: Settings; locked: boolean; dirty: boolean; busy: boolean; hideCost: boolean; setHideCost: (b: boolean) => void;
@@ -33,7 +33,7 @@ export function PriceRail(r: RailProps) {
         <div className="price-row"><span>Base price</span><b>${fmtMoney(q.base)}</b></div>
         <div className="price-row"><span>Installation</span><span>${fmtMoney(q.installation)}</span></div>
         <div className="price-row"><span>Outbound freight</span><span>${fmtMoney(q.freight)}</span></div>
-        {q.preUse != null && <div className="price-row"><span>Pre-use inspections</span><span>${fmtMoney(q.preUse)}</span></div>}
+        {showsPreUse(r.priced) && <div className="price-row"><span>Pre-use inspections</span><span>${fmtMoney(q.preUse)}</span></div>}
         <div className="price-row"><span>Sales tax</span><span>${fmtMoney(q.tax)}</span></div>
         <div className="price-row total"><span>TOTAL</span><span>${fmtMoney(q.total)}</span></div>
         <label className="inline" style={{ marginTop: 6 }}><input type="checkbox" checked={r.hideCost} onChange={e => r.setHideCost(e.target.checked)} /> hide cost &amp; margin (screen-share)</label>
@@ -51,7 +51,7 @@ export function PriceRail(r: RailProps) {
         {r.openFlags.map(f => <div key={f.rule} className="banner flag">⚑ {FLAG_TEXT(f)}
           {r.isManager && !r.locked && !r.dirty && <div><button className="sm" onClick={() => r.onApprove(f.rule)}>Approve</button></div>}
           {r.isManager && !r.locked && r.dirty && <div className="muted">Save first, then approve the saved numbers.</div>}</div>)}
-        {r.approvedRules.map(x => <div key={x} className="banner ok">✓ {FLAG_TEXT({ rule: x })} — approved</div>)}
+        {r.approvedRules.map(x => <div key={x} className="banner ok">✓ {FLAG_LABEL(x)} — approved</div>)}
         {errors.map((l, i) => <div key={i} className="banner block">{l.message}</div>)}
         {r.lint.filter(l => l.level === 'warning').slice(0, 6).map((l, i) => <div key={i} className="msg-warn muted">⚠ {l.message}</div>)}
         {r.msg && <p className={r.msg.t === 'err' ? 'msg-error' : ''}>{r.msg.m}</p>}

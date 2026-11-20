@@ -26,6 +26,7 @@ const P = parts as any[];
 export const harnessCatalog: Catalog = {
   stdSell: d => P.find(p => p.description === d)?.sell ?? null,
   stdHours: d => P.find(p => p.description === d)?.shop_hours_each ?? 0,
+  stdGm: d => P.find(p => p.description === d)?.gm_pct ?? null,
   vendor: part => allV.find(p => p.part === part) ?? null,
   vendorParts: prefix => allV.filter(p => p.part.startsWith(prefix)),
   discount: v => ({ pwi: disc[v]?.[0] ?? 0, customer: disc[v]?.[1] ?? 0 }),

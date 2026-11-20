@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { supabase, api, money } from './supabase';
-import { type QuoteDoc, type QuoteLine, type Settings } from '../../src/engine/manual';
+import { validateDoc, type QuoteDoc, type QuoteLine, type Settings } from '../../src/engine/manual';
 import type { CategoryKey } from '../../src/engine/rollup';
 import { CATEGORIES, FAMILIES, isHours, newLine, kindOf, describe } from './model';
 import { downloadPdf } from './QuotePdf';
@@ -13,14 +13,29 @@ import { PriceRail } from './editor/PriceRail';
 import { useDocHistory, useEditorKeys, saveDraft, readDraft, clearDraft, type Draft } from './editor/useDocHistory';
 import { diffDocs } from './editor/changes';
 import { price, effectiveDoc } from './editor/engineApi';
-import { FLAG_TEXT as flagText } from './editor/flags';
+import { FLAG_TEXT as flagText, FLAG_LABEL } from './editor/flags';
 import './editor/editor.css';
 
 const LIBRARY = library.split(/^=== /m).filter(Boolean).map(b => {
   const [head, ...rest] = b.split('\n'); return { title: rest.find(l => l.trim()) ?? head, text: rest.join('\n').trim() };
 });
-const FLAG_TEXT = (rule: string) => flagText({ rule });   // classic-view banners
+const FLAG_TEXT = (rule: string) => FLAG_LABEL(rule);   // classic-view banners
 const CLASSIC_KEY = 'pwi.editor.classic';
+
+/** Plain message for a quote-api error: 400 { error, problems } lists the problems; 409 says what to do. */
+export function apiError(e: any, action: string): string {
+  const b = e?.body ?? {}, status = e?.status;
+  const list = (xs: unknown) => (Array.isArray(xs) && xs.length ? `: ${xs.slice(0, 5).join(' · ')}${xs.length > 5 ? ` · …${xs.length - 5} more` : ''}` : '');
+  if (status === 400 && Array.isArray(b.problems)) return `${e.message}${list(b.problems)}`;
+  if (status === 409) {
+    if (action === 'save') return `${e.message} Your edits are kept in this browser: reload the page and choose "Restore".`;
+    if (action === 'approve') return `${e.message} Nothing was approved.`;
+    if (action === 'price') return `${e.message} Reload to price the current revision.`;
+    return `${e.message} Reload the page.`;
+  }
+  if (status === 422 && Array.isArray(b.lint)) return `${e.message}${list(b.lint.filter((l: any) => l.level === 'error').map((l: any) => l.message))}`;
+  return e?.message ?? String(e);
+}
 
 export function Editor({ quoteId, me, mode = 'edit' }: { quoteId: string; me: Profile; mode?: 'review' | 'edit' }) {
   const [quote, setQuote] = useState<any>(null);
@@ -86,12 +101,16 @@ export function Editor({ quoteId, me, mode = 'edit' }: { quoteId: string; me: Pr
     if (!doc || !rev || !settings || rev.locked || !dirty || busy) return;
     const voidList = voidsOf();
     if (voidList.length && !confirm(`Saving changes numbers a manager approved:\n\n${voidList.join('\n')}\n\nThe approval will be voided. Save anyway?`)) return;
+    // Same input checks the server runs (validateDoc) — say what's wrong before the round trip.
+    const problems = validateDoc(doc);
+    if (problems.length) { setMsg({ t: 'err', m: `Can't save yet: ${problems.slice(0, 5).join(' · ')}${problems.length > 5 ? ` · …${problems.length - 5} more` : ''}` }); return; }
     setBusy(true); setMsg(null);
     try {
       const res = await api('save', { revision_id: rev.id, doc: effectiveDoc(doc), doc_version: rev.doc_version, header });
+      // The server stamps detail / basis / source / edited on auto lines and derives family + PV hours: use ITS doc.
       setRev(res.revision); H.reset(res.revision.doc); setSaved(res.revision.doc); setHeaderDirty(false); clearDraft(rev.id); setDraft(null); setMsg({ t: 'ok', m: 'Saved' });
       const { data: ap } = await supabase.from('approvals').select('*').eq('revision_id', rev.id); setApprovals(ap ?? []);
-    } catch (e: any) { setMsg({ t: 'err', m: `${e.message}${/version|conflict|409/i.test(e.message) ? ' — your edits are kept in this browser; reload and choose "Restore".' : ''}` }); } finally { setBusy(false); }
+    } catch (e: any) { setMsg({ t: 'err', m: apiError(e, 'save') }); } finally { setBusy(false); }
   }, [doc, rev, dirty, busy, header, settings, approvals]);
   useEditorKeys({ undo: H.undo, redo: H.redo, save: mode === 'edit' && !locked ? save : undefined });
 
@@ -106,7 +125,7 @@ export function Editor({ quoteId, me, mode = 'edit' }: { quoteId: string; me: Pr
   const act = async (action: string, payload: any, ok: string) => {
     setBusy(true); setMsg(null);
     try { const r = await api(action, payload); setMsg({ t: 'ok', m: ok }); await load(r?.revision?.id); return r; }
-    catch (e: any) { setMsg({ t: 'err', m: e.message + (e.body?.lint ? ': ' + e.body.lint.filter((l: any) => l.level === 'error').map((l: any) => l.message).join(' ') : '') }); }
+    catch (e: any) { setMsg({ t: 'err', m: apiError(e, action) }); }
     finally { setBusy(false); }
   };
   const approvedRules = approvals.filter(a => a.decision === 'approved').map(a => a.rule);
