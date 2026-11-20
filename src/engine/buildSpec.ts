@@ -27,7 +27,8 @@ export const BUILDERS: Record<string, { fam: string; build: Builder; def: [numbe
   vrc: { fam: 'vrc', def: [0.73, 1.02], build: buildVrc },
   catalog: { fam: 'other', def: [0.76, 0.98], build: buildCatalogItem },
 };
-import type { QuoteDoc } from './manual';
+import type { QuoteDoc, QuoteLine, EditableField } from './manual';
+import { sectionOf, type SectionKey } from './sections';
 
 export interface QuoteSpec {
   pwi_quote: 1;
@@ -112,16 +113,70 @@ export function ensureRefs(doc: QuoteDoc): QuoteDoc {
   return { ...doc, spec, lines: doc.lines.map(l => (l.auto ? auto[k++] : l)) };
 }
 
-export interface BuiltDoc { doc: QuoteDoc; notes: string[]; blockers: string[]; assumptions: (Assumption & { item: number })[] }
+/** A rep's edit that a rebuild couldn't apply silently (S5). */
+export interface Conflict {
+  id: string;                       // `${ref}|${field}`
+  ref: string; description: string; section: SectionKey;
+  kind: 'changed' | 'gone';         // changed: builder value moved under your edit; gone: builder no longer makes this line
+  field: EditableField | '*';
+  builderWas: unknown; builderNow: unknown; yours: unknown;
+}
+export interface BuiltDoc { doc: QuoteDoc; notes: string[]; blockers: string[]; assumptions: (Assumption & { item: number })[]; conflicts: Conflict[] }
 
-export function buildFromSpec(spec0: QuoteSpec, cat0: Catalog, settings: any, base: QuoteDoc): BuiltDoc {
-  const spec = assignItemIds(spec0);
+/** Items pasted without ids inherit the id of the old item at the same index when the type matches. */
+export function inheritIds<T extends { items: any[] }>(spec: T, old: unknown): T {
+  const oi: any[] = Array.isArray((old as any)?.items) ? (old as any).items : [];
+  if (!spec.items.some(it => !it?.id)) return spec;
+  const used = new Set(spec.items.map(it => it?.id).filter(Boolean));
+  return { ...spec, items: spec.items.map((it, i) => {
+    const o = oi[i];
+    return !it?.id && o?.id && o.type === it?.type && !used.has(o.id) ? { ...it, id: o.id } : it;
+  }) };
+}
+const same = (a: unknown, b: unknown) => typeof a === 'number' && typeof b === 'number' ? Math.abs(a - b) < 0.005 : a === b;
+
+/** S5: carries the rep's edits from the old auto lines onto the fresh build (matched by ref), keeps deleted refs
+ *  deleted, and reports conflicts. Edited lines the builder no longer makes are kept as hand lines. */
+function carryEdits(fresh: QuoteLine[], old: QuoteLine[], removed: Set<string>): { lines: QuoteLine[]; conflicts: Conflict[] } {
+  const conflicts: Conflict[] = [];
+  const oldBy = new Map(old.filter(l => l.auto && l.ref).map(l => [l.ref!, l]));
+  const freshRefs = new Set(fresh.map(l => l.ref));
+  const lines: QuoteLine[] = [];
+  for (const n0 of fresh) {
+    if (n0.ref && removed.has(n0.ref)) continue;
+    const o = n0.ref ? oldBy.get(n0.ref) : undefined;
+    if (!o?.edited || !Object.keys(o.edited).length) { lines.push(o ? { ...n0, key: o.key } : n0); continue; }
+    const n: any = { ...n0, key: o.key }; const edited: Record<string, unknown> = {};
+    for (const [f, builderWas] of Object.entries(o.edited) as [EditableField, unknown][]) {
+      const yours = (o as any)[f], builderNow = (n0 as any)[f];
+      if (same(yours, builderNow)) continue;                   // the builder now agrees with you
+      n[f] = yours; edited[f] = builderNow;
+      if (!same(builderWas, builderNow)) conflicts.push({ id: `${o.ref}|${f}`, ref: o.ref!, description: n0.description, section: sectionOf(n0.category), kind: 'changed', field: f, builderWas, builderNow, yours });
+    }
+    if (Object.keys(edited).length) n.edited = edited; else delete n.edited;
+    if (o.builtDetail && o.detail && n0.detail && o.detail.type === n0.detail.type && n.edited) { n.detail = o.detail; n.builtDetail = n0.detail; }
+    lines.push(n);
+  }
+  for (const o of old) {
+    if (!o.auto || !o.ref || freshRefs.has(o.ref) || removed.has(o.ref) || !o.edited || !Object.keys(o.edited).length) continue;
+    const { edited: _e, builtDetail: _b, basis: _x, ...rest } = o;
+    lines.push({ ...rest, auto: false, source: 'hand' });
+    conflicts.push({ id: `${o.ref}|*`, ref: o.ref, description: o.description, section: sectionOf(o.category), kind: 'gone', field: '*', builderWas: o.edited, builderNow: null, yours: o.description });
+  }
+  return { lines, conflicts };
+}
+
+export function buildFromSpec(spec0: QuoteSpec, cat0: Catalog, settings: any, base0: QuoteDoc): BuiltDoc {
+  const base = base0.lines.some(l => l.auto && !l.ref) ? ensureRefs(base0) : base0;
+  const spec = assignItemIds(inheritIds(spec0, base.spec));
   // Steel cost comes from one dated setting (settings.steel_cost) when present; otherwise the catalog's group prices.
   const steel = readSteelCost(settings.steel_cost);
   const cat = steel.sc ? withSteelCost(cat0, steel.sc) : cat0;
   const pf = settings.production_factor ?? {}, inf = settings.install_factor ?? {};
-  // Rebuilding replaces lines the builder made earlier; lines the rep added by hand stay.
-  let lines = base.lines.filter(l => !(l as any).auto);
+  // Rebuilding replaces lines the builder made earlier; lines the rep added by hand stay. Auto lines the rep edited
+  // keep the edited fields (carryEdits below); auto lines the rep deleted (doc.removed) stay deleted.
+  const handLines = base.lines.filter(l => !(l as any).auto);
+  let lines: QuoteLine[] = [];
   const wording: string[] = [], notes: string[] = [], blockers: string[] = [], assumptions: BuiltDoc['assumptions'] = [];
   if (steel.problem) notes.push(steel.problem);
   const sc = cat.steelCost;
@@ -164,10 +219,12 @@ export function buildFromSpec(spec0: QuoteSpec, cat0: Catalog, settings: any, ba
     assumptions.push(...K.A.map(a => ({ ...a, item: -1 })));
     notes.push(`One shared trip for ${installed.length} installed items (${Math.round(trip.workHrs)} on-site hours).`);
   }
+  const removed = new Set(Array.isArray(base.removed) ? base.removed : []);
+  const carried = carryEdits(lines, base.lines, removed);
   const doc: QuoteDoc = {
     ...base,
     family: BUILDERS[spec.items[0].type]?.fam ?? base.family,
-    lines,
+    lines: [...handLines, ...carried.lines],
     wording: wording.join('\n\n'),
     suggestedInstallHours: install || null,
     outboundFreight: Math.round(freight),
@@ -175,5 +232,5 @@ export function buildFromSpec(spec0: QuoteSpec, cat0: Catalog, settings: any, ba
     spec, assumptions, buildNotes: notes, blockers,
     ...(sc ? { steelCostDate: sc.effective } : {}),
   } as QuoteDoc;
-  return { doc, notes, blockers, assumptions };
+  return { doc, notes, blockers, assumptions, conflicts: carried.conflicts };
 }
