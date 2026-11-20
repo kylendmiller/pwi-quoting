@@ -44,7 +44,7 @@ Deno.serve(async (req: Request) => {
   if (!['sales', 'manager', 'admin'].includes(role)) return json({ error: 'Your account has no access yet. Ask an admin.' }, 403);
 
   const body = await req.json();
-  const { priceManual, sendBlocked, deriveFamily, pvHours } = await engine();
+  const { priceManual, sendBlocked, deriveFamily, pvHours, validateDoc } = await engine();
   const settings = await loadSettings(admin);
   const ev = (quote_id: string, revision_id: string | null, event: string, data: unknown = {}) =>
     admin.from('quote_events').insert({ quote_id, revision_id, actor: uid, event, data });
@@ -59,6 +59,8 @@ Deno.serve(async (req: Request) => {
     switch (body.action) {
       case 'price': {               // preview only, writes nothing
         const d = body.doc as QuoteDoc;
+        const problems = validateDoc(d);
+        if (problems.length) return json({ error: 'The quote has values the server can\'t price.', problems }, 400);
         d.family = deriveFamily(d); d.freestandingShopHours = pvHours(d);
         return json({ priced: priceManual(d, settings) });
       }
@@ -79,6 +81,8 @@ Deno.serve(async (req: Request) => {
         if (r.locked) return json({ error: 'This revision was sent and is locked. Start a new revision.' }, 409);
         if (r.doc_version !== doc_version) return json({ error: 'Someone else saved this quote. Reload to see their changes.' }, 409);
         if (!(r.quotes.salesperson_id === uid || isMgr)) return notYours();
+        const problems = validateDoc(doc);                 // R11: no NaN / Infinity / negative qty / unknown category
+        if (problems.length) return json({ error: 'The quote has values the server can\'t price.', problems }, 400);
         doc = await serverChecks(admin, doc as QuoteDoc, settings);
         // S2: family and production-value hours come from the spec and the lines, never from the browser.
         doc.family = deriveFamily(doc as QuoteDoc); doc.freestandingShopHours = pvHours(doc as QuoteDoc);

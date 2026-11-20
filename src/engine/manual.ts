@@ -1,6 +1,6 @@
 // Manual-mode pricing: the salesperson types lines (any product). The server prices them
 // with current settings, rolls them up exactly like the SMT, computes margin and flags.
-import { rollup, type CategoryKey, type RollupResult } from './rollup';
+import { rollup, ROW, type CategoryKey, type RollupResult } from './rollup';
 import { rateLine } from './lines';
 import type { Role, Basis, LineDetail } from './lineDetail';
 import type { SectionKey } from './sections';
@@ -71,7 +71,8 @@ export interface Settings {
 }
 
 export interface PricedLine extends QuoteLine { cost: number; sell: number; hours: number }
-export type FlagRule = 'INSTALL_BELOW_SUGGESTED' | 'INSTALL_MANUAL_NO_SUGGESTION' | 'PV_BELOW_FLOOR' | 'CLASS_D' | 'FAMILY_PV_DROP';
+export type FlagRule = 'INSTALL_BELOW_SUGGESTED' | 'INSTALL_MANUAL_NO_SUGGESTION' | 'PV_BELOW_FLOOR' | 'CLASS_D' | 'FAMILY_PV_DROP'
+  | 'MIN_GM' | 'ZERO_MARKUP' | 'BIG_DISCOUNT';
 /** A policy flag. `detail` is what an approval covers (hashed on the server), so it holds only rounded,
  *  order-independent numbers. `section` / `lineKeys` say where the editor shows it inline (not hashed). */
 export type Flag = { rule: FlagRule; detail: Record<string, unknown>; section?: SectionKey; lineKeys?: string[] };
@@ -94,7 +95,14 @@ export const flags: FlagDef[] = [
   { id: 'family_pv_drop', rule: 'FAMILY_PV_DROP', label: 'Production value dropped', section: 'costBased',
     explain: d => `Production value counts ${h1(d.used)} of the ${h1(d.expected)} freestanding shop hours (family ${d.family}) — needs a sales manager.` },
   { id: 'class_d', rule: 'CLASS_D', label: 'Class D duty', explain: () => 'Wording calls for Class D duty — needs a sales manager.' },
+  { id: 'min_gm', rule: 'MIN_GM', label: 'Margin below floor',
+    explain: d => `Gross margin ${pct(d.gmPct)} is below the ${pct(d.floor)} floor — needs a sales manager.` },
+  { id: 'zero_markup', rule: 'ZERO_MARKUP', label: 'Material at zero markup',
+    explain: d => `${(d.lines as unknown[] | undefined)?.length ?? 0} material line(s) sold at 0% markup — needs a sales manager.` },
+  { id: 'big_discount', rule: 'BIG_DISCOUNT', label: 'Discount over limit',
+    explain: d => `Discount ${pct(d.pct)} is over the ${pct(d.max)} limit — needs a sales manager.` },
 ];
+function pct(x: unknown) { return `${(Number(x ?? 0) * 100).toFixed(1)}%`; }
 export const flagDef = (rule: FlagRule) => flags.find(f => f.rule === rule);
 
 // Product family → builder factor family, without importing the builders (keeps manual.ts light).
@@ -209,6 +217,18 @@ export function priceManual(doc: QuoteDoc, s: Settings): Priced {
   const pvExp = r1(pvExpected(doc)), pvUsed = r1(doc.freestandingShopHours ?? 0);
   if (pvExp > 0 && pvUsed < pvExp) flags.push({ rule: 'FAMILY_PV_DROP', detail: { expected: pvExp, used: pvUsed, family: doc.family }, section: 'costBased' });
   if (/class\s*d\b/i.test(doc.wording)) flags.push({ rule: 'CLASS_D', detail: {} });
+  // S11 policy flags (manager approval). Details are rounded so unrelated edits don't void an approval.
+  const floor = s.min_gm_pct ?? 0.25;
+  const gmPct = sell ? (sell - cost) / sell : 0;
+  if (sell > 0 && gmPct < floor) flags.push({ rule: 'MIN_GM', detail: { gmPct: Math.round(gmPct * 1000) / 1000, floor } });
+  const zero = lines.filter(l => l.kind === 'material' && l.unitCost != null && l.unitCost > 0 && l.qty > 0 && !((l.markupPct ?? 0) > 0)
+    && !(l.auto && l.source !== 'hand' && !(l.edited && 'markupPct' in l.edited)));
+  if (zero.length) flags.push({ rule: 'ZERO_MARKUP', detail: { lines: zero.map(l => l.ref ?? l.description).sort() }, lineKeys: zero.map(l => l.key) });
+  const maxDisc = s.max_discount_pct ?? 0.1;
+  const gross = lines.reduce((a, l) => a + Math.max(0, l.sell), 0), credits = lines.reduce((a, l) => a + Math.max(0, -l.sell), 0);
+  const discPct = (doc.dealerDiscount ?? 0) + (gross > 0 ? credits / gross : 0);
+  if (discPct > maxDisc + 1e-9) flags.push({ rule: 'BIG_DISCOUNT', detail: { pct: Math.round(discPct * 1000) / 1000, max: maxDisc },
+    lineKeys: lines.filter(l => l.sell < 0).map(l => l.key) });
 
   return {
     quote: quoteMoney(ro.quote),
@@ -220,6 +240,33 @@ export function priceManual(doc: QuoteDoc, s: Settings): Priced {
     lint: lintWording(doc, s),
     costBasis: { shopLaborPerHr: shopCost, siteLaborPerHr: siteCost, shopAssumed: s.labor_cost_shop == null, siteAssumed: s.labor_cost_site == null, stdPartsGmLines: gmLines, stdPartsGmAssumed: gmAssumed },
   };
+}
+
+const KINDS: LineKind[] = ['material', 'shop_labor', 'site_labor', 'travel', 'equipment', 'pm', 'cad', 'engineering'];
+const CATS = new Set(Object.keys(ROW));
+/** Hard input checks (R11). [] = ok. The server refuses to save a doc that fails them. Negative unit cost / sell is
+ *  allowed (credit / discount lines); negative or non-finite qty, non-finite money and markup < −100% are not. */
+export function validateDoc(doc: QuoteDoc): string[] {
+  const out: string[] = [];
+  if (!doc || !Array.isArray(doc.lines)) return ['Quote has no lines array.'];
+  const fin = (v: unknown) => typeof v === 'number' && Number.isFinite(v);
+  const keys = new Set<string>();
+  doc.lines.forEach((l, i) => {
+    const at = `Line ${i + 1}${l?.description ? ` (${String(l.description).slice(0, 40)})` : ''}`;
+    if (!l || typeof l !== 'object') { out.push(`${at}: not a line.`); return; }
+    if (typeof l.key !== 'string' || !l.key) out.push(`${at}: missing key.`); else if (keys.has(l.key)) out.push(`${at}: duplicate key.`); else keys.add(l.key);
+    if (!KINDS.includes(l.kind)) out.push(`${at}: unknown kind "${l.kind}".`);
+    if (!CATS.has(l.category)) out.push(`${at}: unknown category "${l.category}".`);
+    if (!fin(l.qty) || l.qty < 0) out.push(`${at}: quantity must be a number ≥ 0.`);
+    for (const f of ['unitCost', 'unitSell', 'markupPct', 'gmPct'] as const) if (l[f] != null && !fin(l[f])) out.push(`${at}: ${f} must be a number.`);
+    if (l.markupPct != null && l.markupPct < -100) out.push(`${at}: markup below −100%.`);
+    if (l.gmPct != null && (l.gmPct < 0 || l.gmPct >= 1)) out.push(`${at}: GM must be between 0 and 1.`);
+    if (typeof l.description !== 'string') out.push(`${at}: description must be text.`);
+  });
+  for (const f of ['outboundFreight', 'preUse', 'dealerDiscount'] as const) if (doc[f] != null && (!fin(doc[f]) || (doc[f] as number) < 0)) out.push(`${f} must be a number ≥ 0.`);
+  if (fin(doc.dealerDiscount) && doc.dealerDiscount >= 1) out.push('dealerDiscount must be below 100%.');
+  if (doc.pvPerHourOverride != null && (!fin(doc.pvPerHourOverride) || doc.pvPerHourOverride < 0)) out.push('pvPerHourOverride must be a number ≥ 0.');
+  return out;
 }
 
 /** Wording checks. Errors block sending (never saving). */
