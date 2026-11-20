@@ -22,7 +22,7 @@ const engine = () => enginePromise ??= (async () => {
 
 declare const Deno: { env: { get(k: string): string | undefined }; serve(h: (r: Request) => Promise<Response>): void };
 
-const ENGINE_VERSION = 'manual-1+cal1';
+const ENGINE_VERSION = 'manual-1+cal1+r3s';   // round 3 S: refs, stamps, std-part cost, policy flags
 const cors = { 'access-control-allow-origin': '*', 'access-control-allow-headers': 'authorization, content-type, apikey, x-client-info', 'access-control-allow-methods': 'POST, OPTIONS' };
 const json = (b: unknown, status = 200) => new Response(JSON.stringify(b), { status, headers: { ...cors, 'content-type': 'application/json' } });
 
@@ -44,7 +44,7 @@ Deno.serve(async (req: Request) => {
   if (!['sales', 'manager', 'admin'].includes(role)) return json({ error: 'Your account has no access yet. Ask an admin.' }, 403);
 
   const body = await req.json();
-  const { priceManual, sendBlocked, deriveFamily, pvHours, validateDoc } = await engine();
+  const { priceManual, sendBlocked, deriveFamily, pvHours, validateDoc, deltaDoc, reviseStatus } = await engine();
   const settings = await loadSettings(admin);
   const ev = (quote_id: string, revision_id: string | null, event: string, data: unknown = {}) =>
     admin.from('quote_events').insert({ quote_id, revision_id, actor: uid, event, data });
@@ -88,11 +88,10 @@ Deno.serve(async (req: Request) => {
         doc.family = deriveFamily(doc as QuoteDoc); doc.freestandingShopHours = pvHours(doc as QuoteDoc);
         const priced = priceManual(doc as QuoteDoc, settings);
         const t = priced.totals, ro = priced.quote;   // S9: one rounding rule — parts to the cent, total = sum of parts
-        // keep only approvals whose covered numbers are unchanged
-        const { data: appr } = await admin.from('approvals').select('*').eq('revision_id', revision_id);
-        for (const a of appr ?? []) {
-          const f = priced.flags.find(x => x.rule === a.rule);
-          if (!f || (await hash(f.detail)) !== a.covered_hash) await admin.from('approvals').delete().eq('id', a.id);
+        // S10: a CHANGE ORDER prints the delta vs the last confirmed revision
+        if (r.doc_type === 'CHANGE ORDER') {
+          const { data: conf } = await admin.from('quote_revisions').select('doc, rev').eq('quote_id', r.quote_id).eq('doc_type', 'CONFIRMATION').order('rev', { ascending: false }).limit(1).maybeSingle();
+          (priced as any).changeOrder = conf ? { fromRev: conf.rev, ...deltaDoc(conf.doc as QuoteDoc, doc, settings) } : { error: 'No confirmed revision to compare against.' };
         }
         const { data: upd, error } = await admin.from('quote_revisions').update({
           doc, priced, flags: priced.flags, base_price: ro.base, installation: ro.installation, freight: ro.freight, pre_use: ro.preUse,
@@ -100,6 +99,13 @@ Deno.serve(async (req: Request) => {
           cad_hours: t.cadHours, engine_version: ENGINE_VERSION, doc_version: r.doc_version + 1, updated_at: new Date().toISOString(),
         }).eq('id', revision_id).eq('doc_version', doc_version).select().single();
         if (error) throw error;
+        if (!upd) return json({ error: 'Someone else saved this quote. Reload to see their changes.' }, 409);
+        // keep only approvals whose covered numbers are unchanged (after the versioned update succeeded — R8)
+        const { data: appr } = await admin.from('approvals').select('*').eq('revision_id', revision_id);
+        for (const a of appr ?? []) {
+          const f = priced.flags.find(x => x.rule === a.rule);
+          if (!f || (await hash(f.detail)) !== a.covered_hash) await admin.from('approvals').delete().eq('id', a.id);
+        }
         if (header) await admin.from('quotes').update({ ...pick(header, ['project_name', 'job_location', 'contact_id', 'brand']), updated_at: new Date().toISOString() }).eq('id', r.quote_id);
         await admin.from('quote_line_facts').delete().eq('revision_id', revision_id);
         if (priced.lines.length) await admin.from('quote_line_facts').insert(priced.lines.map(l => ({
@@ -111,8 +117,12 @@ Deno.serve(async (req: Request) => {
       }
       case 'approve': {
         if (!['manager', 'admin'].includes(role)) return json({ error: 'Only a sales manager can approve.' }, 403);
-        const { revision_id, rule, note } = body;
+        const { revision_id, rule, note, doc_version } = body;
         const { data: r } = await admin.from('quote_revisions').select('*').eq('id', revision_id).single();
+        if (!r) return json({ error: 'Revision not found' }, 404);
+        // R8: the manager approves what was on their screen — refuse if the revision was saved since.
+        if (typeof doc_version !== 'number') return json({ error: 'doc_version is required to approve.' }, 400);
+        if (r.doc_version !== doc_version) return json({ error: 'The quote changed since you opened it. Reload and review again.' }, 409);
         const { data: oq } = await admin.from('quotes').select('salesperson_id').eq('id', r?.quote_id).single();
         if (oq?.salesperson_id === uid && role !== 'admin') return json({ error: "You can't approve your own quote." }, 403);
         const f = (r?.flags ?? []).find((x: { rule: string }) => x.rule === rule);
@@ -136,14 +146,21 @@ Deno.serve(async (req: Request) => {
         await ev(r.quote_id, revision_id, 'sent', { doc_type: r.doc_type, total: priced.quote.total });
         return json({ ok: true, priced });             // S9: render the customer PDF from this (server-priced) result
       }
-      case 'revise': {             // copy the latest revision into a new editable one
-        const { quote_id, doc_type } = body;
+      case 'revise': {             // copy a revision (the one on screen, else the latest) into a new editable one
+        const { quote_id, doc_type, from_revision_id } = body;
         if (!(await ownQuote(quote_id))) return notYours();
-        const { data: last } = await admin.from('quote_revisions').select('*').eq('quote_id', quote_id).order('rev', { ascending: false }).limit(1).single();
-        const { data: r, error } = await admin.from('quote_revisions').insert({ quote_id, rev: last.rev + 1, doc: last.doc, doc_type: doc_type ?? last.doc_type, created_by: uid }).select().single();
+        const { data: last } = await admin.from('quote_revisions').select('rev').eq('quote_id', quote_id).order('rev', { ascending: false }).limit(1).single();
+        const { data: src } = from_revision_id
+          ? await admin.from('quote_revisions').select('*').eq('id', from_revision_id).eq('quote_id', quote_id).single()
+          : await admin.from('quote_revisions').select('*').eq('quote_id', quote_id).order('rev', { ascending: false }).limit(1).single();
+        if (!src) return json({ error: 'Revision to copy not found.' }, 404);
+        const { data: r, error } = await admin.from('quote_revisions').insert({ quote_id, rev: last.rev + 1, doc: src.doc, doc_type: doc_type ?? src.doc_type, created_by: uid }).select().single();
         if (error) throw error;
-        await admin.from('quotes').update({ current_revision: r.rev, status: doc_type === 'CONFIRMATION' ? 'won' : 'draft' }).eq('id', quote_id);
-        await ev(quote_id, r.id, 'revised', { rev: r.rev, doc_type: r.doc_type });
+        // S10: a won job stays won (status follows the NEW revision's doc type and never downgrades 'won')
+        const { data: q } = await admin.from('quotes').select('status').eq('id', quote_id).single();
+        const status = reviseStatus(q?.status, r.doc_type);
+        await admin.from('quotes').update({ current_revision: r.rev, status }).eq('id', quote_id);
+        await ev(quote_id, r.id, 'revised', { rev: r.rev, doc_type: r.doc_type, from_rev: src.rev });
         return json({ revision: r });
       }
       case 'win': {                // job ID replaces the quote number; confirmation revision created

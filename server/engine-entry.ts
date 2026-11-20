@@ -6,3 +6,4 @@ export { buildFromSpec, ensureRefs } from '../src/engine/buildSpec';
 export { stampFromBuild } from '../src/engine/stamp';
 export { readSteelCost } from '../src/engine/kit';
 export { loadCatalog } from '../src/engine/catalogLoader';
+export { deltaDoc, reviseStatus } from '../src/engine/changeOrder';
