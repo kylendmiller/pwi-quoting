@@ -196,6 +196,7 @@ export interface RebuildPlan {
 export type Choices = Record<string, 'yours' | 'builder'>;        // per conflict `${ref}::${field}`
 
 const PRICED_FIELDS = ['qty', 'unitCost', 'markupPct', 'unitSell', 'description', 'category'] as const;
+const DETAIL_FIELDS = ['detail.shape', 'detail.lengthFt', 'detail.plf', 'detail.tIn', 'detail.wIn', 'detail.lIn', 'detail.part'] as const;
 
 /** Build `spec` fresh (builder lines only) — the input to planRebuild. */
 export function buildFresh(doc: QuoteDoc, spec: QuoteSpec, cat: Catalog, settings: any) {
@@ -213,20 +214,11 @@ export function planRebuild(old: EditorDoc, fresh: QuoteDoc, settings: Settings)
   for (const n of N) {
     const o = oBy.get(n._ref);
     if (!o) { if (removed.has(n._ref)) plan.stayDeleted.push(n.description); else plan.adds.push(n); continue; }
-    const changes: FieldChange[] = [];
-    const kept: string[] = [];
-    for (const f of PRICED_FIELDS) {
-      const ov = o.edited && f in o.edited;
-      if (ov) {
-        kept.push(f);
-        if (!same(o.edited![f], (n as any)[f])) plan.conflicts.push({ ref: n._ref, key: o.key, description: o.description, field: f, yours: (o as any)[f], builderWas: o.edited![f], builderNow: (n as any)[f] });
-      } else if (!same((o as any)[f], (n as any)[f])) changes.push({ field: f, from: (o as any)[f], to: (n as any)[f] });
+    const kept = Object.keys(o.edited ?? {});
+    for (const p of kept) {
+      const now = getPath(n, p);
+      if (!same(o.edited![p], now)) plan.conflicts.push({ ref: n._ref, key: o.key, description: o.description, field: p, yours: getPath(o, p), builderWas: o.edited![p], builderNow: now });
     }
-    for (const p of Object.keys(o.edited ?? {})) if (p.startsWith('detail.')) {
-      kept.push(p);
-      const now = getPath(n, p); if (!same(o.edited![p], now)) plan.conflicts.push({ ref: n._ref, key: o.key, description: o.description, field: p, yours: getPath(o, p), builderWas: o.edited![p], builderNow: now });
-    }
-    if (changes.length) plan.updates.push({ ref: n._ref, description: n.description, changes });
     if (kept.length) plan.keptEdits.push({ ref: n._ref, description: o.description, fields: kept });
   }
   for (const o of O) if (!nBy.has(o._ref)) plan.removes.push(o);
@@ -235,6 +227,18 @@ export function planRebuild(old: EditorDoc, fresh: QuoteDoc, settings: Settings)
   if ((old.preUse ?? 0) !== (fresh.preUse ?? 0)) plan.docChanges.push(`Pre-use inspections $${old.preUse} → $${fresh.preUse}`);
   if ((old.suggestedInstallHours ?? 0) !== (fresh.suggestedInstallHours ?? 0)) plan.docChanges.push(`Suggested install ${r1(old.suggestedInstallHours ?? 0)} h → ${r1(fresh.suggestedInstallHours ?? 0)} h`);
   const after = applyPlan(old, fresh, plan, {});
+  // What actually changes on each matched line once your edits are re-applied (so the list matches the totals).
+  const aBy = new Map(linesOf(after).map(l => [l.key, l]));
+  for (const o of O) {
+    const a = aBy.get(o.key); if (!a) continue;
+    const changes: FieldChange[] = [];
+    for (const f of [...PRICED_FIELDS, ...DETAIL_FIELDS]) {
+      if (f === 'description') continue;
+      const x = getPath(o, f), y = getPath(a, f);
+      if ((x != null || y != null) && !same(x, y)) changes.push({ field: f, from: x, to: y });
+    }
+    if (changes.length) plan.updates.push({ ref: o._ref, description: a.description, changes });
+  }
   plan.before = price(old, settings); plan.after = price(after, settings);
   plan.money = moneyByRow(plan.before, plan.after);
   const fk = (f: Flag) => f.rule + JSON.stringify(f.detail);

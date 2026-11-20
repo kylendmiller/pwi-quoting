@@ -37,6 +37,7 @@ export const rowOf = (k: CategoryKey) => ROWS.find(r => r.key === k)!;
 
 export interface RowStats {
   def: RowDef; lines: PricedLine[]; cost: number; sell: number; gm: number; gmPct: number | null;
+  costPending: boolean;                  // std parts: cost arrives with the engine update (gm_pct)
   lb: number; noWeight: number; hours: number; runs: number; edited: number; hand: number; costUnknown: boolean; estCost: boolean;
 }
 const isWeight = (l: PricedLine) => { const t = l.detail?.type; return t === 'steel' || t === 'plate' || t === 'box'; };
@@ -53,6 +54,7 @@ export function rowStats(doc: QuoteDoc, priced: Priced): RowStats[] {
     const docLines = doc.lines as EditorLine[];
     return {
       def, lines, cost, sell, gm, gmPct: costUnknown || !sell ? null : gm / sell,
+      costPending: costUnknown && ['stdParts', 'ultraLitePcr', 'stairStringerPcr'].includes(def.key),
       lb: lines.reduce((a, l) => a + lbOf(l), 0),
       noWeight: def.measure === 'tons' ? lines.filter(l => !isWeight(l)).length : 0,
       hours: lines.reduce((a, l) => a + l.hours, 0),

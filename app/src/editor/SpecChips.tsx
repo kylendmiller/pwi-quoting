@@ -39,6 +39,7 @@ export function SpecChips({ doc, locked, onSpec, onCrewDays, busy }: {
   if (!spec?.items?.length) return null;
   const crew = crewOf(doc);
   const installed = spec.items.some((it: any) => it.install);
+  const siteH = doc.lines.filter(l => l.kind === 'site_labor').reduce((a, l) => a + l.qty, 0);
 
   const apply = (i: number, f: F, raw: string | boolean) => {
     setEdit(null);
@@ -75,13 +76,13 @@ export function SpecChips({ doc, locked, onSpec, onCrewDays, busy }: {
           })}
         </div>
       ))}
-      {installed && <InstallControl men={crew.men} days={crew.days} locked={locked || busy} onMen={setMen} onDays={d => onCrewDays(crew.men ?? 2, d)} />}
+      {installed && <InstallControl men={crew.men} days={crew.days} siteHours={siteH} locked={locked || busy} onMen={setMen} onDays={d => onCrewDays(crew.men ?? 2, d)} />}
     </div>
   );
 }
 
 /** U7: Men × Days × 10 h — one control. */
-export function InstallControl({ men, days, locked, onMen, onDays }: { men: number | null; days: number | null; locked: boolean; onMen: (n: number) => void; onDays: (n: number) => void }) {
+export function InstallControl({ men, days, siteHours, locked, onMen, onDays }: { men: number | null; days: number | null; siteHours: number; locked: boolean; onMen: (n: number) => void; onDays: (n: number) => void }) {
   const [m, setM] = useState<string | null>(null), [d, setD] = useState<string | null>(null);
   const num = (s: string | null, fb: number | null) => (s == null ? fb : Number(s));
   const hrs = (num(m, men) ?? 0) * (num(d, days) ?? 0) * HOURS_PER_DAY;
@@ -91,7 +92,7 @@ export function InstallControl({ men, days, locked, onMen, onDays }: { men: numb
       <input disabled={locked} value={m ?? men ?? ''} size={2} onChange={e => setM(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') { onMen(Number(m)); setM(null); } if (e.key === 'Escape') setM(null); }} onBlur={() => { if (m != null && Number(m) !== men) onMen(Number(m)); setM(null); }} />
       <span>men ×</span>
       <input disabled={locked} value={d ?? days ?? ''} size={2} onChange={e => setD(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') { onDays(Number(d)); setD(null); } if (e.key === 'Escape') setD(null); }} onBlur={() => { if (d != null && Number(d) !== days) onDays(Number(d)); setD(null); }} />
-      <span>days × {HOURS_PER_DAY} h = <b>{Math.round(hrs)} h</b>{days ? <small className="muted"> · {Math.ceil(days / 5)} wk</small> : null}</span>
+      <span>days{m != null || d != null ? <> × {HOURS_PER_DAY} h = <b>{Math.round(hrs)} h</b> on site</> : <> · <b>{Math.round(siteHours * 10) / 10} h</b> on site</>}{days ? <small className="muted"> · {Math.ceil(days / 5)} wk</small> : null}</span>
       {!S_READY.crewDays && <small className="muted" title="Track S engine update pending: until then a days change adds an 'Install adjustment' hours line and travel/equipment stay as built.">days → hours only*</small>}
     </div>
   );

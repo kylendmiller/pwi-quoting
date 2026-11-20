@@ -81,7 +81,7 @@ export function SummarySheet({ doc, priced, settings, locked, hideCost, openFlag
                 {s.lines.some(l => l.basis?.flag) && <span className="qe-badge flag" title={s.lines.filter(l => l.basis?.flag).map(l => l.basis!.flag).join('\n')}>review</span>}
               </span>
               <span className="num">{measure(s)}</span>
-              {!hideCost && <span className="num">{s.lines.length ? (s.costUnknown ? <i title="Standard-part cost pending the engine update (std_parts gm_pct)">pending</i> : fmtMoney(s.cost)) : ''}</span>}
+              {!hideCost && <span className="num">{s.lines.length ? (s.costPending ? <i title="Standard-part cost arrives with the engine update (std_parts gm_pct)">pending</i> : s.costUnknown ? <span className="muted" title="Sold at a list sell price; no cost is kept on these lines">—</span> : fmtMoney(s.cost)) : ''}</span>}
               <span className="num b">{s.sell || s.lines.length ? fmtMoney(s.sell) : ''}</span>
               {!hideCost && <span className="num">{s.gmPct == null ? '' : fmtMoney(s.gm)}</span>}
               {!hideCost && <span className={`num ${s.gmPct != null && s.gmPct < 0.15 ? 'bad' : ''}`} title={s.estCost ? 'Labor cost is the SMT standard labor cost, not payroll' : undefined}>{s.gmPct == null ? (s.costUnknown && s.sell ? '—' : '') : fmtPct(s.gmPct)}{s.estCost && s.gmPct != null ? <sup>std</sup> : null}</span>}

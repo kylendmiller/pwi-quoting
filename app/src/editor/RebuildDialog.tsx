@@ -1,17 +1,21 @@
 // Rebuild diff dialog (U6): what a spec change does before it is applied.
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { RebuildPlan, Choices } from './engineApi';
 import { rowOf, fmtMoney, fmtNum } from './smt';
 import { FLAG_TEXT } from './flags';
 
 const v = (x: unknown) => (typeof x === 'number' ? fmtNum(x, 2) : String(x ?? '—'));
-const FIELD: Record<string, string> = { qty: 'qty', unitCost: 'cost ea', markupPct: 'markup', unitSell: 'sell ea', description: 'description', category: 'section' };
+const FIELD: Record<string, string> = { qty: 'qty', unitCost: 'cost ea', markupPct: 'markup %', unitSell: 'sell ea', description: 'description', category: 'section',
+  'detail.shape': 'shape', 'detail.lengthFt': 'length ft', 'detail.plf': 'plf', 'detail.tIn': 'thk', 'detail.wIn': 'width', 'detail.lIn': 'length in', 'detail.part': 'part', 'detail.costPerLb': '$/lb', 'detail.baseHrs': 'base h' };
 
 export function RebuildDialog({ title, plan, approvedRules, onCancel, onApply }: {
   title: string; plan: RebuildPlan; approvedRules: string[]; onCancel: () => void; onApply: (c: Choices) => void;
 }) {
   const [choices, setChoices] = useState<Choices>({});
   const [more, setMore] = useState(false);
+  const box = useRef<HTMLDivElement>(null);
+  // Focus the dialog itself, not Apply: the Enter that opened it must not also apply it.
+  useEffect(() => { box.current?.focus(); }, []);
   const b = plan.before, a = plan.after;
   const dT = a.rollup.quote.total - b.rollup.quote.total;
   const dGm = a.totals.grossMarginPct - b.totals.grossMarginPct;
@@ -20,11 +24,11 @@ export function RebuildDialog({ title, plan, approvedRules, onCancel, onApply }:
   const upd = more ? plan.updates : plan.updates.slice(0, 8);
   return (
     <div className="qe-modal" onKeyDown={e => { if (e.key === 'Escape') onCancel(); }}>
-      <div className="qe-dialog" role="dialog" aria-label="Rebuild">
+      <div className="qe-dialog" role="dialog" aria-label="Rebuild" tabIndex={-1} ref={box}>
         <h3>Rebuild: {title}</h3>
         <div className="qe-dlg-total">
           <span>Total <b>${fmtMoney(b.rollup.quote.total)}</b> → <b>${fmtMoney(a.rollup.quote.total)}</b> <span className={dT >= 0 ? 'up' : 'dn'}>({dT >= 0 ? '+' : '−'}${fmtMoney(Math.abs(dT))})</span></span>
-          <span>GM {(b.totals.grossMarginPct * 100).toFixed(1)}% → {(a.totals.grossMarginPct * 100).toFixed(1)}% <span className={dGm >= 0 ? 'up' : 'dn'}>({dGm >= 0 ? '+' : ''}{(dGm * 100).toFixed(1)} pt)</span></span>
+          <span>GM {(b.totals.grossMarginPct * 100).toFixed(1)}% → {(a.totals.grossMarginPct * 100).toFixed(1)}% <span className={Math.round(dGm * 1000) >= 0 ? 'up' : 'dn'}>({Math.round(dGm * 1000) > 0 ? '+' : Math.round(dGm * 1000) < 0 ? '−' : '±'}{Math.abs(dGm * 100).toFixed(1)} pt)</span></span>
           <span>Shop {fmtNum(b.totals.shopHours)} → {fmtNum(a.totals.shopHours)} h · Install {fmtNum(b.totals.installHours)} → {fmtNum(a.totals.installHours)} h</span>
         </div>
         {plan.money.length > 0 && <table className="qe-dlg-money"><thead><tr><th>Main Summary row</th><th className="num">Now</th><th className="num">After</th><th className="num">Change</th></tr></thead>
@@ -56,7 +60,7 @@ export function RebuildDialog({ title, plan, approvedRules, onCancel, onApply }:
         {plan.fallback && <p className="muted">Preview mode: lines are matched by item order and description until the engine update (stable line ids) lands; steel and price-list changes since this quote was built are included in the totals above.</p>}
         <div className="row" style={{ justifyContent: 'flex-end' }}>
           <button className="secondary" onClick={onCancel}>Cancel</button>
-          <button autoFocus onClick={() => onApply(choices)}>Apply {nChanges + plan.docChanges.length} change{nChanges + plan.docChanges.length === 1 ? '' : 's'}</button>
+          <button onClick={() => onApply(choices)}>Apply {nChanges + plan.docChanges.length} change{nChanges + plan.docChanges.length === 1 ? '' : 's'}</button>
         </div>
       </div>
     </div>
