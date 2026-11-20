@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { buildFromSpec, BUILDERS } from '../src/engine/buildSpec';
 import { priceManual } from '../src/engine/manual';
-import { testCatalog } from './freestanding.test';
+import { testCatalog } from './catalog';
 const S = { shop_rate: 140, onsite_rate: 113, pm_rate: 95, cad_rate: 120, pe_rate: 180, freestanding_pv_per_shop_hour: 38.6, one_pct_adder: { on: true }, sales_tax_rate: 0.07, banned_strings: [] as string[] };
 const base: any = { lines: [], outboundFreight: 0, preUse: 0, showPreUse: false, dealerDiscount: 0, taxOn: false, suggestedInstallHours: null, freestandingShopHours: 0, pvPerHourOverride: null, wording: '', options: [] };
 const run = (items: any[]) => {
