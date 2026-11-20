@@ -4,7 +4,7 @@
 import { describe, it, expect } from 'vitest';
 import { buildFromSpec, type QuoteSpec } from '../src/engine/buildSpec';
 import { priceManual, validateDoc, INSTALL_DAYS_OP, type QuoteDoc, type QuoteLine } from '../src/engine/manual';
-import { HOURS_PER_DAY, RULES } from '../src/engine/kit';
+import { HOURS_PER_DAY, RULES, crewDaysFor } from '../src/engine/kit';
 import { planRebuild, applyPlan } from '../src/engine/rebuildPlan';
 import { price } from '../app/src/editor/engineApi';
 import { testCatalog } from './catalog';
@@ -53,11 +53,12 @@ describe('installDays: one item', () => {
     expect(adj[0].qty).toBeGreaterThan(0);
     expect(adj[0].ref).toBe('fs-1:install/install-days-adjustment');
     expect(adj[0].auto).toBe(true);
-    expect(adj[0].description).toContain(`${men} men × ${days} days × ${HOURS_PER_DAY} h`);
-    expect(sum([...tasks(d), ...adj])).toBe(men * days * HOURS_PER_DAY);
+    expect(adj[0].description).toContain(`${men} men × ${days} days`);
+    const target = Math.round((sum(tasks(b0)) + men * HOURS_PER_DAY) * 10) / 10;   // one whole crew-day on top of the builder's hours
+    expect(sum([...tasks(d), ...adj])).toBe(target);
     // hours on the priced quote: the target + travel time (drive: same as built)
     const travel = sum(site(d).filter(l => l.laborOp === 'site_travel'));
-    expect(price(d, S).totals.installHours).toBeCloseTo(men * days * HOURS_PER_DAY + travel, 6);
+    expect(price(d, S).totals.installHours).toBeCloseTo(target + travel, 6);
     // the suggestion stays the builder's
     expect(d.suggestedInstallHours).toBe(sugg);
     expect(price(d, S).flags.map(f => f.rule)).not.toContain('INSTALL_BELOW_SUGGESTED');
@@ -150,8 +151,9 @@ describe('installDays: shared trip (several installed items)', () => {
     const adj = adjOf(d);
     expect(adj.map(l => l.ref).sort()).toEqual(['a:install/install-days-adjustment', 'b:install/install-days-adjustment']);
     const itemTasks = (i: number) => tasks(d).filter(l => l.item === i);
-    expect(sum([...itemTasks(0), ...adj.filter(l => l.item === 0)])).toBe(men * 4 * HOURS_PER_DAY);
-    expect(sum([...itemTasks(1), ...adj.filter(l => l.item === 1)])).toBe(men * 3 * HOURS_PER_DAY);
+    const want = (i: number, days: number) => { const t = sum(itemTasks(i)), bd = crewDaysFor(t, men); return Math.round((days >= bd ? t + (days - bd) * men * HOURS_PER_DAY : men * days * HOURS_PER_DAY) * 10) / 10; };
+    expect(sum([...itemTasks(0), ...adj.filter(l => l.item === 0)])).toBe(want(0, 4));
+    expect(sum([...itemTasks(1), ...adj.filter(l => l.item === 1)])).toBe(want(1, 3));
     const pd = travelDetail(d, 'per_diem').detail as any;
     expect(pd.crewDays).toBe(7);
     expect(equip(d).every(l => (l.detail as any).crewDays === 7)).toBe(true);
@@ -187,5 +189,20 @@ describe('installDays through planRebuild (the editor\'s path)', () => {
   it('fewer days through the plan raises the approval', () => {
     const plan = planRebuild(d0, spec({ installDays: 2 }), testCatalog, S);
     expect(plan.flags.raised.map(f => f.rule)).toContain('INSTALL_BELOW_SUGGESTED');
+  });
+});
+
+describe('installDays at the builder\'s own day count', () => {
+  it('never adds hours and never raises the install approval, for any job size', () => {
+    for (const runwayOalFt of [30, 60, 90, 120, 160, 240]) {
+      const sp: QuoteSpec = { pwi_quote: 1, items: [{ type: 'freestanding', series: 'M', capacityTons: 2, spanFt: 20, runwayOalFt, overallHeightFt: 16, bridgeDrive: 'motorized', voltage: '460V/3', install: true, miles: 200, crewMen: 2 } as any] };
+      const b = buildFromSpec(sp, testCatalog, CAL_SETTINGS, { lines: [], options: [] } as any).doc as QuoteDoc;
+      const task = b.lines.filter(l => l.kind === 'site_labor' && l.laborOp !== 'site_travel').reduce((a, l) => a + l.qty, 0);
+      const days = crewDaysFor(task, 2);
+      (sp.items[0] as any).installDays = days;
+      const d = buildFromSpec(sp, testCatalog, CAL_SETTINGS, { lines: [], options: [] } as any).doc as QuoteDoc;
+      expect(d.lines.some(l => l.laborOp === INSTALL_DAYS_OP)).toBe(false);
+      expect(priceManual(d, CAL_SETTINGS as any).flags.some(f => f.rule === 'INSTALL_BELOW_SUGGESTED')).toBe(false);
+    }
   });
 });

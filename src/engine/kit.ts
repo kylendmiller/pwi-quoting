@@ -98,11 +98,15 @@ export { INSTALL_DAYS_OP };
 /** The visible +/− site-labor line for spec.installDays: the builder's task lines stay as built, this line makes the
  *  on-site total men × days × HOURS_PER_DAY. null when the tasks already add up to that. */
 export function installDaysLine(taskHrs: number, men: number, days: number, fam: string): QuoteLine | null {
-  const target = men * days * HOURS_PER_DAY, delta = Math.round((target - taskHrs) * 10) / 10;
+  // At or above the builder's own day count, days only ADD whole crew-days to the builder's hours, so typing the
+  // suggested days never lands under the suggestion (crewDaysFor allows a little slack when it rounds days).
+  const builtDays = crewDaysFor(taskHrs, men);
+  const target = days >= builtDays ? taskHrs + (days - builtDays) * men * HOURS_PER_DAY : men * days * HOURS_PER_DAY;
+  const delta = Math.round((target - taskHrs) * 10) / 10;
   if (Math.abs(delta) < 0.05) return null;
   const t1 = Math.round(taskHrs * 10) / 10;
   return { key: key(), family: fam, kind: 'site_labor', category: 'onsiteLabor', laborOp: INSTALL_DAYS_OP, role: 'install', qty: delta,
-    description: `Install days adjustment (${men} men × ${days} days × ${HOURS_PER_DAY} h = ${target} h)`,
+    description: `Install days adjustment (${men} men × ${days} days; builder ${builtDays} days → ${Math.round(target * 10) / 10} h on site)`,
     basis: { source: 'spec', text: `installDays ${days} on the spec: ${men} men × ${days} days × ${HOURS_PER_DAY} h/day = ${target} h on site; the builder's install tasks total ${t1} h → ${delta > 0 ? '+' : ''}${delta} h`, assumption: 'installDays' },
     detail: { type: 'labor', where: 'site', op: 'Install days adjustment', smtRow: 'Labor G9:G44 On Site Labor', baseHrs: delta, factor: 1, factorName: 'install', hours: delta } };
 }

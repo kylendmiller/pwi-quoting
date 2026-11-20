@@ -290,7 +290,8 @@ describe('round 4: install crew control (men × days) through spec + planRebuild
     const c1 = installCrew(d1);
     expect(c1).toEqual({ men: c0.men, days: c0.days! + 2, builtDays: c0.days, set: true });
     const site = d1.lines.filter(l => l.kind === 'site_labor' && l.laborOp !== 'site_travel').reduce((a, l) => a + l.qty, 0);
-    expect(Math.round(site * 10) / 10).toBe(c0.men! * (c0.days! + 2) * 10);
+    const site0 = d0.lines.filter(l => l.kind === 'site_labor' && l.laborOp !== 'site_travel').reduce((a, l) => a + l.qty, 0);
+    expect(Math.round(site * 10) / 10).toBe(Math.round((site0 + c0.men! * 2 * 10) * 10) / 10);   // +2 whole crew-days on top of the builder's hours
     expect(price(d1, S).flags.some(f => f.rule === 'INSTALL_BELOW_SUGGESTED')).toBe(false);
     // fewer days
     const fewer = applyPlan(planRebuild(d1, withInstallCrew(d1, { days: c0.days! - 1 }), testCatalog, S));
