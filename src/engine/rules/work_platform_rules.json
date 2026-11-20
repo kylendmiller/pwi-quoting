@@ -1,0 +1,449 @@
+{
+ "_source": "SMT 11.3.26 'Work Platforms' tab (Guardian RV work platform set: 2 platforms, 4 towers, 4 hoists per set) + Labor tab rows 59-71. Prices per set; steel re-priced through the steel_cost setting / price list. No sold work-platform set in fixtures/ to calibrate against (28738 is a StructuralSpace grating platform, not a WP set).",
+ "boxTrussIf": {
+  "lengthOverFt": 57,
+  "widthOverFt": 6
+ },
+ "hoistByLength": [
+  [
+   40,
+   "1 Ton"
+  ],
+  [
+   62,
+   "2 Ton"
+  ],
+  [
+   9999,
+   "3 Ton"
+  ]
+ ],
+ "hoists": {
+  "1 Ton": {
+   "part": "STK1026-20-460V-3PH-A",
+   "brake": "S2KLAS-20"
+  },
+  "2 Ton": {
+   "part": "STK2026-20-460V-3PH-A",
+   "brake": "S3KLAS-20"
+  },
+  "3 Ton": {
+   "part": "STK3021-20-460V-3PH-A",
+   "brake": "S3KLAS-20"
+  }
+ },
+ "componentDiscount": 0.15,
+ "track": {
+  "part": "S300-53",
+  "perSet": 2
+ },
+ "sirenStrobe": {
+  "desc": "Siren and strobe alarm kit (installed at PWI)",
+  "perSet": 2,
+  "sell": 1200
+ },
+ "tallTowerIfUnitOverFt": 14,
+ "specialtyMarkupPct": 25,
+ "specialty": [
+  [
+   "Black 3/8\" UHMW cut 2\" x 4-1/2\"",
+   16,
+   1.25
+  ],
+  [
+   "Black 7/16\" UHMW cut 2\" x 4-1/2\"",
+   16,
+   2.4
+  ],
+  [
+   "Tower bracing U-bolt TR51015U",
+   8,
+   7
+  ],
+  [
+   "UHMW tower slide 5/16\" screws",
+   64,
+   0.2
+  ],
+  [
+   "UHMW tower slide 5/16\" nylon nuts",
+   64,
+   0.07
+  ],
+  [
+   "3/4\" cup point set screws (tower base)",
+   16,
+   1.95
+  ],
+  [
+   "PWI standard decal 4\" x 7\"",
+   8,
+   10
+  ],
+  [
+   "Hoist bolts",
+   8,
+   3.96
+  ],
+  [
+   "Hoist bolt nuts",
+   8,
+   1.8
+  ],
+  [
+   "End unit attachment bolts",
+   16,
+   1.25
+  ],
+  [
+   "End unit attachment nuts",
+   16,
+   1
+  ],
+  [
+   "End unit attachment heavy washers",
+   16,
+   0.25
+  ],
+  [
+   "PWI built wiring harness, complete",
+   1,
+   1000
+  ],
+  [
+   "Base plates (purchased)",
+   16,
+   3
+  ]
+ ],
+ "plate": [
+  [
+   "End unit UHMW plates",
+   32,
+   0.1875,
+   4,
+   6
+  ],
+  [
+   "Hoist tabs",
+   16,
+   0.5,
+   3,
+   5
+  ],
+  [
+   "Base plates",
+   4,
+   0.5,
+   10,
+   10
+  ],
+  [
+   "Base unit / holder",
+   16,
+   0.25,
+   6,
+   6
+  ],
+  [
+   "Tower top gussets",
+   8,
+   0.25,
+   10,
+   10
+  ],
+  [
+   "Top U-bolt plate",
+   4,
+   0.5,
+   8,
+   10
+  ],
+  [
+   "Decal plate",
+   2,
+   0.125,
+   6,
+   12
+  ],
+  [
+   "End carriage channel assemblies",
+   4,
+   0.25,
+   12,
+   20
+  ],
+  [
+   "WP end channel assemblies",
+   4,
+   0.25,
+   9,
+   20
+  ],
+  [
+   "Shim plates",
+   4,
+   0.13,
+   6,
+   20
+  ],
+  [
+   "WP extension sheets",
+   1,
+   0.1875,
+   12,
+   36
+  ],
+  [
+   "Toe kick",
+   2,
+   0.105,
+   6,
+   600
+  ]
+ ],
+ "_structural": "[description, qty per set, shape, length ft, scales with platform length (L/50)]",
+ "structural": {
+  "triangular": [
+   [
+    "Main tower column",
+    4,
+    "ST 5 x 5 x 7ga",
+    20,
+    false
+   ],
+   [
+    "Main tower top",
+    4,
+    "ST 5 x 5 x 1/4",
+    2,
+    false
+   ],
+   [
+    "Carriage tube",
+    4,
+    "ST 5 x 5 x 7ga",
+    5,
+    false
+   ],
+   [
+    "Tower angle bracing",
+    6,
+    "AI 2 1/2 x 2 1/2 x 3/16",
+    10,
+    false
+   ],
+   [
+    "Tower lateral brace (top tube)",
+    2,
+    "ST 3 1/2 x 3 1/2 x 7ga",
+    15,
+    false
+   ],
+   [
+    "Platform truss pipes",
+    164,
+    "PI 1/2 x #40",
+    1.75,
+    true
+   ],
+   [
+    "Platform side chord",
+    1,
+    "RT 3 x 2 x 11ga",
+    50,
+    true
+   ],
+   [
+    "Platform bottom chord",
+    2,
+    "ST 2 1/2 x 2 1/2 x 7ga",
+    50,
+    true
+   ],
+   [
+    "Platform floor structure",
+    50,
+    "RT 2 x 1 1/2 x 11ga",
+    4,
+    true
+   ],
+   [
+    "Platform guardrail",
+    2,
+    "ST 2 x 2 x 11ga",
+    2.5,
+    true
+   ]
+  ],
+  "box": [
+   [
+    "Main tower column",
+    4,
+    "ST 5 x 5 x 7ga",
+    24,
+    false
+   ],
+   [
+    "Main tower top",
+    5,
+    "ST 5 x 5 x 1/4",
+    21,
+    false
+   ],
+   [
+    "Carriage tube",
+    1,
+    "ST 6 x 6 x 7ga",
+    4,
+    false
+   ],
+   [
+    "Tower angle bracing",
+    4,
+    "AI 2 1/2 x 2 1/2 x 3/16",
+    20,
+    false
+   ],
+   [
+    "Tower lateral brace (top tube)",
+    2,
+    "ST 3 1/2 x 3 1/2 x 7ga",
+    16,
+    false
+   ],
+   [
+    "Platform truss tubes",
+    224,
+    "ST 1 1/4 x 1 1/4 x 11ga",
+    2,
+    true
+   ],
+   [
+    "Platform box structure",
+    2,
+    "ST 2 x 2 x 7ga",
+    180,
+    true
+   ],
+   [
+    "Platform misc structure",
+    8,
+    "RT 3 x 2 x 7ga",
+    4,
+    true
+   ],
+   [
+    "Platform floor structure",
+    82,
+    "RT 2 x 1 1/2 x 11ga",
+    4,
+    true
+   ],
+   [
+    "Platform guardrail",
+    1,
+    "ST 2 x 2 x 11ga",
+    240,
+    true
+   ]
+  ]
+ },
+ "calc": {
+  "_why": "Tab rows 164-171: accessory material priced from these members (structural markup).",
+  "fingerRack": [
+   "ST 2 x 2 x 11ga",
+   8
+  ],
+  "swingGate": [
+   "ST 1 1/2 x 1 1/2 x 11ga",
+   12
+  ],
+  "camGate": [
+   "ST 1 1/2 x 1 1/2 x 11ga",
+   18
+  ],
+  "innerGuardrail": [
+   "ST 2 x 2 x 11ga",
+   3
+  ],
+  "endExtension": [
+   "ST 2 1/2 x 2 1/2 x 7ga",
+   15
+  ],
+  "endCap": [
+   "ST 2 x 2 x 11ga",
+   10
+  ],
+  "extraLongTower": [
+   "ST 5 x 5 x 7ga",
+   8,
+   4
+  ],
+  "extraRunner": [
+   "ST 2 x 2 x 11ga",
+   50,
+   2
+  ]
+ },
+ "options": {
+  "widthOver4PerFt": 500,
+  "advantechSheet": 50,
+  "tallTowerAdd": 300,
+  "crosswalk": {
+   "standard": 2000,
+   "pivot": 2400,
+   "expandable": 4500,
+   "expandablePerFtOver6": 600,
+   "aluminum": 4500,
+   "aluminumWide": 5500
+  },
+  "gapProtectionPerCrosswalk": 800,
+  "vNose": 2700,
+  "telescopingGuardrail": 800,
+  "telescopingPerFtOver10": 200,
+  "camGatePerFtAdd": 150,
+  "innerGuardrailPerFtAdd": 18.75,
+  "endExtensionAdd": 275,
+  "endCapAdd": 125,
+  "swingGateAdd": 135,
+  "fingerRackPerFtAdd": 37.5,
+  "treadPlateFactor": 1.75,
+  "ladder": 300
+ },
+ "perSet": {
+  "_why": "Work Platforms tab: $600 CAD + $600 PM per set (hours at the template's $120 CAD / $95 PM rates), $1,600 paint booth, $125 inbound freight.",
+  "cadHrs": 5,
+  "pmHrs": 6.3,
+  "paintDollars": 1600,
+  "inboundFreightDollars": 125
+ },
+ "shop": {
+  "_why": "Labor tab rows 60-68, SMT hours per set; platforms/handrails scale with length/50; box truss doubles platform assembly.",
+  "towers": 15,
+  "endUnits": 15,
+  "handrailsPer50ft": 18,
+  "endChannels": 3,
+  "benchComponents": 5,
+  "assemblePlatformsPer50ft": 38,
+  "afterPaint": 5,
+  "loading": 2,
+  "cutting": 6,
+  "accessoryHrsPerDollar": {
+   "material075": 0.01,
+   "crosswalk": 0.004444,
+   "guard": 0.006667,
+   "treadPlate": 0.005333
+  }
+ },
+ "site": {
+  "_why": "No sold work-platform installs in fixtures/ \u2014 per-set estimate (layout, 4 towers, 2 platforms, 4 hoists + brakes, controls, building bracing). Confirm with install crew.",
+  "unloadLayout": 8,
+  "tower": 4,
+  "platform": 8,
+  "hoist": 2,
+  "controls": 6,
+  "buildingBracing": 8,
+  "crosswalk": 4
+ }
+}

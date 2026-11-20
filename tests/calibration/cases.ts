@@ -82,7 +82,7 @@ export const SKIPPED: [string, string][] = [
   ['27660', 'Barnhart 16 t / 40 t custom monorail structures'], ['28953', 'Barnhart 16 t / 40 t custom monorail structures'],
   ['27823', '22,000 sq ft mezzanine on a bought-in joist package (NMBS) with structure by others'],
   ['28323', '7-system multi-bay crane package (not modeled yet)'], ['28723', 'Runway completion + 6 double-girder box bridges (not modeled yet)'],
-  ['28738', 'Work platform (see work_platform builder)'],
+  ['28738', 'StructuralSpace grating pit platform (11.5" deck) — not a Guardian work platform set, below the mezzanine builder\'s 4\' minimum deck'],
   ['28772', '2 building runways, 5 bridges + 8 wall jibs (not modeled yet)'],
   ['29629', 'AQT template — no sold price'], ['27685', 'AQT template — no sold price'], ['28726', 'AQT template — no sold price'], ['28083', 'AQT template — no sold price'],
   ['28893', 'AQT template — no sold price'], ['28013', 'AQT template — no sold price'], ['28945', 'AQT template — no sold price'],

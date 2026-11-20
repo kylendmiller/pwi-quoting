@@ -229,6 +229,11 @@ export class Kit {
     this.push({ kind: 'pm', category: 'pmMarketing', description: 'Project management', qty: pm });
     this.push({ kind: 'cad', category: 'cad', description: 'AutoCAD design / approval drawings', qty: cad });
   }
+  /** Fixed PM / CAD hours (products priced per unit on their SMT tab, e.g. work platform sets). */
+  pmCadFixed(pmHrs: number, cadHrs: number) {
+    if (pmHrs > 0) this.push({ kind: 'pm', category: 'pmMarketing', description: 'Project management', qty: Math.round(pmHrs * 10) / 10 });
+    if (cadHrs > 0) this.push({ kind: 'cad', category: 'cad', description: 'AutoCAD design / approval drawings', qty: Math.round(cadHrs * 10) / 10 });
+  }
   /** Engineering (P.E. stamp) hours. */
   pe(hours: number) { if (hours > 0) this.push({ kind: 'engineering', category: 'engineering', description: 'P.E. calculations / stamped drawings', qty: hours }); }
   done() { for (const n of this.notes) if (/not found|not in/.test(n)) this.blockers.push(n); }

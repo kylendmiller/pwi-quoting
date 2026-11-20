@@ -5,6 +5,7 @@ import { buildCrane, type BuildResult, type BuildOpts } from './crane';
 import { buildGantry } from './gantry';
 import { buildMonorail } from './monorail';
 import { buildMezzanine } from './mezzanine';
+import { buildWorkPlatform } from './workPlatform';
 import { buildJib, buildFallProtection, buildVrc, buildCatalogItem } from './products';
 import { Kit, readSteelCost, withSteelCost, type Factors } from './kit';
 
@@ -20,6 +21,7 @@ export const BUILDERS: Record<string, { fam: string; build: Builder; def: [numbe
   monorail: { fam: 'monorail', def: [0.7, 1.02], build: buildMonorail },
   // mezzanine production 0.83 → 0.60 (tuned 11/20): builder shop $ ÷ sold = 0.55 on 28527 and 0.66 on 27893.
   mezzanine: { fam: 'mezzanine', def: [0.6, 1.11], build: buildMezzanine },
+  work_platform: { fam: 'work_platform', def: [0.82, 0.95], build: buildWorkPlatform },
   jib: { fam: 'jib', def: [0.77, 1.25], build: buildJib },
   fall_protection: { fam: 'fall_protection', def: [0.7, 1.09], build: buildFallProtection },
   vrc: { fam: 'vrc', def: [0.73, 1.02], build: buildVrc },
