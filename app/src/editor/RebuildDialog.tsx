@@ -5,6 +5,7 @@ import type { Priced, QuoteDoc } from '../../../src/engine/manual';
 import { applyPlan, flagDiff, type RebuildPlan, type Choices, type LineChange, type Conflict } from './engineApi';
 import { fmtMoney, fmtNum } from './smt';
 import { FLAG_TEXT } from './flags';
+import { builderDefaultIds, staleMemberRefs, geometryChanges } from './rebuildSafety';
 
 const v = (x: unknown) => (typeof x === 'number' ? fmtNum(x, 2) : String(x ?? '—'));
 const FIELD: Record<string, string> = { qty: 'qty', unitCost: 'cost ea', markupPct: 'markup %', unitSell: 'sell ea', description: 'description', category: 'section', kind: 'kind', '*': 'line' };
@@ -43,10 +44,15 @@ function conflictText(g: Conflict[]) {
 }
 const yoursText = (g: Conflict[]) => { const d = g.find(c => c.field === 'description'); return d ? fv(d, d.yours) : g.map(c => v(c.yours)).join(', '); };
 
-export function RebuildDialog({ title, plan, current, approvedRules, priceOf, onCancel, onApply }: {
-  title: string; plan: RebuildPlan; current: Priced; approvedRules: string[]; priceOf: (d: QuoteDoc) => Priced; onCancel: () => void; onApply: (c: Choices) => void;
+export function RebuildDialog({ title, plan, current, oldSpec, approvedRules, priceOf, onCancel, onApply }: {
+  title: string; plan: RebuildPlan; current: Priced; oldSpec?: unknown; approvedRules: string[]; priceOf: (d: QuoteDoc) => Priced; onCancel: () => void; onApply: (c: Choices) => void;
 }) {
-  const [choices, setChoices] = useState<Choices>({});
+  // A kept edit on a girder / runway / column / brace (or any structural / plate line) was sized for the old geometry:
+  // when the spec change touched span, runway, height, capacity, columns or bays, default those to the builder's value.
+  const stale = useMemo(() => staleMemberRefs(plan.conflicts, plan.next, oldSpec, plan.next.spec), [plan, oldSpec]);
+  const geo = useMemo(() => geometryChanges(oldSpec, plan.next.spec), [plan, oldSpec]);
+  const [choices, setChoices] = useState<Choices>(() =>
+    Object.fromEntries([...builderDefaultIds(plan.conflicts, plan.next, oldSpec, plan.next.spec)].map(id => [id, 'builder' as const])));
   const box = useRef<HTMLDivElement>(null);
   // Focus the dialog itself, not Apply: the Enter that opened it must not also apply it.
   useEffect(() => { box.current?.focus(); }, []);
@@ -86,7 +92,8 @@ export function RebuildDialog({ title, plan, current, approvedRules, priceOf, on
           <b>The builder now says something different on {groups.length} line{groups.length > 1 ? 's' : ''} you changed:</b>
           {groups.map(g => { const builder = g.every(c => choices[c.id] === 'builder'); const set = (x: 'mine' | 'builder') => setChoices({ ...choices, ...Object.fromEntries(g.map(c => [c.id, x])) }); return (
             <div key={g[0].ref} className="row">
-              <span style={{ flex: 1 }}>{conflictText(g)}</span>
+              <span style={{ flex: 1 }}>{conflictText(g)}
+                {stale.has(g[0].ref) && <div className="banner flag">⚠ Your kept member was sized for the old geometry ({geo.join(', ')} changed). {builder ? "Taking the builder's size." : 'Check it before you keep it.'}</div>}</span>
               <label><input type="radio" checked={!builder} onChange={() => set('mine')} /> {g[0].kind === 'gone' ? 'keep it as your own line' : `keep yours (${yoursText(g)})`}</label>
               <label><input type="radio" checked={builder} onChange={() => set('builder')} /> {g[0].kind === 'gone' ? 'drop it' : "take builder's"}</label>
             </div>); })}

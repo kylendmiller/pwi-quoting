@@ -123,7 +123,7 @@ export function NumbersView(p: NumbersProps) {
       <SummarySheet doc={doc} priced={priced} settings={settings} locked={locked} hideCost={p.hideCost} openFlags={p.openFlags} refData={refData} act={act}
         isManager={p.isManager} open={open} setOpen={setOpen} removedCache={removedCache} />
       {!locked && p.importBox?.(fromImport)}
-      {pending && <RebuildDialog title={pending.label} plan={pending.plan} approvedRules={p.approvedRules} onCancel={() => setPending(null)}
+      {pending && <RebuildDialog title={pending.label} plan={pending.plan} oldSpec={doc.spec} approvedRules={p.approvedRules} onCancel={() => setPending(null)}
         current={priced} priceOf={d => price(d, settings)}
         onApply={choices => {
           const next = applyPlan(pending.plan, choices);
