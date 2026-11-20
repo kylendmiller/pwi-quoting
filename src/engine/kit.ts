@@ -3,7 +3,7 @@
 // plate, standard parts, vendor items, paint, shop labor, install crew/travel/lodging/equipment,
 // freight and PM/CAD. Numbers come from rules/freestanding_rules.json (calibrated on sold jobs)
 // and the live price lists (Catalog).
-import type { QuoteLine } from './manual';
+import { INSTALL_DAYS_OP, type QuoteLine } from './manual';
 import { roleOf, vendorRole, smtLaborBlock, type Role, type Basis, type LineDetail, type CostSource } from './lineDetail';
 import type { CategoryKey } from './rollup';
 import R from './rules/freestanding_rules.json';
@@ -81,8 +81,31 @@ export interface FinishOpts {
   generator?: boolean; crewMen?: number; travelMode?: 'drive' | 'fly' | 'local';
   extraEquipment?: string[];
   skipTravel?: boolean;              // multi-product job: travel/lodging/equipment added once for the whole job
+  installDays?: number;              // spec.installDays: crew days on site set by the rep (travel follows; site labor via installDaysLine)
 }
-export interface JobTravel { workHrs: number; miles: number; workTopFt: number; heaviestPickLb: number; generator?: boolean; crewMen?: number; travelMode?: 'drive' | 'fly' | 'local'; extraEquipment?: string[] }
+export interface JobTravel { workHrs: number; miles: number; workTopFt: number; heaviestPickLb: number; generator?: boolean; crewMen?: number; travelMode?: 'drive' | 'fly' | 'local'; extraEquipment?: string[];
+  /** Crew days on site set on the spec (installDays). Nights, per diem, hotel, commute and rental periods use exactly these days.
+   *  Unset → days come from the hours (crewDaysFor), as always. */
+  installDays?: number }
+
+/** Crew hours per day on site (rules crew.hoursPerDay) — travel and installDays use the same number. */
+export const HOURS_PER_DAY: number = R.crew.hoursPerDay;
+/** Crew size the builder picks for a given amount of on-site work (when the spec has no crewMen). */
+export const crewMenFor = (workHrs: number): number => pick(R.crew.menIfHoursAbove as [number, number][], workHrs);
+/** Crew days the builder derives from on-site hours and crew size. */
+export const crewDaysFor = (workHrs: number, men: number): number => Math.max(1, Math.ceil(workHrs / (men * R.crew.hoursPerDay) - R.crew.dayRoundSlack));
+export { INSTALL_DAYS_OP };
+/** The visible +/− site-labor line for spec.installDays: the builder's task lines stay as built, this line makes the
+ *  on-site total men × days × HOURS_PER_DAY. null when the tasks already add up to that. */
+export function installDaysLine(taskHrs: number, men: number, days: number, fam: string): QuoteLine | null {
+  const target = men * days * HOURS_PER_DAY, delta = Math.round((target - taskHrs) * 10) / 10;
+  if (Math.abs(delta) < 0.05) return null;
+  const t1 = Math.round(taskHrs * 10) / 10;
+  return { key: key(), family: fam, kind: 'site_labor', category: 'onsiteLabor', laborOp: INSTALL_DAYS_OP, role: 'install', qty: delta,
+    description: `Install days adjustment (${men} men × ${days} days × ${HOURS_PER_DAY} h = ${target} h)`,
+    basis: { source: 'spec', text: `installDays ${days} on the spec: ${men} men × ${days} days × ${HOURS_PER_DAY} h/day = ${target} h on site; the builder's install tasks total ${t1} h → ${delta > 0 ? '+' : ''}${delta} h`, assumption: 'installDays' },
+    detail: { type: 'labor', where: 'site', op: 'Install days adjustment', smtRow: 'Labor G9:G44 On Site Labor', baseHrs: delta, factor: 1, factorName: 'install', hours: delta } };
+}
 
 export class Kit {
   lines: QuoteLine[] = []; notes: string[] = []; blockers: string[] = []; A: Assumption[] = [];
@@ -230,7 +253,7 @@ export class Kit {
             detail: { type: 'labor', where: 'site', op: x.desc, smtRow: 'Labor G9:G44 On Site Labor', baseHrs: x.hours, factor: this.f.install, factorName: 'install', hours: hrs } });
       }
       this.workHrs = workHrs;
-      if (!o.skipTravel) this.travel({ workHrs, miles, workTopFt: o.workTopFt, heaviestPickLb: o.heaviestPickLb, generator: o.generator, crewMen: o.crewMen, travelMode: o.travelMode, extraEquipment: o.extraEquipment });
+      if (!o.skipTravel) this.travel({ workHrs, miles, workTopFt: o.workTopFt, heaviestPickLb: o.heaviestPickLb, generator: o.generator, crewMen: o.crewMen, travelMode: o.travelMode, extraEquipment: o.extraEquipment, ...(o.installDays ? { installDays: o.installDays } : {}) });
     }
     // freight (freight history rates by load type and distance)
     const tns = this.lbs / 2000, F = R.freight;
@@ -246,15 +269,22 @@ export class Kit {
   travel(o: JobTravel) {
     const T = { ...R.travel, hotel: this.cat.rate?.('Hotels (one room per person)') ?? R.travel.hotel, perDiem: this.cat.rate?.('Per diem costs') ?? R.travel.perDiem };
     const miles = o.miles ?? 0, workHrs = o.workHrs;
-      const men = o.crewMen ?? pick(R.crew.menIfHoursAbove as [number, number][], workHrs);
+      const men = o.crewMen ?? crewMenFor(workHrs);
       if (!o.crewMen) this.A.push({ field: 'crewMen', value: men, why: `${Math.round(workHrs)} on-site hours → ${men}-man crew`, alt: men === 2 ? 3 : 2 });
-      const crewDays = Math.max(1, Math.ceil(workHrs / (men * R.crew.hoursPerDay) - R.crew.dayRoundSlack));
+      // installDays (spec): the rep's crew days drive the whole trip; the builder's own days stay the install suggestion.
+      const builtDays = crewDaysFor(workHrs, men), setDays = o.installDays && o.installDays > 0 ? o.installDays : undefined;
+      const crewDays = setDays ?? builtDays;
       const mode = o.travelMode ?? (miles <= T.localMiles ? 'local' : miles > T.flyAboveMiles ? 'fly' : 'drive');
       if (!o.travelMode) this.A.push({ field: 'travelMode', value: mode, why: mode === 'local' ? `${miles} mi — daily commute, no lodging` : mode === 'fly' ? `${miles} mi > ${T.flyAboveMiles} — crew flies, rental car, tools ship LTL` : `${miles} mi — crew drives`, alt: mode === 'fly' ? 'drive' : mode === 'drive' ? 'fly' : 'drive' });
-      const travelHrs = mode === 'local' ? men * 2 * crewDays * miles / T.driveMph : mode === 'fly' ? men * 2 * T.flyDoorToDoorHrsEachWay : men * 2 * miles / T.driveMph;
-      const tbasis: Basis = { source: 'rule', text: `${Math.round(workHrs)} on-site h → ${men} men × ${crewDays} crew days (${R.crew.hoursPerDay} h/day), ${mode} ${miles} mi`, assumption: o.crewMen ? undefined : 'crewMen' };
+      const hrsFor = (d: number) => mode === 'local' ? men * 2 * d * miles / T.driveMph : mode === 'fly' ? men * 2 * T.flyDoorToDoorHrsEachWay : men * 2 * miles / T.driveMph;
+      const travelHrs = hrsFor(crewDays);
+      const tbasis: Basis = setDays != null
+        ? { source: 'spec', text: `${men} men × ${crewDays} crew days set on the spec (installDays; builder suggests ${builtDays} for ${Math.round(workHrs)} on-site h at ${R.crew.hoursPerDay} h/day), ${mode} ${miles} mi`, assumption: 'installDays' }
+        : { source: 'rule', text: `${Math.round(workHrs)} on-site h → ${men} men × ${crewDays} crew days (${R.crew.hoursPerDay} h/day), ${mode} ${miles} mi`, assumption: o.crewMen ? undefined : 'crewMen' };
+      // the install suggestion (this.site) is always the builder's own: travel hours at the builder's days
+      this.site += setDays != null ? (hrsFor(builtDays) > 0 ? Math.round(hrsFor(builtDays)) : 0) : 0;
       if (travelHrs > 0) {
-        const th = Math.round(travelHrs); this.site += th;
+        const th = Math.round(travelHrs); if (setDays == null) this.site += th;
         this.push({ kind: 'site_labor', category: 'onsiteLabor', description: `Travel (${mode}, ${men} men, ${miles} mi)`, qty: th, laborOp: 'site_travel' },
           { role: 'travel_time', basis: { source: 'rule', text: mode === 'local' ? `${men} men × 2 × ${crewDays} days × ${miles} mi ÷ ${T.driveMph} mph (daily commute)` : mode === 'fly' ? `${men} men × 2 × ${T.flyDoorToDoorHrsEachWay} h door to door` : `${men} men × 2 × ${miles} mi ÷ ${T.driveMph} mph`, assumption: o.travelMode ? undefined : 'travelMode' },
             detail: { type: 'travel', what: 'travel_time', mode, men, crewDays, miles, driveMph: T.driveMph } });
@@ -266,7 +296,9 @@ export class Kit {
         tl(`Hotels — ${men} rooms × ${days - 1} nights`, men * (days - 1), T.hotel, 'hotel', 'lodging');
         tl(`Per diem — ${men} men × ${days} days`, men * days, T.perDiem, 'per_diem', 'per_diem');
         if (mode === 'fly') { tl('Flights (round trip per man)', men, T.flightPerMan, 'flight', 'airfare'); tl('Rental car (weekly)', Math.ceil(days / 7), T.rentalCarWeekly, 'rental_car', 'rental_car'); tl('LTL tool return to PWI', 1, T.toolReturnLtl, 'tool_return', 'tool_return'); }
-        this.A.push({ field: 'crewDays', value: crewDays, why: `${Math.round(workHrs)} h ÷ (${men} men × ${R.crew.hoursPerDay} h) → ${crewDays} days on site + ${days - crewDays} travel days; lodging $${T.hotel}/night, per diem $${T.perDiem} (+${T.markupPct}%)` });
+        this.A.push({ field: 'crewDays', value: crewDays, why: setDays != null
+          ? `${crewDays} days on site set on the spec (installDays; builder suggests ${builtDays}) + ${days - crewDays} travel days; lodging $${T.hotel}/night, per diem $${T.perDiem} (+${T.markupPct}%)`
+          : `${Math.round(workHrs)} h ÷ (${men} men × ${R.crew.hoursPerDay} h) → ${crewDays} days on site + ${days - crewDays} travel days; lodging $${T.hotel}/night, per diem $${T.perDiem} (+${T.markupPct}%)` });
       }
       const E = R.equipment, weeks = Math.ceil(crewDays / 5);
       const eq = (item: string, qty: number, purpose: 'lift' | 'handler' | 'generator' | 'extra', why: string) => {

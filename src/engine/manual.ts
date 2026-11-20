@@ -225,10 +225,10 @@ export function priceManual(doc: QuoteDoc, s: Settings): Priced {
     && !(l.auto && l.source !== 'hand' && !(l.edited && 'markupPct' in l.edited)));
   if (zero.length) flags.push({ rule: 'ZERO_MARKUP', detail: { lines: zero.map(l => l.ref ?? l.description).sort() }, lineKeys: zero.map(l => l.key) });
   const maxDisc = s.max_discount_pct ?? 0.1;
-  const gross = lines.reduce((a, l) => a + Math.max(0, l.sell), 0), credits = lines.reduce((a, l) => a + Math.max(0, -l.sell), 0);
+  const gross = lines.reduce((a, l) => a + Math.max(0, l.sell), 0), credits = lines.reduce((a, l) => a + (l.laborOp === INSTALL_DAYS_OP ? 0 : Math.max(0, -l.sell)), 0);   // fewer install days is the install rule's business, not a discount
   const discPct = (doc.dealerDiscount ?? 0) + (gross > 0 ? credits / gross : 0);
   if (discPct > maxDisc + 1e-9) flags.push({ rule: 'BIG_DISCOUNT', detail: { pct: Math.round(discPct * 1000) / 1000, max: maxDisc },
-    lineKeys: lines.filter(l => l.sell < 0).map(l => l.key) });
+    lineKeys: lines.filter(l => l.sell < 0 && l.laborOp !== INSTALL_DAYS_OP).map(l => l.key) });
 
   return {
     quote: quoteMoney(ro.quote),
@@ -242,6 +242,9 @@ export function priceManual(doc: QuoteDoc, s: Settings): Priced {
   };
 }
 
+/** laborOp of the site-labor line spec.installDays adds (men × days × h/day − the builder's task hours). Its qty may be
+ *  negative (fewer days than the tasks need); every other line's qty must be ≥ 0. */
+export const INSTALL_DAYS_OP = 'site_days_adjust';
 const KINDS: LineKind[] = ['material', 'shop_labor', 'site_labor', 'travel', 'equipment', 'pm', 'cad', 'engineering'];
 const CATS = new Set(Object.keys(ROW));
 /** Hard input checks (R11). [] = ok. The server refuses to save a doc that fails them. Negative unit cost / sell is
@@ -257,7 +260,9 @@ export function validateDoc(doc: QuoteDoc): string[] {
     if (typeof l.key !== 'string' || !l.key) out.push(`${at}: missing key.`); else if (keys.has(l.key)) out.push(`${at}: duplicate key.`); else keys.add(l.key);
     if (!KINDS.includes(l.kind)) out.push(`${at}: unknown kind "${l.kind}".`);
     if (!CATS.has(l.category)) out.push(`${at}: unknown category "${l.category}".`);
-    if (!fin(l.qty) || l.qty < 0) out.push(`${at}: quantity must be a number ≥ 0.`);
+    // the installDays adjustment line (site labor, laborOp INSTALL_DAYS_OP) may take hours off the builder's tasks
+    const mayBeNegative = l.kind === 'site_labor' && l.laborOp === INSTALL_DAYS_OP;
+    if (!fin(l.qty) || (l.qty < 0 && !mayBeNegative)) out.push(`${at}: quantity must be a number ≥ 0.`);
     for (const f of ['unitCost', 'unitSell', 'markupPct', 'gmPct'] as const) if (l[f] != null && !fin(l[f])) out.push(`${at}: ${f} must be a number.`);
     if (l.markupPct != null && l.markupPct < -100) out.push(`${at}: markup below −100%.`);
     if (l.gmPct != null && (l.gmPct < 0 || l.gmPct >= 1)) out.push(`${at}: GM must be between 0 and 1.`);

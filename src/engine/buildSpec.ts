@@ -7,7 +7,7 @@ import { buildMonorail } from './monorail';
 import { buildMezzanine } from './mezzanine';
 import { buildWorkPlatform } from './workPlatform';
 import { buildJib, buildFallProtection, buildVrc, buildCatalogItem } from './products';
-import { Kit, readSteelCost, withSteelCost, type Factors } from './kit';
+import { Kit, readSteelCost, withSteelCost, crewMenFor, crewDaysFor, installDaysLine, type Factors } from './kit';
 
 // Reps (and Claude) say "motorized" for every product; cranes call it bridgeDrive.
 const drive = (s: any) => s.bridgeDrive || s.motorized == null ? s : { ...s, bridgeDrive: s.motorized ? 'motorized' : 'manual' };
@@ -137,6 +137,16 @@ export function inheritIds<T extends { items: any[] }>(spec: T, old: unknown): T
 }
 const same = (a: unknown, b: unknown) => typeof a === 'number' && typeof b === 'number' ? Math.abs(a - b) < 0.005 : a === b;
 
+/** spec item installDays (crew days on site, set by the rep). Only used when the item is installed. */
+function installDaysOf(it: Record<string, any>): number | undefined {
+  if (!it.install || it.installDays == null) return undefined;
+  const v = it.installDays;
+  if (typeof v !== 'number' || !Number.isInteger(v) || v < 1 || v > 365) throw new Error(`installDays = ${v} must be a whole number of days (1–365).`);
+  return v;
+}
+/** Builder install-task hours on a set of lines (site labor that is not travel time). */
+const taskHours = (ls: QuoteLine[]) => ls.filter(l => l.kind === 'site_labor' && l.laborOp !== 'site_travel').reduce((a, l) => a + l.qty, 0);
+
 /** S5: carries the rep's edits from the old auto lines onto the fresh build (matched by ref), keeps deleted refs
  *  deleted, and reports conflicts. Edited lines the builder no longer makes are kept as hand lines. */
 function carryEdits(fresh: QuoteLine[], old: QuoteLine[], removed: Set<string>): { lines: QuoteLine[]; conflicts: Conflict[] } {
@@ -188,6 +198,9 @@ export function buildFromSpec(spec0: QuoteSpec, cat0: Catalog, settings: any, ba
   const installed = spec.items.filter(it => BUILDERS[it.type] && it.install);
   const shared = installed.length > 1;
   const trip = { workHrs: 0, workTopFt: 0, heaviestPickLb: 0, generator: false, miles: 0, crewMen: undefined as number | undefined, travelMode: undefined as any };
+  // installDays on shared-trip items: their tasks' hours (builder) and days, priced once the trip's crew is known
+  const sharedDays: { i: number; id?: string; fam: string; group: string; task: number; days: number; workHrs: number }[] = [];
+  let unsetWorkHrs = 0;
   spec.items.forEach((it, i) => {
     const label = spec.items.length > 1 ? `Item ${i + 1}${it.tag ? ` (${it.tag})` : ''}: ` : '';
     const B = BUILDERS[it.type];
@@ -198,11 +211,26 @@ export function buildFromSpec(spec0: QuoteSpec, cat0: Catalog, settings: any, ba
     }
     let r: BuildResult;
     const { id: _id, ...bare } = it as any;
-    try { r = B.build(bare, cat, { production: pf[B.fam] ?? B.def[0], install: inf[B.fam] ?? B.def[1] }, { skipTravel: shared && !!it.install }); }
+    let days: number | undefined;
+    try {
+      days = installDaysOf(it);
+      r = B.build(bare, cat, { production: pf[B.fam] ?? B.def[0], install: inf[B.fam] ?? B.def[1] }, { skipTravel: shared && !!it.install, ...(days && !shared ? { installDays: days } : {}) });
+    }
     catch (e: any) { blockers.push(`${label}${e.message ?? e}`); return; }
     const group = `${spec.items.length > 1 ? `Item ${i + 1}` : 'Item'}${it.tag ? ` (${it.tag})` : ''} — ${it.type.replace(/_/g, ' ')}`;
     const tag = (l: any) => ({ ...l, auto: true, source: 'auto', item: i, group });
-    lines = lines.concat(stampRefs(r.lines.map(tag), () => it.id) as any);
+    let built = r.lines;
+    if (days && !shared) {
+      // one installed item: crew size as the trip used it (travel line), else the spec / builder pick
+      const tm = (r.lines.find(l => l.detail?.type === 'travel')?.detail as any)?.men as number | undefined;
+      const adj = installDaysLine(taskHours(r.lines), tm ?? (it.crewMen || crewMenFor(r.job?.workHrs ?? 0)), days, B.fam);
+      if (adj) built = [...r.lines, adj];
+    }
+    if (shared && it.install && r.job) {
+      if (days) sharedDays.push({ i, id: it.id, fam: B.fam, group, task: taskHours(r.lines), days, workHrs: r.job.workHrs ?? 0 });
+      else unsetWorkHrs += r.job.workHrs ?? 0;
+    }
+    lines = lines.concat(stampRefs(built.map(tag), () => it.id) as any);
     wording.push(it.wording ?? r.wording);
     notes.push(...r.notes.map(n => label + n));
     blockers.push(...r.blockers.map(n => label + n));
@@ -216,7 +244,17 @@ export function buildFromSpec(spec0: QuoteSpec, cat0: Catalog, settings: any, ba
   });
   if (shared && trip.workHrs > 0) {
     const K = new Kit(cat, 'other', { production: 1, install: 1 });
-    K.travel(trip);
+    let tripDays: number | undefined;
+    if (sharedDays.length) {
+      // the trip's crew (same pick travel makes) × each item's days; items without installDays add their builder days
+      const men = trip.crewMen || crewMenFor(trip.workHrs);
+      tripDays = sharedDays.reduce((a, x) => a + x.days, 0) + (unsetWorkHrs > 0 ? crewDaysFor(unsetWorkHrs, men) : 0);
+      for (const x of sharedDays) {
+        const adj = installDaysLine(x.task, men, x.days, x.fam);
+        if (adj) lines = lines.concat(stampRefs([{ ...adj, auto: true, source: 'auto' as const, item: x.i, group: x.group }], () => x.id) as any);
+      }
+    }
+    K.travel(tripDays ? { ...trip, installDays: tripDays } : trip);
     lines = lines.concat(stampRefs(K.lines.map(l => ({ ...l, auto: true, source: 'auto' as const, item: -1, group: `Shared trip (${installed.length} installed items)` })), () => 'trip') as any);
     assumptions.push(...K.A.map(a => ({ ...a, item: -1 })));
     notes.push(`One shared trip for ${installed.length} installed items (${Math.round(trip.workHrs)} on-site hours).`);

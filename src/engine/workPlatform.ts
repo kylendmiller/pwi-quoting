@@ -115,7 +115,7 @@ export function buildWorkPlatform(spec: WorkPlatformSpec, cat: Catalog, f: Facto
   const X = W.site, cws = (cw.standard ?? 0) + (cw.pivot ?? 0) + (cw.expandable ?? 0) + (cw.aluminum ?? 0);
   const towerFt = tall ? 30 : box ? 24 : 22;
   const job = { workTopFt: towerFt, heaviestPickLb: Math.max(K.heaviestLb, 1200) };
-  K.finish({ install: s.install, miles: s.miles ?? 0, crewMen: s.crewMen, travelMode: s.travelMode, skipTravel: bo.skipTravel, ...job,
+  K.finish({ install: s.install, miles: s.miles ?? 0, crewMen: s.crewMen, travelMode: s.travelMode, skipTravel: bo.skipTravel, installDays: bo.installDays, ...job,
     site: [
       { desc: 'Unload, layout', hours: X.unloadLayout * n }, { desc: `Set towers (${4 * n})`, hours: X.tower * 4 * n }, { desc: `Hang platforms (${2 * n})`, hours: X.platform * 2 * n },
       { desc: `Hoists + secondary brakes (${4 * n})`, hours: X.hoist * 4 * n }, { desc: 'Controls / wiring', hours: X.controls * n }, { desc: 'Brace to building structure', hours: X.buildingBracing * n },

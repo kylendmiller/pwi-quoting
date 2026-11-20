@@ -117,7 +117,7 @@ export function buildMezzanine(spec: MezzanineSpec, cat: Catalog, f: Factors = {
   const job = { workTopFt: s.deckHeightFt + 4, heaviestPickLb: K.heaviestLb };
   const floorHrs = deck === 'bdeck_advantech' || deck === 'bdeck_resindek' ? X.woodFloorPerSheet * sheets : deck === 'grating' ? X.gratingPerSqft * sqft : deck === 'treadplate' ? X.woodFloorPerSheet * sheets : 0;
   K.finish({
-    install: s.install, miles: s.miles ?? 0, crewMen: s.crewMen, travelMode: s.travelMode, skipTravel: bo.skipTravel, ...job,
+    install: s.install, miles: s.miles ?? 0, crewMen: s.crewMen, travelMode: s.travelMode, skipTravel: bo.skipTravel, installDays: bo.installDays, ...job,
     site: [
       { desc: 'Unload / markout', hours: X.unloadMarkout * n },
       { desc: `Install columns (${cols * n})`, hours: X.column * cols * n },

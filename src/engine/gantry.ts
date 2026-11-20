@@ -108,7 +108,7 @@ export function buildGantry(spec: GantrySpec, cat: Catalog, f: Factors = { produ
   ]);
   const job = { workTopFt: hub + 2, heaviestPickLb: Math.max(girderLb, K.heaviestLb) };
   K.finish({
-    install: s.install, miles: s.miles ?? 0, crewMen: s.crewMen, travelMode: s.travelMode, skipTravel: bo.skipTravel, ...job,
+    install: s.install, miles: s.miles ?? 0, crewMen: s.crewMen, travelMode: s.travelMode, skipTravel: bo.skipTravel, installDays: bo.installDays, ...job,
     site: [
       { desc: 'Unload, mark out', hours: 10 },
       { desc: `Assemble and set gantries (${n})`, hours: 24 * n * m },

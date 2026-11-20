@@ -105,7 +105,7 @@ export function buildMonorail(spec: MonorailSpec, cat: Catalog, f: Factors = { p
   ]);
   const job = { workTopFt: overall, heaviestPickLb: K.heaviestLb + 200 };
   K.finish({
-    install: s.install, miles: s.miles ?? 0, crewMen: s.crewMen, travelMode: s.travelMode, skipTravel: bo.skipTravel, ...job,
+    install: s.install, miles: s.miles ?? 0, crewMen: s.crewMen, travelMode: s.travelMode, skipTravel: bo.skipTravel, installDays: bo.installDays, ...job,
     site: [
       { desc: 'Unload, set up, layout', hours: 8 },
       { desc: `Install columns (${cols})`, hours: 3 * cols },
