@@ -130,6 +130,7 @@ The auto-builder only handles the ranges above. For anything bigger, or for spec
 - `support`: `building_runway` (default — runway on the building's columns) / `crane_columns` (new PWI columns) / `bridge_only` (existing runway)
 - `hanging`: `top_running` (default) / `underhung`
 - `buildingBayFt` (building column spacing, default 20), `runwayElectrification` (bridge_only)
+- `bracketsByOthers: true` when the building (e.g. a new metal building) comes with crane brackets — PWI supplies runway beams only
 - `railFt` (total ASCE rail feet) and `runwayElectrificationFt` (total runway conductor-bar feet) only when they differ from the runway length — runway extensions / completion packages
 - Spans past the sizing chart (e.g. 70' at 10 t) are sized automatically — a heavier W beam or a plate box girder
 - `capacityTons` up to 20; `runwayOalFt` not needed for bridge_only

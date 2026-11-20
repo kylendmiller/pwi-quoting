@@ -42,11 +42,11 @@ export const CASES: CalCase[] = [
     note: 'Box girder (189 plf) bridge, 2 hoists; 225\' 120 A runway bar replaced + two 125\' runway completion packages (500\' rail, 250\' bar). Class D: sold with 15 t hoists auto-derated to 10 t.' },
 
   { job: '28772', product: 'bridge', items: [
-    { type: 'bridge', support: 'building_runway', systems: 2, bridgesPerSystem: 2, runwayOalFt: 229, buildingBayFt: 25, spanFt: 47.3, capacityTons: 5, hookHeightFt: 20, liftFt: 30, motorized: true, voltage: '460V/3', control: 'radio', collisionAvoidance: true, railFt: 950, runwayElectrificationFt: 225, install: true, miles: 150 },
+    { type: 'bridge', support: 'building_runway', bracketsByOthers: true, systems: 2, bridgesPerSystem: 2, runwayOalFt: 229, buildingBayFt: 25, spanFt: 47.3, capacityTons: 5, hookHeightFt: 20, liftFt: 30, motorized: true, voltage: '460V/3', control: 'radio', collisionAvoidance: true, railFt: 950, runwayElectrificationFt: 225, install: true, miles: 150 },
     { type: 'bridge', support: 'bridge_only', spanFt: 47.3, capacityTons: 2, hookHeightFt: 20, liftFt: 30, motorized: true, voltage: '460V/3', control: 'radio', install: true, miles: 150 },
     { type: 'catalog', item: 'PWIJ-UL-WMC-200020', description: 'Ultralite wall-mounted jib, 2000 lb × 20\' (sold cost line)', unitPrice: 4527, qty: 8 },
     { type: 'catalog', item: 'STK1026-20-230V-3PH-A', qty: 8 }, { type: 'catalog', item: 'SHT100', qty: 8 }, { type: 'catalog', item: 'S2B1SP', qty: 8 }],
-    note: 'New building: 2 runways × 229\' on the building steel, 4 × 5 t + 1 × 2 t bridges (47\'), 950\' rail; 8 bought-in Ultralite wall jibs with hoists added as catalog lines.' },
+    note: 'New building: 2 runways × 229\' on the building\'s crane brackets (sold has no bracket plates or bracket fab), 4 × 5 t + 1 × 2 t bridges (47\'), 950\' rail; 8 bought-in Ultralite wall jibs with hoists added as catalog lines.' },
 
   { job: '28723', product: 'bridge', items: [
     { type: 'bridge', support: 'bridge_only', systems: 3, bridgesPerSystem: 2, spanFt: 50, capacityTons: 10, doubleGirder: true, serviceClass: 'D', hookHeightFt: 25, liftFt: 30, motorized: true, voltage: '460V/3', control: 'radio', collisionAvoidance: true, railFt: 3012, runwayElectrificationFt: 1506, install: true, miles: 700 },

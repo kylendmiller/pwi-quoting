@@ -25,7 +25,8 @@ export interface CraneSpec {
   colors?: { columns?: string; runways?: string; bridge?: string };
   install: boolean; miles?: number; crewMen?: number; travelMode?: 'drive' | 'fly' | 'local';
   bracedToBuilding?: boolean; preUseInspection?: boolean;
-  serviceClass?: 'C' | 'D';                 // CMAA class; D (heavy service) = hoist one size up, derated (sold 29562, 28723)
+  serviceClass?: 'C' | 'D';
+  bracketsByOthers?: boolean;               // building_runway: crane brackets / seats come with the building (PEMB) — PWI supplies beams only (sold 28772)                 // CMAA class; D (heavy service) = hoist one size up, derated (sold 29562, 28723)
 }
 export interface BuildResult { lines: QuoteLine[]; assumptions: Assumption[]; notes: string[]; wording: string; suggestedInstallHours: number; smtShopHours: number;
   outboundFreight: number; preUse: number; blockers: string[]; geometry: Record<string, number | string>; tons: number;
@@ -35,7 +36,7 @@ export interface BuildOpts { skipTravel?: boolean }
 type Norm = CraneSpec & { support: Support; hanging: 'top_running' | 'underhung'; series: 'UL' | 'M' | 'GM' | 'HL'; systems: number; runwayOalFt: number; trolley: 'manual' | 'motorized'; control: 'radio' | 'pendant'; voltage: '460V/3' | '230V/3' | '208V/3' };
 const KEYS = ['series', 'support', 'hanging', 'systems', 'runwayOalFt', 'spanFt', 'capacityTons', 'overallHeightFt', 'hookHeightFt', 'liftFt', 'columnsPerSystem', 'bridgesPerSystem', 'hoistsPerBridge',
   'buildingBayFt', 'runwayElectrification', 'railFt', 'runwayElectrificationFt', 'bridgeDrive', 'trolley', 'voltage', 'control', 'collisionAvoidance', 'asceRail', 'doubleGirder', 'bracing', 'foundation', 'colors', 'install', 'miles',
-  'crewMen', 'travelMode', 'bracedToBuilding', 'preUseInspection', 'serviceClass'] as const;
+  'crewMen', 'travelMode', 'bracedToBuilding', 'preUseInspection', 'serviceClass', 'bracketsByOthers'] as const;
 
 export function normalize(x0: CraneSpec): Norm {
   const support: Support = x0.support ?? 'freestanding';
@@ -138,6 +139,7 @@ export function buildCrane(spec: CraneSpec, cat: Catalog, f: Factors = { product
   }
   if (s.support === 'building_runway') {
     if (under) { /* hung from building steel with drop rods — std parts below */ }
+    else if (s.bracketsByOthers) A.push({ field: 'bracketsByOthers', value: true, why: 'Runway beams set on crane brackets supplied with the building — PWI supplies beams, rail and hardware only', alt: false });
     else { K.plate('Runway seat brackets', supports, 0.75, 12, 18); K.plate('Runway bracket stiffeners', supports * 2, 0.5, 6, 12); K.plate('Runway tie-back clips', supports, 0.5, 8, 12); }
   }
   if (hasRunway && cap >= 5) K.plate('Runway web stiffeners', 2 * piecesPerLine * n * 2, 0.3125, 6, 16);
@@ -203,7 +205,7 @@ export function buildCrane(spec: CraneSpec, cat: Catalog, f: Factors = { product
     ['Cut list', O.cutList * n],
     ...(hasCols ? [[`Column fab (${columnType})`, columnType === 'built_up' ? O.colBuiltUpPerFt * colLen * cols : columnType === 'wide_flange' ? O.colWideFlangeMoment * cols : O.colTubeGusset * cols] as [string, number]] : []),
     ...(hasRunway ? [[`PCR runways (${runBeams})`, (pieceFt > 20 ? O.pcrRunwayGT20 : O.pcrRunwayLE20) * runBeams] as [string, number]] : []),
-    ...(s.support === 'building_runway' && !under ? [[`Runway bracket fab (${supports})`, 1.5 * supports] as [string, number]] : []),
+    ...(s.support === 'building_runway' && !under && !s.bracketsByOthers ? [[`Runway bracket fab (${supports})`, 1.5 * supports] as [string, number]] : []),
     ...(hasRunway && cap >= O.webStiffenersPerBeamFromCap[0] ? [['Runway web stiffeners', O.webStiffenersPerBeamFromCap[1] * runBeams] as [string, number]] : []),
     [`Bridge fab + after-paint (${bType})`, ((O.bridge as any)[bType] + (s.spanFt > 70 ? O.bridge.over70ftAdd : 0)) * bridges],
     ...(boxPlf ? [[`Box girder fab (${bridges * (doubleGirder ? 2 : 1)} × ${Math.ceil(s.spanFt + 2)}')`, R.boxGirder.fabHrsPerFt * Math.ceil(s.spanFt + 2) * bridges * (doubleGirder ? 2 : 1)] as [string, number]] : []),
@@ -220,7 +222,7 @@ export function buildCrane(spec: CraneSpec, cat: Catalog, f: Factors = { product
     site: [
       { desc: 'Unload, set up, layout', hours: S2.setup },
       { desc: `Install columns (${cols})`, hours: S2.column * cols },
-      { desc: `Install runway ${under ? 'hangers' : 'brackets'} (${s.support === 'building_runway' ? supports : 0})`, hours: s.support === 'building_runway' ? 2 * supports : 0 },
+      { desc: `Install runway ${under ? 'hangers' : 'brackets'} (${s.support === 'building_runway' && !s.bracketsByOthers ? supports : 0})`, hours: s.support === 'building_runway' && !s.bracketsByOthers ? 2 * supports : 0 },
       { desc: `Install runway beams (${runBeams})`, hours: (pieceFt > 40 ? S2.runwayPieceOver40 : S2.runwayPiece) * runBeams },
       { desc: 'Install runway end stops', hours: hasRunway ? S2.endStops * n : 0 },
       { desc: 'Install electrification', hours: runwayElec ? S2.electrificationPer100ftOal * elecFt / 100 : 2 * bridges },
@@ -298,7 +300,7 @@ function wording(s: Norm, x: any): string {
   if (s.support !== 'bridge_only') {
     out.push('## Runway Package');
     if (s.support === 'freestanding' || s.support === 'crane_columns') out.push(`- (${x.colsPer}) ${x.builtUp ? 'Built-up plate' : 'Structural'} ${s.support === 'crane_columns' ? 'crane ' : ''}columns spaced at approx. ${ftIn(Math.round(x.bayFt))} bays`);
-    else out.push(`- Runway beams ${s.hanging === 'underhung' ? 'hung from the existing building structure with drop rod connections' : 'mounted to the existing building columns with PWI runway brackets'} (approx. ${ftIn(Math.round(x.bayFt))} spacing)`, '- Customer to confirm the building structure can support the crane loads (PWI to provide reactions)');
+    else out.push(`- Runway beams ${s.hanging === 'underhung' ? 'hung from the existing building structure with drop rod connections' : s.bracketsByOthers ? 'set on the crane brackets supplied with the building (brackets by others)' : 'mounted to the existing building columns with PWI runway brackets'} (approx. ${ftIn(Math.round(x.bayFt))} spacing)`, '- Customer to confirm the building structure can support the crane loads (PWI to provide reactions)');
     out.push(`- ${ftIn(s.runwayOalFt)} x ${T} Ton capacity WF beam runway system`);
     if (x.rail) out.push('- 30# ASCE crane rail with standard weld clips');
     if (s.support === 'freestanding') out.push('- Runway system will include lateral and longitudinal tie back bracing');
