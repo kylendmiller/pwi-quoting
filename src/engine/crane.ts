@@ -2,6 +2,7 @@
 // building, or bridge only on an existing runway — top running or underhung. Calibrated on PWI's
 // sold SMT quotes (rules/freestanding_rules.json) with AQT sizing charts for steel.
 import CH from './rules/aqt_sizing_charts.json';
+import PC from './rules/pwi_bridge_charts.json';
 import { Kit, RULES as R, W_SHAPES, ixOf, pick, depthIn, STD_COLORS, check, keep, volt, ftIn, hgt, tons, type Catalog, type Assumption, type Factors } from './kit';
 import type { QuoteLine } from './manual';
 
@@ -64,6 +65,17 @@ function chartPick(rows: any[], keyName: string, x: number, cap: number): string
   const row = rows.find(r => r[keyName] >= x - 1e-9) ?? null;
   return row ? row.byCap[String(c)] ?? null : null;
 }
+/** PWI bridge girder chart (Sizing Wizard export): smallest charted capacity ≥ cap, first charted span ≥ span.
+ *  Returns 'box' when the chart says BOX GIRDER at that span, null when off the chart. */
+function pwiGirder(cap: number, span: number, double: boolean): string | null {
+  const rows = (double ? PC.double : PC.motor) as [number, number, string][];
+  const boxFrom = (double ? PC.doubleBoxFrom : PC.motorBoxFrom) as Record<string, number>;
+  const caps = [...new Set(rows.map(r => r[0]))].sort((a, b) => a - b);
+  const c = caps.find(v => v >= cap - 1e-9); if (c == null) return null;
+  if (boxFrom[String(c)] != null && span >= boxFrom[String(c)] - 1e-9) return 'box';
+  const r = rows.filter(r => r[0] === c).sort((a, b) => a[1] - b[1]).find(r => r[1] >= span - 1e-9);
+  return r ? r[2] : null;
+}
 const chartMax = (rows: any[]) => { const r = rows[rows.length - 1].byCap; const ks = Object.keys(r).map(Number).sort((a, b) => a - b); return r[String(ks[ks.length - 1])]; };
 
 export function buildCrane(spec: CraneSpec, cat: Catalog, f: Factors = { production: 0.56, install: 1.02 }, bo: BuildOpts = {}): BuildResult {
@@ -104,11 +116,17 @@ export function buildCrane(spec: CraneSpec, cat: Catalog, f: Factors = { product
     if (cap > 10 || bayFt <= 40) { runway = chartMax(CH.runway_by_bay); K.blockers.push(`${bayFt.toFixed(1)}' bays at ${cap} t are past the AQT runway chart — engineering must size the runway (priced as ${runway} placeholder).`); }
     else throw new Error(`${bayFt.toFixed(1)}' bays at ${cap} t are past the sizing chart — add columns or quote by hand.`);
   }
-  let girder = s.series === 'UL' || s.series === 'HL' ? null : chartPick(CH.girder_by_span, 'spanFt', s.spanFt, cap);
+  let girder: string | null = null, girderSrc = 'AQT chart';
+  if (s.series !== 'UL' && s.series !== 'HL') {
+    const p = pwiGirder(cap, s.spanFt, doubleGirder);
+    if (p && p !== 'box' && cat.shape(p)) { girder = p; girderSrc = 'PWI bridge chart'; }
+    else if (p !== 'box') girder = chartPick(CH.girder_by_span, 'spanFt', s.spanFt, cap);
+    if (girder) A.push({ field: 'girder', value: girder, why: `${cap} t × ${s.spanFt}' span${doubleGirder ? ' (double girder, each)' : ''} → ${girder} from the ${girderSrc}${girderSrc === 'AQT chart' ? ' (not on the PWI bridge chart)' : ' — CONFIRMED PWI CHART'}` });
+  }
   let boxPlf = 0;
   if (girder === null && s.series !== 'UL' && s.series !== 'HL') {
     const g = sizeGirder(cat, s.spanFt, cap, doubleGirder);
-    if (g.shape) { girder = g.shape; A.push({ field: 'girder', value: girder, why: `${s.spanFt}' span at ${cap} t is past the AQT girder chart — sized at L/${R.boxGirder.deflLimit} (rated load + hoist + self weight) as the lightest W ≤ ${R.boxGirder.maxWDepthIn}" deep; engineering to confirm` }); }
+    if (g.shape) { girder = g.shape; A.push({ field: 'girder', value: girder, why: `${s.spanFt}' span at ${cap} t is past the PWI bridge chart — sized at L/${R.boxGirder.deflLimit} (rated load + hoist + self weight) as the lightest W ≤ ${R.boxGirder.maxWDepthIn}" deep; engineering to confirm` }); }
     else { boxPlf = g.boxPlf; A.push({ field: 'girder', value: `box ${boxPlf} plf`, why: `No W shape ≤ ${R.boxGirder.maxWDepthIn}" deep meets L/${R.boxGirder.deflLimit} at ${s.spanFt}' / ${cap} t → plate box girder ${g.depthIn}" deep, ${boxPlf} plf (Ireq ≈ ${Math.round(g.Ireq)} in⁴); engineering to confirm` }); }
   }
   const builtUp = hasCols && (s.support === 'crane_columns' ? cap >= 5 || !column : cap >= R.columnType.builtUpFromCap || !column || overall > R.columnType.maxChartHeightFt + 2);
