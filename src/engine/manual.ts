@@ -2,6 +2,8 @@
 // with current settings, rolls them up exactly like the SMT, computes margin and flags.
 import { rollup, type CategoryKey, type RollupResult } from './rollup';
 import { rateLine } from './lines';
+import type { Role, Basis, LineDetail } from './lineDetail';
+export type { Role, Basis, LineDetail } from './lineDetail';
 
 export type LineKind = 'material' | 'shop_labor' | 'site_labor' | 'travel' | 'equipment' | 'pm' | 'cad' | 'engineering';
 
@@ -18,6 +20,12 @@ export interface QuoteLine {
   laborOp?: string;                 // labor_ops code
   reason?: string;                  // required for site_difficulty / overrides
   auto?: boolean;                   // made by an auto-builder (replaced on rebuild)
+  // ---- editor data (round 3). Optional, never priced: see src/engine/lineDetail.ts and sections.ts
+  role?: Role;                      // what the line is on the job (column, runway, girder, hoist, install, …)
+  item?: number;                    // spec.items index it was built for; -1 = shared across the job (one trip)
+  group?: string;                   // label for that item: "Item 1 (Bay A) — bridge", "Shared trip"
+  basis?: Basis;                    // why: chart + row, calc + unity, rule, catalog pick, assumption field
+  detail?: LineDetail;              // the numbers behind the price, typed per kind
 }
 
 export interface QuoteDoc {

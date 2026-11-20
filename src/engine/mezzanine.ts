@@ -2,7 +2,7 @@
 // for the floor load at L/360, deck + flooring, guardrail, gates, stairs, bracing, PWI labor.
 // Patterned on sold mezzanines 28527, 27823, 27893 and the SMT Mezzanines price rows.
 import M from './rules/mezzanine_rules.json';
-import { Kit, check, keep, ftIn, hgt, sizeBeam, depthIn, pick, type Catalog, type Factors } from './kit';
+import { Kit, check, keep, ftIn, hgt, sizeBeam, beamUnity, calcBasis, depthIn, pick, type Catalog, type Factors } from './kit';
 import type { BuildResult, BuildOpts } from './crane';
 
 export interface MezzanineSpec {
@@ -49,9 +49,12 @@ export function buildMezzanine(spec: MezzanineSpec, cat: Catalog, f: Factors = {
   const clear = s.deckHeightFt - (depthIn(hdr) + depthIn(cm) * 0) / 12 - 0.5;
   A.push({ field: 'members', value: `${col} / ${hdr} / ${cm}`, why: `${LL} psf live + ${DL} psf dead at L/${M.deflectionLimit}: crossmembers ${cm}, headers ${hdr}, columns ${col} (≈${Math.round(colLoad / 1000)} kip) — engineering to confirm` });
 
-  K.steel('Columns', col, cols * n, colLen);
-  K.steel('Headers', hdr, headers * n, Math.ceil(colSpacing));
-  K.steel('Crossmembers', cm, cms * n, Math.ceil(crossSpan));
+  const colRow = (M.columnByLoadLb as [number, string][]).find(([m]) => colLoad <= m)?.[0];
+  K.steel('Columns', col, cols * n, colLen, { role: 'column', basis: { source: 'chart', chart: 'mezzanine_rules columnByLoadLb', row: `load ≤ ${colRow ?? 'max'} lb`, text: `${Math.round(colLoad).toLocaleString('en-US')} lb per column (${w} psf × ${colSpacing.toFixed(1)}' × ${trib.toFixed(1)}' trib) → ${col}`, assumption: 'members', ...(colRow ? { unity: Math.round(colLoad / colRow * 1000) / 1000 } : { flag: 'Past the column table — engineering to size' }) } });
+  K.steel('Headers', hdr, headers * n, Math.ceil(colSpacing), { role: 'header', basis: calcBasis(`${colSpacing.toFixed(1)}' span, ${w} psf × ${trib.toFixed(1)}' trib = ${Math.round(w * trib)} plf, L/${M.deflectionLimit} on live load, ≥ crossmember depth`,
+    beamUnity(hdr, { spanFt: colSpacing, wPlf: w * trib, liveFrac: LL / w, deflLimit: M.deflectionLimit }), 'members') });
+  K.steel('Crossmembers', cm, cms * n, Math.ceil(crossSpan), { role: 'crossmember', basis: calcBasis(`${crossSpan.toFixed(1)}' span at ${M.crossmemberSpacingFt}' c/c, ${w} psf = ${w * M.crossmemberSpacingFt} plf, L/${M.deflectionLimit} on live load`,
+    beamUnity(cm, { spanFt: crossSpan, wPlf: w * M.crossmemberSpacingFt, liveFrac: LL / w, deflLimit: M.deflectionLimit }), 'members') });
   const bp = colLoad > 40000 ? [1, 20] : colLoad > 15000 ? [0.75, 16] : [0.75, 14];
   K.plate('Base plates', cols * n, bp[0], bp[1], bp[1]);
   K.plate('Top / cap plates', cols * n, 0.5, 10, 12);

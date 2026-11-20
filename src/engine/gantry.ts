@@ -3,7 +3,7 @@
 // trucks, (4) brace tubes, plasma plates, wheel-load BOM (casters/drives/motors), the tab's
 // standard parts and its labor PLF-with-minimum table. Calibrated against sold job 28884.
 import G from './rules/gantry_rules.json';
-import { Kit, RULES as R, check, keep, volt, ftIn, hgt, tons, sizeBeam, depthIn, type Catalog, type Factors } from './kit';
+import { Kit, RULES as R, check, keep, volt, ftIn, hgt, tons, sizeBeam, beamUnity, calcBasis, depthIn, type Catalog, type Factors } from './kit';
 import { pickHoist, type BuildResult, type BuildOpts } from './crane';
 
 export interface GantrySpec {
@@ -54,8 +54,10 @@ export function buildGantry(spec: GantrySpec, cat: Catalog, f: Factors = { produ
   const brace = hub < 10 ? 'RT 5 x 3 x 1/4' : hub <= 15 ? 'RT 6 x 4 x 1/4' : 'RT 8 x 4 x 1/4';
   const braceLen = up(casterLen * 1.15, G.braceLenBrackets);
 
-  K.steel('Gantry girder', girder, n, gLen);
-  K.box('Box columns / risers', 2 * n, colPlf, colLen);
+  K.steel('Gantry girder', girder, n, gLen, { role: 'girder', basis: calcBasis(`${s.spanFt}' span, ${tons(cap)} t × 1.15 + hoist at L/600 incl. self weight → lightest W; cut ${gLen}' (Gantry tab length brackets)`,
+    beamUnity(girder, { spanFt: s.spanFt, pointLb: loadLb, deflLimit: 600, wPlf: cat.shape(girder)?.lbPerFt ?? 60 }), 'girder') });
+  K.box('Box columns / risers', 2 * n, colPlf, colLen, { role: 'column', basis: { source: 'chart', chart: 'Gantry tab column chart', row: `height ≤ ${row.heightFt}', force ${Math.round(force)} lb/leg`, text: `Smallest box column PLF whose chart capacity at ${hub.toFixed(1)}' covers ${Math.round(force)} lb per leg → ${colPlf} plf`, assumption: 'columns',
+    ...(opts.length ? { unity: Math.round(force / opts[0].c * 1000) / 1000 } : { flag: 'Past the gantry column chart — engineering must size the legs' }) } });
   K.box('Caster plate weldments (end trucks)', 2 * n, colPlf, Math.ceil(casterLen * 2) / 2);
   K.steel('Brace tubes', brace, 4 * n, braceLen);
   K.plate('Top chamfer plates', 2 * n, 0.5, 8, 8);

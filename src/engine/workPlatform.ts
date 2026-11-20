@@ -46,8 +46,9 @@ export function buildWorkPlatform(spec: WorkPlatformSpec, cat: Catalog, f: Facto
 
   // ---------- steel (structural markup, steel_cost setting); paint is a flat per-set booth charge
   const rows = (box ? W.structural.box : W.structural.triangular) as [string, number, string, number, boolean][];
-  for (const [d, q, sh, len, scale] of rows) K.steel(d, sh, q * n, Math.round(len * (scale ? adj : 1) * 100) / 100, { paint: false });
-  for (const [d, q, t, w, l] of W.plate as [string, number, number, number, number][]) K.plate(d, q * n, t, w, l);
+  for (const [d, q, sh, len, scale] of rows) K.steel(d, sh, q * n, Math.round(len * (scale ? adj : 1) * 100) / 100, { paint: false,
+    basis: { source: 'fixed', chart: `Work Platforms tab — ${box ? 'box' : 'triangular'} truss`, text: `${q} per set${scale ? ` × ${len}' scaled by length ${L}' ÷ 50'` : ` × ${len}'`}`, assumption: 'truss' } });
+  for (const [d, q, t, w, l] of W.plate as [string, number, number, number, number][]) K.plate(d, q * n, t, w, l, { basis: { source: 'fixed', chart: 'Work Platforms tab — plate', text: `${q} per set` } });
   const C = W.calc as unknown as Record<string, (string | number)[]>;
   const calc = (k: string, qty: number, desc: string) => { const [sh, len, per] = C[k] as [string, number, number?]; if (qty > 0) K.steel(desc, sh, qty * (per ?? 1), len, { paint: false }); };
   if (Wd > 4) { calc('extraLongTower', n, 'Width adder — extra tower material'); calc('extraRunner', n, 'Width adder — extra runner tubes'); K.sell(`Width adder (${Wd}' wide)`, n, (Wd - 4) * O.widthOver4PerFt, 'workPlatforms'); }

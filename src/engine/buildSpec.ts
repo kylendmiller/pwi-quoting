@@ -86,7 +86,8 @@ export function buildFromSpec(spec: QuoteSpec, cat0: Catalog, settings: any, bas
     let r: BuildResult;
     try { r = B.build(it, cat, { production: pf[B.fam] ?? B.def[0], install: inf[B.fam] ?? B.def[1] }, { skipTravel: shared && !!it.install }); }
     catch (e: any) { blockers.push(`${label}${e.message ?? e}`); return; }
-    const tag = (l: any) => ({ ...l, auto: true, item: i });
+    const group = `${spec.items.length > 1 ? `Item ${i + 1}` : 'Item'}${it.tag ? ` (${it.tag})` : ''} — ${it.type.replace(/_/g, ' ')}`;
+    const tag = (l: any) => ({ ...l, auto: true, item: i, group });
     lines = lines.concat(r.lines.map(tag) as any);
     wording.push(it.wording ?? r.wording);
     notes.push(...r.notes.map(n => label + n));
@@ -102,7 +103,7 @@ export function buildFromSpec(spec: QuoteSpec, cat0: Catalog, settings: any, bas
   if (shared && trip.workHrs > 0) {
     const K = new Kit(cat, 'other', { production: 1, install: 1 });
     K.travel(trip);
-    lines = lines.concat(K.lines.map(l => ({ ...l, auto: true })) as any);
+    lines = lines.concat(K.lines.map(l => ({ ...l, auto: true, item: -1, group: `Shared trip (${installed.length} installed items)` })) as any);
     assumptions.push(...K.A.map(a => ({ ...a, item: -1 })));
     notes.push(`One shared trip for ${installed.length} installed items (${Math.round(trip.workHrs)} on-site hours).`);
   }
