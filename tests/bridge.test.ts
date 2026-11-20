@@ -27,3 +27,14 @@ describe('bridge girder past the AQT chart', () => {
     expect(r.lines.find(l => /Runway Electrification Package/.test(l.description))?.qty).toBe(475);
   });
 });
+
+describe('Class D service', () => {
+  it('sizes the hoist one step up (10 t → 15 t SMW) and says Class D', () => {
+    const c = buildCrane({ support: 'bridge_only', spanFt: 40, capacityTons: 10, bridgeDrive: 'motorized', voltage: '460V/3', install: false, liftFt: 20 }, testCatalog);
+    const d = buildCrane({ support: 'bridge_only', spanFt: 40, capacityTons: 10, serviceClass: 'D', bridgeDrive: 'motorized', voltage: '460V/3', install: false, liftFt: 20 }, testCatalog);
+    expect(c.lines.find(l => l.category === 'vendor' && /SMW10/.test(l.description))).toBeTruthy();
+    expect(d.lines.find(l => l.category === 'vendor' && /SMW15/.test(l.description))).toBeTruthy();
+    expect(d.wording).toMatch(/Class D/);
+    expect(c.wording).toMatch(/Class C/);
+  });
+});

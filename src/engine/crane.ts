@@ -25,6 +25,7 @@ export interface CraneSpec {
   colors?: { columns?: string; runways?: string; bridge?: string };
   install: boolean; miles?: number; crewMen?: number; travelMode?: 'drive' | 'fly' | 'local';
   bracedToBuilding?: boolean; preUseInspection?: boolean;
+  serviceClass?: 'C' | 'D';                 // CMAA class; D (heavy service) = hoist one size up, derated (sold 29562, 28723)
 }
 export interface BuildResult { lines: QuoteLine[]; assumptions: Assumption[]; notes: string[]; wording: string; suggestedInstallHours: number; smtShopHours: number;
   outboundFreight: number; preUse: number; blockers: string[]; geometry: Record<string, number | string>; tons: number;
@@ -34,7 +35,7 @@ export interface BuildOpts { skipTravel?: boolean }
 type Norm = CraneSpec & { support: Support; hanging: 'top_running' | 'underhung'; series: 'UL' | 'M' | 'GM' | 'HL'; systems: number; runwayOalFt: number; trolley: 'manual' | 'motorized'; control: 'radio' | 'pendant'; voltage: '460V/3' | '230V/3' | '208V/3' };
 const KEYS = ['series', 'support', 'hanging', 'systems', 'runwayOalFt', 'spanFt', 'capacityTons', 'overallHeightFt', 'hookHeightFt', 'liftFt', 'columnsPerSystem', 'bridgesPerSystem', 'hoistsPerBridge',
   'buildingBayFt', 'runwayElectrification', 'railFt', 'runwayElectrificationFt', 'bridgeDrive', 'trolley', 'voltage', 'control', 'collisionAvoidance', 'asceRail', 'doubleGirder', 'bracing', 'foundation', 'colors', 'install', 'miles',
-  'crewMen', 'travelMode', 'bracedToBuilding', 'preUseInspection'] as const;
+  'crewMen', 'travelMode', 'bracedToBuilding', 'preUseInspection', 'serviceClass'] as const;
 
 export function normalize(x0: CraneSpec): Norm {
   const support: Support = x0.support ?? 'freestanding';
@@ -50,6 +51,7 @@ export function normalize(x0: CraneSpec): Norm {
   const series = x0.series ?? (x0.bridgeDrive === 'motorized' ? (x0.capacityTons >= 3 ? 'GM' : 'M') : 'M');
   if (!['UL', 'M', 'GM', 'HL'].includes(series)) throw new Error(`Unknown series ${series}.`);
   if (!['manual', 'motorized'].includes(x0.bridgeDrive)) throw new Error('bridgeDrive must be manual or motorized.');
+  if (x0.serviceClass != null && !['C', 'D'].includes(x0.serviceClass)) throw new Error('serviceClass must be C or D.');
   const x = keep<CraneSpec>(x0, KEYS);
   return { ...x, support, series, hanging: x.hanging ?? 'top_running', systems: Math.max(1, x.systems ?? 1), runwayOalFt: x.runwayOalFt ?? 0,
     trolley: x.trolley ?? x.bridgeDrive, control: x.control ?? (x.bridgeDrive === 'motorized' ? 'radio' : 'pendant'), voltage: volt(x.voltage) as Norm['voltage'] };
@@ -172,7 +174,9 @@ export function buildCrane(spec: CraneSpec, cat: Catalog, f: Factors = { product
   const v = s.voltage.startsWith('460') ? '460V' : '230V';
   const lift = s.liftFt ?? Math.max(10, Math.ceil((hook + 2) / 5) * 5);
   if (s0.liftFt == null) A.push({ field: 'liftFt', value: lift, why: `Hook ${hook.toFixed(1)}' + 2' → next stocked lift`, alt: lift + 10 });
-  const hoistPart = pickHoist(cat, cap, lift, v, s.trolley, doubleGirder);
+  const classD = s.serviceClass === 'D', CD = (R as any).classD;
+  const hoistPart = pickHoist(cat, classD ? cap * CD.hoistCapFactor : cap, lift, v, s.trolley, doubleGirder);
+  if (classD) A.push({ field: 'serviceClass', value: 'D', why: `Class D (heavy service): hoist sized at ${CD.hoistCapFactor}× rated capacity and derated to ${cap} t (sold 29562, 28723)`, alt: 'C' });
   if (cap > 3) A.push({ field: 'hoistFamily', value: `Starke ${doubleGirder ? 'STW' : 'SMW'} wire rope`, why: '≥5 t sold jobs used wire rope (SMW single girder 29331/28192; STW double girder 29523)' });
   if (hoistPart) K.vend(hoistPart, hoists); else K.notes.push(`No hoist found for ${cap} t / ${lift}' / ${v} — pick in editor.`);
   if (motor) {
@@ -204,6 +208,7 @@ export function buildCrane(spec: CraneSpec, cat: Catalog, f: Factors = { product
     [`Bridge fab + after-paint (${bType})`, ((O.bridge as any)[bType] + (s.spanFt > 70 ? O.bridge.over70ftAdd : 0)) * bridges],
     ...(boxPlf ? [[`Box girder fab (${bridges * (doubleGirder ? 2 : 1)} × ${Math.ceil(s.spanFt + 2)}')`, R.boxGirder.fabHrsPerFt * Math.ceil(s.spanFt + 2) * bridges * (doubleGirder ? 2 : 1)] as [string, number]] : []),
     ...(s.collisionAvoidance ? [['Collision avoidance', O.collisionAvoidPerBridge * bridges] as [string, number]] : []),
+    ...(classD ? [['Hoist derating setup', CD.deratingHrsPerBridge * bridges] as [string, number]] : []),
   ]);
 
   // ---------- install ----------
@@ -284,7 +289,8 @@ function wording(s: Norm, x: any): string {
   if (s.overallHeightFt != null || s.hookHeightFt != null) out.push(`- Hook Height:\t${hgt(x.hook, 'floor')}`, `- ${s.support === 'freestanding' ? 'Overall Height' : 'Top of Runway'}:\t${hgt(x.overall, 'ceil')}`);
   out.push(`- System Voltage:\t${s.voltage.replace('/3', '/3 phase')}`, '',
     '## Crane Classification:',
-    '> Class C (Moderate Service): This service covers cranes whose service requirements are deemed moderate, handling loads which average 50 percent of the rated capacity with 5 to 10 lifts per hour, averaging 15 feet, with not over 50 percent of the lifts at rated capacity.', '');
+    s.serviceClass === 'D' ? '> Class D (Heavy Service): This service covers cranes which may be used in heavy machine shops, foundries, fabricating plants, steel warehouses, container yards, lumber mills, etc., and standard duty bucket and magnet operations where heavy duty production is required. In this type of service, loads approaching 50 percent of the rated capacity will be handled constantly during the working period.'
+      : '> Class C (Moderate Service): This service covers cranes whose service requirements are deemed moderate, handling loads which average 50 percent of the rated capacity with 5 to 10 lifts per hour, averaging 15 feet, with not over 50 percent of the lifts at rated capacity.', '');
   if (s.support !== 'bridge_only') {
     out.push('## Runway Package');
     if (s.support === 'freestanding' || s.support === 'crane_columns') out.push(`- (${x.colsPer}) ${x.builtUp ? 'Built-up plate' : 'Structural'} ${s.support === 'crane_columns' ? 'crane ' : ''}columns spaced at approx. ${ftIn(Math.round(x.bayFt))} bays`);

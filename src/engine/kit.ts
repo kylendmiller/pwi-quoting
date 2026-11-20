@@ -224,11 +224,13 @@ export class Kit {
       this.push({ kind: 'equipment', category: 'equipment', description: 'Rental delivery / pickup', qty: 1 + (handler && handler !== 'Rental Fork Lift' ? 1 : 0), unitCost: E.deliveryFee, markupPct: 0 });
       this.A.push({ field: 'equipment', value: `${liftItem}, ${handler ?? '15K telehandler + crane?'}${o.generator ? ', generator' : ''} × ${weeks} wk`, why: `Work height ≈ ${o.workTopFt.toFixed(1)}', heaviest pick ≈ ${Math.round(o.heaviestPickLb)} lb, ${crewDays} crew days` });
       }
-  /** PM + CAD hours scale with job size (fitted on sold jobs). */
+  /** PM + CAD hours scale with job size: $ = k·(materials + shop $, in $k)^exp (fitted on sold crane jobs). */
   pmCad(mult = 1, mins?: { pm?: number; cad?: number }) {
-    const base0 = this.matSell() + this.smtShopHours * this.f.production * (140 + 38.6);
-    const pm = Math.max(mins?.pm ?? R.pmCad.pmMin, Math.round(R.pmCad.pmHrsPer10k * base0 / 1e4 * mult));
-    const cad = Math.max(mins?.cad ?? R.pmCad.cadMin, Math.round(R.pmCad.cadHrsPer10k * base0 / 1e4 * 0.98 * mult));
+    const P = R.pmCad as any;
+    const rest = this.matSell() + this.smtShopHours * this.f.production * P.shopRate;
+    const dollars = P.k * Math.pow(Math.max(rest, 1000) / 1000, P.exp) * mult;
+    const pm = Math.max(mins?.pm ?? P.pmMin, Math.round(dollars * P.pmShare / P.pmRate));
+    const cad = Math.max(mins?.cad ?? P.cadMin, Math.round(dollars * (1 - P.pmShare) / P.cadRate));
     this.push({ kind: 'pm', category: 'pmMarketing', description: 'Project management', qty: pm });
     this.push({ kind: 'cad', category: 'cad', description: 'AutoCAD design / approval drawings', qty: cad });
   }

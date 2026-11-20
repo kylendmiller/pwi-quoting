@@ -351,9 +351,13 @@
   ]
  },
  "pmCad": {
-  "_why": "Tuned 11/20 (overnight): sold PM+CAD = 8.8% of materials+shop across non-outlier crane jobs 29140, 29213, 29354, 29331, 28192, 28426, 29562 (was 10.2%). Scaled both rates by 0.865.",
-  "pmHrsPer10k": 4.5,
-  "cadHrsPer10k": 3.9,
+  "_why": "Tuned 11/20 (overnight): PM + CAD $ = 226.5 \u00d7 (materials + shop $ in $k)^0.807, fitted log-log on sold crane jobs 29213, 28426, 29140, 28192 (ex-gantries), 29562, 29354, 28772, 29331, 28723 \u2014 big jobs carry a smaller share (12% at $30k, 6% at $1.6M). Split 48% PM / 52% CAD at the template's $95 / $120 rates. Replaces the linear 5.2 / 4.5 h per $10k.",
+  "k": 226.5,
+  "exp": 0.807,
+  "pmShare": 0.48,
+  "pmRate": 95,
+  "cadRate": 120,
+  "shopRate": 140,
   "pmMin": 15,
   "cadMin": 12
  },
@@ -374,5 +378,10 @@
   "lbPerIn2Ft": 3.4,
   "hoistLbPerTon": 200,
   "fabHrsPerFt": 1.8
+ },
+ "classD": {
+  "_why": "Added 11/20 (overnight): Class D (heavy service) sold jobs carry a hoist one size up, derated \u2014 29562 (10 t bridge, SMW 15 t hoists, 10 h 'auto derating' shop time) and 28723 (10 t on STW 15 t, 15 t on STW 20 t).",
+  "hoistCapFactor": 1.25,
+  "deratingHrsPerBridge": 10
  }
 }

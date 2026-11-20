@@ -38,8 +38,8 @@ export const CASES: CalCase[] = [
     note: 'Two bought-in motorized gantries ($45,200 −2%) added as catalog lines.' },
   { job: '28426', product: 'bridge', items: [{ type: 'bridge', support: 'bridge_only', runwayOalFt: 144, runwayElectrification: true, asceRail: true, spanFt: 44.08, capacityTons: 4, hookHeightFt: 14, liftFt: 20, motorized: true, voltage: '460V/3', control: 'radio', install: true, miles: 150 }],
     note: 'Bridge only on customer runway; new 30# rail (288\') + 145\' runway conductor bar.' },
-  { job: '29562', product: 'bridge', items: [{ type: 'bridge', support: 'bridge_only', runwayOalFt: 225, runwayElectrificationFt: 475, railFt: 500, spanFt: 70, capacityTons: 10, hoistsPerBridge: 2, hookHeightFt: 20, liftFt: 20, motorized: true, voltage: '460V/3', control: 'radio', collisionAvoidance: true, install: true, miles: 400 }],
-    note: 'Box girder (189 plf) bridge, 2 hoists; 225\' 120 A runway bar replaced + two 125\' runway completion packages (500\' rail, 250\' bar). Sold with 15 t hoists auto-derated to 10 t (wording says 10 t).' },
+  { job: '29562', product: 'bridge', items: [{ type: 'bridge', support: 'bridge_only', runwayOalFt: 225, runwayElectrificationFt: 475, railFt: 500, spanFt: 70, capacityTons: 10, hoistsPerBridge: 2, serviceClass: 'D', hookHeightFt: 20, liftFt: 20, motorized: true, voltage: '460V/3', control: 'radio', collisionAvoidance: true, install: true, miles: 400 }],
+    note: 'Box girder (189 plf) bridge, 2 hoists; 225\' 120 A runway bar replaced + two 125\' runway completion packages (500\' rail, 250\' bar). Class D: sold with 15 t hoists auto-derated to 10 t.' },
 
   { job: '28772', product: 'bridge', items: [
     { type: 'bridge', support: 'building_runway', systems: 2, bridgesPerSystem: 2, runwayOalFt: 229, buildingBayFt: 25, spanFt: 47.3, capacityTons: 5, hookHeightFt: 20, liftFt: 30, motorized: true, voltage: '460V/3', control: 'radio', collisionAvoidance: true, railFt: 950, runwayElectrificationFt: 225, install: true, miles: 150 },
@@ -47,6 +47,12 @@ export const CASES: CalCase[] = [
     { type: 'catalog', item: 'PWIJ-UL-WMC-200020', description: 'Ultralite wall-mounted jib, 2000 lb × 20\' (sold cost line)', unitPrice: 4527, qty: 8 },
     { type: 'catalog', item: 'STK1026-20-230V-3PH-A', qty: 8 }, { type: 'catalog', item: 'SHT100', qty: 8 }, { type: 'catalog', item: 'S2B1SP', qty: 8 }],
     note: 'New building: 2 runways × 229\' on the building steel, 4 × 5 t + 1 × 2 t bridges (47\'), 950\' rail; 8 bought-in Ultralite wall jibs with hoists added as catalog lines.' },
+
+  { job: '28723', product: 'bridge', items: [
+    { type: 'bridge', support: 'bridge_only', systems: 3, bridgesPerSystem: 2, spanFt: 50, capacityTons: 10, doubleGirder: true, serviceClass: 'D', hookHeightFt: 25, liftFt: 30, motorized: true, voltage: '460V/3', control: 'radio', collisionAvoidance: true, railFt: 3012, runwayElectrificationFt: 1506, install: true, miles: 700 },
+    { type: 'bridge', support: 'bridge_only', systems: 3, bridgesPerSystem: 2, spanFt: 75, capacityTons: 15, doubleGirder: true, serviceClass: 'D', hookHeightFt: 25, liftFt: 30, motorized: true, voltage: '460V/3', control: 'radio', collisionAvoidance: true, railFt: 2262, runwayElectrificationFt: 1131, install: true, miles: 700 },
+    { type: 'catalog', item: 'extra-bridge', description: 'Additional 15 t bridge (sold cost line)', unitPrice: 185150, qty: 1 }],
+    note: 'Runway completion packages (3 × 502\' + 3 × 377\': rail + 120 A bar) with 6 × 10 t and 6 × 15 t double-girder bridges (15 t on 161 plf box girders) + a 7th 15 t bridge as a cost line. Class D.' },
 
   // ------------------------------------------------------------------ mezzanine
   { job: '28527', product: 'mezzanine', items: [{ type: 'mezzanine', lengthFt: 27.67, widthFt: 23.83, deckHeightFt: 9.52, liveLoadPsf: 125, deck: 'bdeck_advantech', guardrailFt: 50, gates: [{ type: 'manual_rolling', qty: 1 }], bracing: 'knee', install: false }],
@@ -88,7 +94,7 @@ export const SKIPPED: [string, string][] = [
   ['28670', 'Custom modular box-girder crane (R&D, engineering hours)'], ['28970', '25 t double-girder bridges — above builder range (20 t)'],
   ['27660', 'Barnhart 16 t / 40 t custom monorail structures'], ['28953', 'Barnhart 16 t / 40 t custom monorail structures'],
   ['27823', '22,000 sq ft mezzanine on a bought-in joist package (NMBS) with structure by others'],
-  ['28323', '7-system multi-bay crane package (not modeled yet)'], ['28723', 'Runway completion + 6 double-girder box bridges (not modeled yet)'],
+  ['28323', '7-system multi-bay crane package (not modeled yet)'],
   ['28738', 'StructuralSpace grating pit platform (11.5" deck) — not a Guardian work platform set, below the mezzanine builder\'s 4\' minimum deck'],
   ['29629', 'AQT template — no sold price'], ['27685', 'AQT template — no sold price'], ['28726', 'AQT template — no sold price'], ['28083', 'AQT template — no sold price'],
   ['28893', 'AQT template — no sold price'], ['28013', 'AQT template — no sold price'], ['28945', 'AQT template — no sold price'],
