@@ -9,10 +9,11 @@ import { priceManual, type QuoteDoc } from '../src/engine/manual';
 import { testCatalog } from './catalog';
 import { CAL_SETTINGS } from './calibration/harness';
 import { CASES } from './calibration/cases';
+import { legacyPv } from './r3-helpers';
 
 const FILE = 'tests/golden/sell_fingerprint.json';
 const base: any = { family: 'other', lines: [], outboundFreight: 0, preUse: 0, showPreUse: false, dealerDiscount: 0, taxOn: false, wording: '', options: [] };
-export const EXTRA: [string, any[]][] = [
+const EXTRA: [string, any[]][] = [
   ['fstr-installed', [{ type: 'freestanding', capacityTons: 5, spanFt: 30, runwayOalFt: 80, overallHeightFt: 20, bridgeDrive: 'motorized', voltage: '460V/3', install: true, miles: 400 }]],
   ['bridge-installed', [{ type: 'bridge', support: 'building_runway', capacityTons: 3, spanFt: 40, runwayOalFt: 100, overallHeightFt: 22, bridgeDrive: 'motorized', voltage: '460V/3', install: true, miles: 250 }]],
   ['multi-installed', [{ type: 'freestanding', capacityTons: 2, spanFt: 20, runwayOalFt: 40, overallHeightFt: 16, install: true, miles: 300 },
@@ -21,13 +22,11 @@ export const EXTRA: [string, any[]][] = [
   ['monorail-local', [{ type: 'monorail', capacityTons: 2, lengthFt: 60, overallHeightFt: 16, install: true, miles: 20 }]],
   ['wp-vrc-fp', [{ type: 'work_platform', lengthFt: 40, widthFt: 4 }, { type: 'vrc', model: 'PWSD0606', install: true, miles: 100 }, { type: 'fall_protection', lengthFt: 120 }]],
 ];
-export const ALL: [string, any[]][] = [...CASES.map(c => [c.job, c.items] as [string, any[]]), ...EXTRA];
+const ALL: [string, any[]][] = [...CASES.map(c => [c.job, c.items] as [string, any[]]), ...EXTRA];
 
-/** How the app has always set PV hours: every shop hour when the doc family is freestanding. */
-export const legacyPv = (d: QuoteDoc) => d.family === 'freestanding' ? d.lines.filter(l => l.kind === 'shop_labor').reduce((s, l) => s + (l.qty || 0), 0) : 0;
 const c2 = (x: number) => Math.round(x * 100) / 100;
 
-export function fingerprint(items: any[]) {
+function fingerprint(items: any[]) {
   const b = buildFromSpec({ pwi_quote: 1, items }, testCatalog, CAL_SETTINGS, base);
   const doc = { ...b.doc, freestandingShopHours: legacyPv(b.doc) } as QuoteDoc;
   const p = priceManual(doc, CAL_SETTINGS);

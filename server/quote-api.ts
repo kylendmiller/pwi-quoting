@@ -44,7 +44,7 @@ Deno.serve(async (req: Request) => {
   if (!['sales', 'manager', 'admin'].includes(role)) return json({ error: 'Your account has no access yet. Ask an admin.' }, 403);
 
   const body = await req.json();
-  const { priceManual, sendBlocked } = await engine();
+  const { priceManual, sendBlocked, deriveFamily, pvHours } = await engine();
   const settings = await loadSettings(admin);
   const ev = (quote_id: string, revision_id: string | null, event: string, data: unknown = {}) =>
     admin.from('quote_events').insert({ quote_id, revision_id, actor: uid, event, data });
@@ -58,7 +58,9 @@ Deno.serve(async (req: Request) => {
   try {
     switch (body.action) {
       case 'price': {               // preview only, writes nothing
-        return json({ priced: priceManual(body.doc as QuoteDoc, settings) });
+        const d = body.doc as QuoteDoc;
+        d.family = deriveFamily(d); d.freestandingShopHours = pvHours(d);
+        return json({ priced: priceManual(d, settings) });
       }
       case 'create': {
         const { customer_id, contact_id, project_name, job_location, brand } = body;
@@ -77,6 +79,8 @@ Deno.serve(async (req: Request) => {
         if (r.doc_version !== doc_version) return json({ error: 'Someone else saved this quote. Reload to see their changes.' }, 409);
         if (!(r.quotes.salesperson_id === uid || isMgr)) return notYours();
         await serverChecks(admin, doc as QuoteDoc, settings);
+        // S2: family and production-value hours come from the spec and the lines, never from the browser.
+        doc.family = deriveFamily(doc as QuoteDoc); doc.freestandingShopHours = pvHours(doc as QuoteDoc);
         const priced = priceManual(doc as QuoteDoc, settings);
         const t = priced.totals, ro = priced.rollup.quote;
         // keep only approvals whose covered numbers are unchanged

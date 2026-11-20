@@ -56,7 +56,7 @@ export interface Settings {
 }
 
 export interface PricedLine extends QuoteLine { cost: number; sell: number; hours: number }
-export type FlagRule = 'INSTALL_BELOW_SUGGESTED' | 'INSTALL_MANUAL_NO_SUGGESTION' | 'PV_BELOW_FLOOR' | 'CLASS_D';
+export type FlagRule = 'INSTALL_BELOW_SUGGESTED' | 'INSTALL_MANUAL_NO_SUGGESTION' | 'PV_BELOW_FLOOR' | 'CLASS_D' | 'FAMILY_PV_DROP';
 /** A policy flag. `detail` is what an approval covers (hashed on the server), so it holds only rounded,
  *  order-independent numbers. `section` / `lineKeys` say where the editor shows it inline (not hashed). */
 export type Flag = { rule: FlagRule; detail: Record<string, unknown>; section?: SectionKey; lineKeys?: string[] };
@@ -76,9 +76,33 @@ export const flags: FlagDef[] = [
     explain: d => `Install ${h1(d.quoted)} has no auto-built suggestion to check against — needs a sales manager.` },
   { id: 'pv_below_floor', rule: 'PV_BELOW_FLOOR', label: 'Production value below floor', section: 'costBased',
     explain: d => `Production value $${d.used}/shop h is below the $${d.floor} floor.` },
+  { id: 'family_pv_drop', rule: 'FAMILY_PV_DROP', label: 'Production value dropped', section: 'costBased',
+    explain: d => `Production value counts ${h1(d.used)} of the ${h1(d.expected)} freestanding shop hours (family ${d.family}) — needs a sales manager.` },
   { id: 'class_d', rule: 'CLASS_D', label: 'Class D duty', explain: () => 'Wording calls for Class D duty — needs a sales manager.' },
 ];
 export const flagDef = (rule: FlagRule) => flags.find(f => f.rule === rule);
+
+// Product family → builder factor family, without importing the builders (keeps manual.ts light).
+const FAM: Record<string, string> = { freestanding: 'freestanding', bridge: 'bridge', gantry: 'gantry', monorail: 'monorail', mezzanine: 'mezzanine',
+  work_platform: 'work_platform', jib: 'jib', fall_protection: 'fall_protection', vrc: 'vrc', catalog: 'other' };
+const specItems = (doc: QuoteDoc): any[] => { const it = (doc.spec as any)?.items; return Array.isArray(it) ? it : []; };
+/** S2: the quote's family. With a saved spec it comes from the first item's builder (the client's dropdown is ignored);
+ *  without one it is the doc's own family. */
+export function deriveFamily(doc: QuoteDoc): string {
+  const t = specItems(doc)[0]?.type;
+  return (t && FAM[t]) || doc.family;
+}
+/** S2: freestanding production-value shop hours, the way the app has always counted them (every shop-labor hour on a
+ *  freestanding-family quote), with the family taken from the spec. The server sets doc.freestandingShopHours to this. */
+export function pvHours(doc: QuoteDoc): number {
+  if (deriveFamily(doc) !== 'freestanding') return 0;
+  return doc.lines.filter(l => l.kind === 'shop_labor').reduce((a, l) => a + (Number.isFinite(l.qty) ? l.qty : 0), 0);
+}
+/** Shop hours that should earn production value: pvHours() plus, with no spec, shop lines built for a freestanding item. */
+function pvExpected(doc: QuoteDoc): number {
+  const byLines = doc.lines.filter(l => l.kind === 'shop_labor' && l.family === 'freestanding').reduce((a, l) => a + (Number.isFinite(l.qty) ? l.qty : 0), 0);
+  return Math.max(pvHours(doc), byLines);
+}
 export type Lint = { level: 'error' | 'warning'; message: string };
 
 export interface Priced {
@@ -147,6 +171,9 @@ export function priceManual(doc: QuoteDoc, s: Settings): Priced {
   } else if (sugg == null && siteLines.length) flags.push({ rule: 'INSTALL_MANUAL_NO_SUGGESTION', detail: { quoted: quotedInstall }, section: 'install', lineKeys: siteLines.map(l => l.key) });
   if (doc.pvPerHourOverride != null && doc.pvPerHourOverride < s.freestanding_pv_per_shop_hour && (doc.freestandingShopHours ?? 0) > 0)
     flags.push({ rule: 'PV_BELOW_FLOOR', detail: { used: doc.pvPerHourOverride, floor: s.freestanding_pv_per_shop_hour }, section: 'costBased' });
+  // S2: no silent production-value drop (family dropdown switched away from freestanding, or PV hours under-reported).
+  const pvExp = r1(pvExpected(doc)), pvUsed = r1(doc.freestandingShopHours ?? 0);
+  if (pvExp > 0 && pvUsed < pvExp) flags.push({ rule: 'FAMILY_PV_DROP', detail: { expected: pvExp, used: pvUsed, family: doc.family }, section: 'costBased' });
   if (/class\s*d\b/i.test(doc.wording)) flags.push({ rule: 'CLASS_D', detail: {} });
 
   return {
