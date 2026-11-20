@@ -118,6 +118,7 @@ Optional, only if said:
 - `colors { columns, runways, bridge }`
 - `crewMen`, `travelMode` (`drive` / `fly` / `local`)
 - `bracedToBuilding`, `preUseInspection`
+- `serviceClass`: `D` only when they say Class D / heavy service (foundry, steel yard, constant near-capacity lifts) — the app sizes the hoist up and derates it; default Class C
 
 **Out of range**
 
