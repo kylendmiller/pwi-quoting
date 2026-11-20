@@ -13,14 +13,30 @@ export interface Catalog {
   vendor(part: string): { list: number; description: string; vendor: string } | null;
   vendorParts(prefix: string): { part: string; list: number; description: string }[];
   discount(vendor: string): { pwi: number; customer: number };
-  shape(name: string): { lbPerFt: number; pricePerLb: number } | null;
+  shape(name: string): { lbPerFt: number; pricePerLb: number; group?: string } | null;
   plate: { pricePerLb: number; markupPct: number; dropFactor: number };
   structuralMarkupPct: number;
   decalSell(name: string): number | null;
   equip(item: string): { daily: number; weekly: number; monthly: number } | null;
   rate?(item: string): number | null;                  // painting / travel rate items (live, editable)
+  steelCost?: SteelCost | null;                         // dated steel $/lb by price group (settings.steel_cost); wins over shape/plate prices
   stdAll?(): { description: string; part: string | null; sell: number; hours: number; info: string | null; section: string | null }[];   // whole catalog (product configurators)
 }
+/** settings.steel_cost — one dated steel price per price group (reference/steel_price_groups.json groups + "Plate").
+ *  Updated weekly from the steel brief (tools/steel-cost-from-brief.md). Missing groups fall back to the catalog. */
+export interface SteelCost { effective: string; source: string; perLb: Record<string, number> }
+/** Validates a steel_cost setting; returns null (and why) when it can't be used. */
+export function readSteelCost(x: unknown): { sc: SteelCost | null; problem?: string } {
+  if (x == null) return { sc: null };
+  const o = x as any;
+  if (typeof o !== 'object' || typeof o.perLb !== 'object' || o.perLb == null) return { sc: null, problem: 'steel_cost setting has no perLb table — using catalog steel prices' };
+  if (typeof o.effective !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(o.effective)) return { sc: null, problem: 'steel_cost.effective must be YYYY-MM-DD — using catalog steel prices' };
+  const perLb: Record<string, number> = {};
+  for (const [k, v] of Object.entries(o.perLb)) if (typeof v === 'number' && isFinite(v) && v > 0 && v < 20) perLb[k] = v;
+  return { sc: { effective: o.effective, source: String(o.source ?? ''), perLb } };
+}
+/** Catalog with a steel_cost setting applied (Kit reads cat.steelCost). */
+export const withSteelCost = (cat: Catalog, sc: SteelCost | null): Catalog => (sc ? { ...cat, steelCost: sc } : cat);
 export interface Assumption { field: string; value: unknown; why: string; alt?: unknown; altLabel?: string }
 export interface Factors { production: number; install: number }
 
@@ -64,6 +80,9 @@ export class Kit {
   lbs = 0; units = 0; heaviestLb = 0; longest = 0; builtHrs = 0; site = 0; smtShopHours = 0; freight = 0; workHrs = 0;
   constructor(public cat: Catalog, public fam: string, public f: Factors) {}
 
+  /** Steel $/lb for a price group: dated steel_cost setting first, then the catalog value. */
+  steelPerLb(group: string | undefined, fallback: number) { const v = group ? this.cat.steelCost?.perLb[group] : undefined; return v ?? fallback; }
+  platePerLb() { return this.cat.steelCost?.perLb.Plate ?? this.cat.plate.pricePerLb; }
   private push(l: Omit<QuoteLine, 'key' | 'family'>) { this.lines.push({ key: key(), family: this.fam, ...l } as QuoteLine); }
   unitsFor(qty: number, len: number) { return qty * Math.max(1, Math.ceil(len / R.paint.maxLenFt - 1e-9)); }
 
@@ -71,7 +90,7 @@ export class Kit {
   steel(desc: string, shape: string, qty: number, len: number, opts: { paint?: boolean } = {}) {
     if (qty <= 0) return 0;
     const sh = this.cat.shape(shape); if (!sh) { this.notes.push(`Shape ${shape} not in steel list.`); return 0; }
-    this.push({ kind: 'material', category: 'structural', description: `${desc} — ${shape} × ${len}'`, qty, unitCost: Math.round(sh.lbPerFt * len * sh.pricePerLb * 100) / 100, markupPct: this.cat.structuralMarkupPct });
+    this.push({ kind: 'material', category: 'structural', description: `${desc} — ${shape} × ${len}'`, qty, unitCost: Math.round(sh.lbPerFt * len * this.steelPerLb(sh.group, sh.pricePerLb) * 100) / 100, markupPct: this.cat.structuralMarkupPct });
     if (opts.paint !== false) this.units += this.unitsFor(qty, len);
     this.heaviestLb = Math.max(this.heaviestLb, sh.lbPerFt * len); this.longest = Math.max(this.longest, len);
     this.lbs += sh.lbPerFt * len * qty; return sh.lbPerFt * len;
@@ -80,13 +99,13 @@ export class Kit {
   plate(desc: string, qty: number, t: number, w: number, l: number) {
     if (qty <= 0) return;
     const lb = t * w * l * 0.2833 * this.cat.plate.dropFactor; this.lbs += lb * qty;
-    this.push({ kind: 'material', category: 'plate', description: `${desc} — ${t}" × ${w}" × ${l}"`, qty, unitCost: Math.round(lb * this.cat.plate.pricePerLb * 100) / 100, markupPct: this.cat.plate.markupPct });
+    this.push({ kind: 'material', category: 'plate', description: `${desc} — ${t}" × ${w}" × ${l}"`, qty, unitCost: Math.round(lb * this.platePerLb() * 100) / 100, markupPct: this.cat.plate.markupPct });
   }
   /** Built-up / box member priced by plf (Plate tab box rows: plf × ft × 1.03). */
   box(desc: string, qty: number, plf: number, len: number) {
     if (qty <= 0) return 0;
     const lb = plf * len * 1.03; this.lbs += lb * qty; this.units += this.unitsFor(qty, len); this.heaviestLb = Math.max(this.heaviestLb, lb); this.longest = Math.max(this.longest, len);
-    this.push({ kind: 'material', category: 'plate', description: `${desc} — ${plf} plf × ${len}'`, qty, unitCost: Math.round(lb * this.cat.plate.pricePerLb * 100) / 100, markupPct: this.cat.plate.markupPct });
+    this.push({ kind: 'material', category: 'plate', description: `${desc} — ${plf} plf × ${len}'`, qty, unitCost: Math.round(lb * this.platePerLb() * 100) / 100, markupPct: this.cat.plate.markupPct });
     return lb;
   }
   /** Standard Parts & Products line at catalog sell price (+ its built shop hours). */

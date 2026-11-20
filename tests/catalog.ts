@@ -14,7 +14,7 @@ export const testCatalog: Catalog = {
   vendor: part => allV.find(p => p.part === part) ?? null,
   vendorParts: prefix => allV.filter(p => p.part.startsWith(prefix)),
   discount: v => ({ pwi: disc[v]?.[0] ?? 0, customer: disc[v]?.[1] ?? 0 }),
-  shape: n => { const s = shapes.find((x: any) => x.shape === n); return s ? { lbPerFt: s.lb_per_ft, pricePerLb: groups[s.group].price_per_lb } : null; },
+  shape: n => { const s = shapes.find((x: any) => x.shape === n); return s ? { lbPerFt: s.lb_per_ft, pricePerLb: groups[s.group].price_per_lb, group: s.group } : null; },
   plate: { pricePerLb: 1.35, markupPct: 21, dropFactor: 1.1 }, structuralMarkupPct: 26,
   decalSell: n => decals.find((d: any) => d.item === n)?.price ?? null,
   stdAll: () => parts.map((x: any) => ({ description: x.description, part: x.part, sell: x.sell, hours: x.shop_hours_each ?? 0, info: x.vendor, section: x.section })),

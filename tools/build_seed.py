@@ -28,6 +28,7 @@ settings = {
   'collision_avoidance_hours_per_bridge': (20, 'Kyle 11/19'),
   'default_radio_brand': ('Starke', 'Kyle 11/19'),
   'quote_valid_days': (15, 'Quote validity'),
+  'steel_cost': (json.load(open('src/engine/rules/steel_cost.default.json')), 'Dated steel $/lb by price group — update weekly from the steel brief (tools/steel-cost-from-brief.md)'),
   'banned_strings': (["Paul's Welding", 'xx', ' OR ', '?'], 'Wording that blocks sending'),
 }
 for k, (v, d) in settings.items():

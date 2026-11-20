@@ -20,7 +20,7 @@
 
 ## Items
 - [x] 1. Move `testCatalog` out of `tests/freestanding.test.ts` into `tests/catalog.ts` so importing it doesn't re-run those tests.
-- [ ] 2. **Steel cost from one dated setting.** Add a `steel_cost` setting: `{ effective: "YYYY-MM-DD", source: "weekly steel brief", perLb: { <price group>: $/lb, ... } }`
+- [x] 2. **Steel cost from one dated setting.** Add a `steel_cost` setting: `{ effective: "YYYY-MM-DD", source: "weekly steel brief", perLb: { <price group>: $/lb, ... } }`
       (groups = those in `reference/steel_price_groups.json`; seed with current values). All builders (`Kit.steel`, `plate`, `box`) price steel cost from it,
       falling back to today's catalog values. Add `tools/steel-cost-from-brief.md` documenting the exact JSON shape so Kyle's weekly brief can update it later.
       Calibration (item 3) re-prices old jobs' steel at this setting so old and new jobs compare fairly.
