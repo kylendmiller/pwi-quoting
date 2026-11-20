@@ -1,0 +1,52 @@
+A2	V	'Date:'
+K2	F	=IF('Main Summary'!H11="","********UPDATE LEAD TIME********","The estimated ship date for your project is approximately ("&'Main Summary'!H12&") weeks after receipt of your purchase order. This includes ("&'Main Summary'!H9&_xlfn._LONGTEXT(") business days for review, requested revisions, and return of signed approval drawings. Delays in returning approved drawings will delay the estimated ship date. Production capacity, labor, and material availability are allocated on a first come, first s","erved basis. Lead times begin upon receipt of a purchase order and are based on production capacity at that time. Prior to receipt of a purchase order, quoted lead times are estimates only and may change. For projects requiring PWI installation, the final"," installation schedule will be coordinated between the customer and the PWI Project Manager."))	=> 'The estimated ship date for your project is approximately (0) weeks after receipt of your purchase order. This includes (0) business days for review, requested revisions, and return of signed approval drawings. Delays in returning approved drawings will delay the estimated ship date. Production capacity, labor, and material availability are allocated on a first come, first served basis. Lead times begin upon receipt of a purchase order and are based on production capacity at that time. Prior to receipt of a purchase order, quoted lead times are estimates only and may change. For projects requiring PWI installation, the final installation schedule will be coordinated between the customer and the PWI Project Manager.'
+A3	V	'Company:'
+A4	V	'Attention:'
+A5	V	'Project:'
+A6	V	'Job Location:'
+A7	V	'PO Number:'
+B7	V	' '
+A8	V	'Job #:'
+B8	V	' '
+A9	V	'QUOTATION'
+K9	F	=IF(A9="Confirmation","","This quote is valid for 15 days.")	=> 'This quote is valid for 15 days.'
+K12	V	'Base Price (per above specs)'
+L12	F	=IF('Main Summary'!E29>0,'Main Summary'!E31,'Main Summary'!D31)	=> 0
+K13	V	'Installation Charges'
+L13	F	='Main Summary'!D32	=> 0
+K14	V	'Outbound Freight Charges'
+L14	F	='Main Summary'!D33	=> 0
+K15	F	=IF('Main Summary'!A41=TRUE,"Pre-Use Inspections and Load Tests","")	=> 'Pre-Use Inspections and Load Tests'
+L15	F	=IF('Main Summary'!A41=TRUE,'Main Summary'!D34,"")	=> 0
+K16	V	'Sales Tax'
+L16	F	=IF('Main Summary'!E29>0,'Main Summary'!E35,'Main Summary'!D35)	=> 0
+K17	V	'Total Package Price'
+L17	F	=SUM(L12:L16)	=> 0
+K19	F	=IF('Main Summary'!A42=TRUE,'Main Summary'!A46,"")	=> None
+L19	F	=IF('Main Summary'!A42=TRUE,'Main Summary'!B46,"")	=> None
+K20	F	=IF('Main Summary'!A43=TRUE,'Main Summary'!A47,"")	=> None
+L20	F	=IF('Main Summary'!A43=TRUE,'Main Summary'!B47,"")	=> None
+K21	F	=IF('Main Summary'!A44=TRUE,'Main Summary'!A48,"")	=> None
+L21	F	=IF('Main Summary'!A44=TRUE,'Main Summary'!B48,"")	=> None
+K22	V	'PWI Standard'
+L22	V	'PWI Standard'
+K23	F	=IF(K22="","",VLOOKUP(K22,'Information Page'!A34:AR37,2,0))	=> 'Terms: 35% Down with Purchase Order for orders over $25,000. Monthly progress payments may be issued as delivery and/or installation of each phase of the project is completed. Does not include any applicable tax unless noted. Customer is responsible to provide an ST-105 form to avoid sales tax. Final payment due upon completion. A 2% finance charge will apply for all overdue payments.'
+K28	V	'Ashton Bontrager'
+K29	F	=VLOOKUP(K28,'Information Page'!A2:B31,2,0)	=> 'National Sales / Project Management'
+K30	F	=IF(A9="Confirmation","","Project Acceptance")	=> 'Project Acceptance'
+K31	F	=IF(A12="Confirmation","","This signifies that I have read the above quotation including customer provisions and terms. I agree to make timely"&" payments as stated in Terms and understand that PWI reserves the right to place a hold on installation of components"&"  until payment(s) are received.")	=> 'This signifies that I have read the above quotation including customer provisions and terms. I agree to make timely payments as stated in Terms and understand that PWI reserves the right to place a hold on installation of components  until payment(s) are received.'
+K34	F	=IF(A9="Confirmation","","Purchase Order Number: __________________  ")	=> 'Purchase Order Number: __________________  '
+K36	F	=IF(A9="Confirmation","","Sales Tax on this project: (please mark X on the appropriate option below)")	=> 'Sales Tax on this project: (please mark X on the appropriate option below)'
+K37	F	=IF(A9="Confirmation","","Sales Tax exempt form included _____   I will be paying Sales Tax on all components _____")	=> 'Sales Tax exempt form included _____   I will be paying Sales Tax on all components _____'
+K39	F	=IF(A9="Confirmation","","Circle options above (if any) and confirm Grand Total Price $ _________________")	=> 'Circle options above (if any) and confirm Grand Total Price $ _________________'
+K41	F	=IF(A9="Confirmation","","Customer Signature _____________________________________________")	=> 'Customer Signature _____________________________________________'
+L41	F	=IF(A9="Confirmation","","Date___________")	=> 'Date___________'
+A43	V	'pwiworks.com                     574.646.2015                     CONQUER YOUR SPACE'
+D43	V	'pwiworks.com                     574.646.2015                     CONQUER YOUR SPACE'
+E43	V	'pwiworks.com                     574.646.2015                     CONQUER YOUR SPACE'
+F43	V	'pwiworks.com                     574.646.2015                     CONQUER YOUR SPACE'
+G43	V	'pwiworks.com                     574.646.2015                     CONQUER YOUR SPACE'
+H43	V	'pwiworks.com                     574.646.2015                     CONQUER YOUR SPACE'
+I43	V	'pwiworks.com                     574.646.2015                     CONQUER YOUR SPACE'
+J43	V	'pwiworks.com                     574.646.2015                     CONQUER YOUR SPACE'
+K43	V	'pwiworks.com                     574.646.2015                     CONQUER YOUR SPACE'

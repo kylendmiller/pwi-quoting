@@ -5,8 +5,9 @@ import { buildCrane, type BuildResult, type BuildOpts } from './crane';
 import { buildGantry } from './gantry';
 import { buildMonorail } from './monorail';
 import { buildMezzanine } from './mezzanine';
+import { buildWorkPlatform } from './workPlatform';
 import { buildJib, buildFallProtection, buildVrc, buildCatalogItem } from './products';
-import { Kit, type Factors } from './kit';
+import { Kit, readSteelCost, withSteelCost, type Factors } from './kit';
 
 // Reps (and Claude) say "motorized" for every product; cranes call it bridgeDrive.
 const drive = (s: any) => s.bridgeDrive || s.motorized == null ? s : { ...s, bridgeDrive: s.motorized ? 'motorized' : 'manual' };
@@ -14,10 +15,13 @@ type Builder = (spec: any, cat: Catalog, f: Factors, bo: BuildOpts) => BuildResu
 /** Every product the app can build. `fam` picks the production / install factor in settings. */
 export const BUILDERS: Record<string, { fam: string; build: Builder; def: [number, number] }> = {
   freestanding: { fam: 'freestanding', def: [0.56, 1.02], build: (s, c, f, b) => buildCrane({ ...drive(s), support: 'freestanding' }, c, f, b) },
+  // bridge production stays 0.68: once built-part hours stopped being double-priced (11/20), builder shop $ ÷ sold = 0.89 / 0.81 / 0.84 / 1.43 on 28192 / 28426 / 29562 / 28772.
   bridge: { fam: 'bridge', def: [0.68, 1.0], build: (s, c, f, b) => buildCrane({ support: 'building_runway', ...drive(s) }, c, f, b) },
   gantry: { fam: 'gantry', def: [0.69, 1.09], build: buildGantry },
   monorail: { fam: 'monorail', def: [0.7, 1.02], build: buildMonorail },
-  mezzanine: { fam: 'mezzanine', def: [0.83, 1.11], build: buildMezzanine },
+  // mezzanine production 0.83 → 0.60 (tuned 11/20): builder shop $ ÷ sold = 0.55 on 28527 and 0.66 on 27893.
+  mezzanine: { fam: 'mezzanine', def: [0.6, 1.11], build: buildMezzanine },
+  work_platform: { fam: 'work_platform', def: [0.82, 0.95], build: buildWorkPlatform },
   jib: { fam: 'jib', def: [0.77, 1.25], build: buildJib },
   fall_protection: { fam: 'fall_protection', def: [0.7, 1.09], build: buildFallProtection },
   vrc: { fam: 'vrc', def: [0.73, 1.02], build: buildVrc },
@@ -55,11 +59,17 @@ export function decodeB64(s: string): string {
 
 export interface BuiltDoc { doc: QuoteDoc; notes: string[]; blockers: string[]; assumptions: (Assumption & { item: number })[] }
 
-export function buildFromSpec(spec: QuoteSpec, cat: Catalog, settings: any, base: QuoteDoc): BuiltDoc {
+export function buildFromSpec(spec: QuoteSpec, cat0: Catalog, settings: any, base: QuoteDoc): BuiltDoc {
+  // Steel cost comes from one dated setting (settings.steel_cost) when present; otherwise the catalog's group prices.
+  const steel = readSteelCost(settings.steel_cost);
+  const cat = steel.sc ? withSteelCost(cat0, steel.sc) : cat0;
   const pf = settings.production_factor ?? {}, inf = settings.install_factor ?? {};
   // Rebuilding replaces lines the builder made earlier; lines the rep added by hand stay.
   let lines = base.lines.filter(l => !(l as any).auto);
   const wording: string[] = [], notes: string[] = [], blockers: string[] = [], assumptions: BuiltDoc['assumptions'] = [];
+  if (steel.problem) notes.push(steel.problem);
+  const sc = cat.steelCost;
+  if (sc) assumptions.push({ item: -1, field: 'steelCost', value: sc.effective, why: `Steel $/lb from the ${sc.effective} steel cost setting${sc.source ? ` (${sc.source})` : ''}; groups it doesn't list use the price list` });
   let install = 0, freight = 0, preUse = 0;
   // Several installed items on one job share one trip: build each without travel, then price the trip once.
   const installed = spec.items.filter(it => BUILDERS[it.type] && it.install);

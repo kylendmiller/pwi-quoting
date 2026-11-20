@@ -1,29 +1,114 @@
 {
-  "_source": "SMT 11.3.26 Standard Parts 'Mezzanines' rows 74-105 (costs + 20% markup), sold mezz quotes 28527 / 27823 / 27893 (quantities, labor), Labor tab mezz ops.",
-  "deadLoadPsf": 15,
-  "maxColumnSpacingFt": 25,
-  "maxCrossmemberSpanFt": 28,
-  "crossmemberSpacingFt": 4,
-  "deflectionLimit": 360,
-  "columnByLoadLb": [[15000, "ST 5 x 5 x 1/4"], [40000, "ST 6 x 6 x 1/4"], [70000, "ST 8 x 8 x 1/4"], [110000, "ST 10 x 10 x 3/8"], [9999999, "ST 12 x 12 x 1/2"]],
-  "markupPct": 20,
-  "deck": {
-    "bdeck_white_20ga_per_sqft_sell": 2.137,
-    "advantech_sheet_cost": 60,
-    "resindek_sheet_cost": 118,
-    "grating_per_100sqft_cost": 1010.97,
-    "treadplate_sheet_cost": { "1/8": 144.65, "3/16": 183.7, "1/4": 237.48, "3/8": 327.59 }
-  },
-  "fasteners": { "pinsShotsPerSqft": 0.44, "pinsShotsCost": 0.54, "woodScrewsPerSheet": 20, "woodScrewCost": 0.12, "valleyShimsPerSqft": 0.0235, "valleyShimCost": 6.94, "saddleClipsPerSqft": 0.525, "saddleClipCost": 0.70 },
-  "guardrailPerFtCost": { "osha": 39.93, "ibc": 109.29, "removable": 63.06 },
-  "gates": {
-    "manual_rolling": ["6 - 12' Manual Rolling Gate (Includes Floor Track)", 1060.5, 4],
-    "manual_pivot": ["6' - 12' Manual Pivot Gate", 1868.5, 4],
-    "pneumatic_pivot": ["6' - 12' Pneumatic Pivot Gate", 4242, 8],
-    "motorized_rolling": ["10' - 18' Motorized Rolling Gate (w/ Electric Operator)", 6262, 12],
-    "motorized_rollup": ["8' - 12' Motorized Roll Up Gate w/ Operator", 6262, 12],
-    "safety": ["2' - 3' Self Closing Safety Gate (Stairs/Mezz/Outriggers)", 353.5, 1]
-  },
-  "shop": { "cutList": 2, "columnFab": 1.5, "pcrHeader": 3, "pcrCrossmember": 1.5, "braceFab": 0.5 },
-  "site": { "unloadMarkout": 12, "column": 1.25, "header": 1.5, "crossmember": 1, "brace": 0.5, "guardrailPerFt": 0.25, "deckPerSqft": 0.0055, "woodFloorPerSheet": 0.5, "gratingPerSqft": 0.012, "stairStraight": 6, "stairSwitchback": 10 }
+ "_source": "SMT 11.3.26 Standard Parts 'Mezzanines' rows 74-105 (costs + 20% markup), sold mezz quotes 28527 / 27823 / 27893 (quantities, labor), Labor tab mezz ops.",
+ "deadLoadPsf": 15,
+ "maxColumnSpacingFt": 25,
+ "maxCrossmemberSpanFt": 28,
+ "crossmemberSpacingFt": 4,
+ "deflectionLimit": 360,
+ "columnByLoadLb": [
+  [
+   15000,
+   "ST 5 x 5 x 1/4"
+  ],
+  [
+   40000,
+   "ST 6 x 6 x 1/4"
+  ],
+  [
+   70000,
+   "ST 8 x 8 x 1/4"
+  ],
+  [
+   110000,
+   "ST 10 x 10 x 3/8"
+  ],
+  [
+   9999999,
+   "ST 12 x 12 x 1/2"
+  ]
+ ],
+ "markupPct": 20,
+ "deck": {
+  "bdeck_white_20ga_per_sqft_sell": 2.137,
+  "advantech_sheet_cost": 60,
+  "resindek_sheet_cost": 118,
+  "grating_per_100sqft_cost": 1010.97,
+  "treadplate_sheet_cost": {
+   "1/8": 144.65,
+   "3/16": 183.7,
+   "1/4": 237.48,
+   "3/8": 327.59
+  }
+ },
+ "fasteners": {
+  "pinsShotsPerSqft": 0.44,
+  "pinsShotsCost": 0.54,
+  "woodScrewsPerSheet": 20,
+  "woodScrewCost": 0.12,
+  "valleyShimsPerSqft": 0.0235,
+  "valleyShimCost": 6.94,
+  "saddleClipsPerSqft": 0.525,
+  "saddleClipCost": 0.7
+ },
+ "guardrailPerFtCost": {
+  "osha": 39.93,
+  "ibc": 109.29,
+  "removable": 63.06
+ },
+ "gates": {
+  "manual_rolling": [
+   "6 - 12' Manual Rolling Gate (Includes Floor Track)",
+   1060.5,
+   4
+  ],
+  "manual_pivot": [
+   "6' - 12' Manual Pivot Gate",
+   1868.5,
+   4
+  ],
+  "pneumatic_pivot": [
+   "6' - 12' Pneumatic Pivot Gate",
+   4242,
+   8
+  ],
+  "motorized_rolling": [
+   "10' - 18' Motorized Rolling Gate (w/ Electric Operator)",
+   6262,
+   12
+  ],
+  "motorized_rollup": [
+   "8' - 12' Motorized Roll Up Gate w/ Operator",
+   6262,
+   12
+  ],
+  "safety": [
+   "2' - 3' Self Closing Safety Gate (Stairs/Mezz/Outriggers)",
+   353.5,
+   1
+  ]
+ },
+ "shop": {
+  "cutList": 2,
+  "columnFab": 1.5,
+  "pcrHeader": 3,
+  "pcrCrossmember": 1.5,
+  "braceFab": 0.5
+ },
+ "site": {
+  "unloadMarkout": 12,
+  "column": 1.25,
+  "header": 1.5,
+  "crossmember": 1,
+  "brace": 0.5,
+  "guardrailPerFt": 0.25,
+  "deckPerSqft": 0.0055,
+  "woodFloorPerSheet": 0.5,
+  "gratingPerSqft": 0.012,
+  "stairStraight": 6,
+  "stairSwitchback": 10
+ },
+ "paint": {
+  "_why": "Tuned 11/20 (overnight): sold mezzanines 28527, 27793, 27893 all priced primer booth runs for gray steel.",
+  "primerByDefault": true
+ }
 }

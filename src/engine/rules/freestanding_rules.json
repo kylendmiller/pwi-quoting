@@ -52,7 +52,21 @@
     85
    ]
   ],
-  "maxChartHeightFt": 22
+  "maxChartHeightFt": 22,
+  "builtUpShortColumn": {
+   "_why": "Tuned 11/20 (overnight): 10 t built-up columns \u2264 17' long sold at 55 plf (29354, 15.25' columns); taller 10 t stays 70 plf (29331 mixed 57/85 plf at 20'). Sold engineered sizes, so not below the column limit.",
+   "maxColumnFt": 17,
+   "plfByCap": [
+    [
+     5,
+     57
+    ],
+    [
+     10,
+     55
+    ]
+   ]
+  }
  },
  "basePlate": [
   [
@@ -337,9 +351,37 @@
   ]
  },
  "pmCad": {
-  "pmHrsPer10k": 5.2,
-  "cadHrsPer10k": 4.5,
+  "_why": "Tuned 11/20 (overnight): PM + CAD $ = 226.5 \u00d7 (materials + shop $ in $k)^0.807, fitted log-log on sold crane jobs 29213, 28426, 29140, 28192 (ex-gantries), 29562, 29354, 28772, 29331, 28723 \u2014 big jobs carry a smaller share (12% at $30k, 6% at $1.6M). Split 48% PM / 52% CAD at the template's $95 / $120 rates. Replaces the linear 5.2 / 4.5 h per $10k.",
+  "k": 226.5,
+  "exp": 0.807,
+  "pmShare": 0.48,
+  "pmRate": 95,
+  "cadRate": 120,
+  "shopRate": 140,
   "pmMin": 15,
   "cadMin": 12
+ },
+ "bracing": {
+  "_why": "Tuned 11/20 (overnight): tube-column FSTR gets ST3x3 tie-back bracing from 8 columns or \u22653 t. 28640 (6 columns, 2 t) sold without bracing; 29140 (8 columns, 2 t) sold with it.",
+  "tubeFromColumns": 8,
+  "tubeFromCap": 3
+ },
+ "boxGirder": {
+  "_why": "Added 11/20 (overnight). Past the AQT girder chart the girder is sized at L/600 (rated load + hoist, plus self weight) as the lightest W shape up to 36\" deep; when none works, a plate box girder: depth = span/24 (24-48\"), two 1/4\" webs, flanges for the required I, x1.15 for diaphragms/rail/stiffeners. Calibrated on 29562 (70' 10 t, 189 plf sold) and 28723 (75' 15 t double girder, 161 plf sold). Box fab 1.8 SMT h/ft (both jobs).",
+  "deflLimit": 600,
+  "maxWDepthIn": 36,
+  "depthInPerSpanIn": 0.0417,
+  "minDepthIn": 24,
+  "maxDepthIn": 48,
+  "webIn": 0.25,
+  "fabFactor": 1.15,
+  "lbPerIn2Ft": 3.4,
+  "hoistLbPerTon": 200,
+  "fabHrsPerFt": 1.8
+ },
+ "classD": {
+  "_why": "Added 11/20 (overnight): Class D (heavy service) sold jobs carry a hoist one size up, derated \u2014 29562 (10 t bridge, SMW 15 t hoists, 10 h 'auto derating' shop time) and 28723 (10 t on STW 15 t, 15 t on STW 20 t).",
+  "hoistCapFactor": 1.25,
+  "deratingHrsPerBridge": 10
  }
 }

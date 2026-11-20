@@ -1,0 +1,197 @@
+A1	V	'Name '
+B1	V	'Title'
+F1	V	'All text is white. Convert to Black to see info.'
+A3	V	'Anthony Hochstetler '
+B3	V	'Regional Sales / Project Management'
+A4	V	'Ashton Bontrager'
+B4	V	'National Sales / Project Management'
+A5	V	'Ben Helmuth'
+B5	V	'National Sales / Project Management'
+A6	V	'Brian Bontrager'
+B6	V	'National Sales / Project Management'
+A7	V	'Cal Kaufman'
+B7	V	'Regional Sales Manager'
+A8	V	'Connor Matthes'
+B8	V	'National Sales / Project Management'
+A9	V	'Damon Woodard'
+B9	V	'National Sales / Project Management'
+A10	V	'Derek Lenhart'
+B10	V	'National Sales / Project Management'
+A11	V	'Deron Manwaring'
+B11	V	'Business Development'
+A12	V	'Jim Hartung'
+B12	V	'Regional Sales / Project Management'
+A13	V	'Kaleb Dallas'
+B13	V	'National Sales / Project Management'
+A14	V	'Ken Bajdek'
+B14	V	'Regional Sales / Project Management'
+A15	V	'Kyle Miller'
+B15	V	'VP of Sales'
+A16	V	'Lyle Kemp'
+B16	V	'Branch Sales Manager '
+A17	V	'Mark Miller'
+B17	V	'Regional Sales / Project Management'
+A18	V	'Mark Surber'
+B18	V	'Sales Manager'
+A19	V	'Matt Jarvis'
+B19	V	'VP of Operations '
+A20	V	'Mike Woodward'
+B20	V	'Branch Sales Manager '
+A21	V	'Race Berkey'
+B21	V	'Regional Sales / Project Management'
+A22	V	'Riley Youngman'
+B22	V	'National Sales / Project Management'
+A23	V	'Sam Whitehead'
+B23	V	'Regional Sales / Project Management'
+A24	V	'Tanner Sallee'
+B24	V	'National Sales / Project Management'
+A25	V	'Tim Ergle'
+B25	V	'Regional Sales / Project Management'
+A26	V	'Trent Kautzmann'
+B26	V	'National Sales / Project Management'
+A27	V	'Tyler Hartsough'
+B27	V	'National Sales Manager'
+A28	V	'Zac Lechlitner'
+B28	V	'National Sales / Project Management'
+A29	V	'Zach Gay'
+B29	V	'Fort Wayne Area Sales / Project Management'
+A32	V	'Terms'
+A34	V	'PWI Standard'
+B34	V	'Terms: 35% Down with Purchase Order for orders over $25,000. Monthly progress payments may be issued as delivery and/or installation of each phase of the project is completed. Does not include any applicable tax unless noted. Customer is responsible to provide an ST-105 form to avoid sales tax. Final payment due upon completion. A 2% finance charge will apply for all overdue payments.'
+A35	V	'GC/Dealer'
+B35	V	'Terms: 10% Down with Purchase Order. Net 30. Progress payments may be required. Full payment due upon completion. Does not include any applicable taxes that may apply if customer does not provide an ST-105 form. A 2% finance charge will apply for all overdue payments.\n                                                                                   '
+A36	V	'Ship Only - Hoistzone'
+B36	V	'Terms: 50% Down Payment at order. Payment in full before scheduled delivery. Does not include any applicable taxes that may apply if customer does not provide an ST-105 form.  A 2% finance charge will apply for all overdue payments.'
+A37	V	'Stair Zone/100% Down'
+B37	V	'Terms: 100% due with order '
+A41	V	'FSTRUL '
+B41	V	'Freestanding Top Runner UltraLite Series'
+D41	V	1
+A42	V	'FSTRHL'
+B42	V	'Freestanding Top Runner HyperLite Series'
+D42	V	0
+A43	V	'FSTRM '
+B43	V	'Freestanding Top Runner Motorized'
+D43	V	0
+A44	V	'FSTRGM'
+B44	V	'Freestanding Top Running Motorized'
+D44	V	0
+A46	F	=_xlfn.CONCAT("https://portal.pwiworks.com/projects/projects/new?autofill__","sold_by_brand=bra_recSbCzfZdDLZ5HGS","&autofill__date_sold=",TEXT(TODAY(),"YYYY-MM-DD"),"T00:00:00.000Z",IF(ISNUMBER(SEARCH("""expedited"":true", 'Main Summary'!F6)), "&autofill__project_expedited=1", "&autofill__project_expedited=0"),_xlfn.SWITCH(Quote!K22,"","","PWI Standard",_xlfn.CONCAT("&autofill__payment_terms=pte_","recfLAoTRLEogaM8V"),"GC/Dealer",_xlfn.CONCAT("&autofill__payment_terms=pte_","rechTLlOEaelrbGZi"),"Stair Zone/100% Down",_xlfn.CONCAT("&autofill__payment_terms=pte_","recfLAoTRLEogaM8V")),"&autofill__project_description=",Quote!B5,"&autofill__quoted_shop_hours=",'Main Summary'!T17,"&autofill__quoted_installation_hours=",'Main Summary'!T18,"&autofill__quoted_service_hours=",'Main Summary'!T19,"&autofill__quoted_engineering_hours=",'Main Summary'!G16,"&autofill__mezzanines=",'Main Summary'!T6,"&autofill__cranes=",'Main Summary'!T7,"&autofill__cranes_copy=",'Main Summary'!T8,"&autofill__work_platforms=",'Main Summary'!T9,"&autofill__work_platforms_copy=",'Main Summary'!T10,"&autofill__
+outbound_freight_delivery=",'Main Summary'!T11,"&autofill__standalone_structural_deck=",'Main Summary'!T12,"&autofill__standalone_structural_deck_copy=",'Main Summary'!T13,"&autofill__fall_protection=",'Main Summary'!T14,"&autofill__inspections=",'Main Summary'!T15,"&autofill__paymentstatus=",_xlfn.ENCODEURL("NOT PAID"),_xlfn.CONCAT("&autofill__preuseinspections=", IF('Main Summary'!A41, "Yes", "No")),"&autofill__traveler_deadlines_json=",'Main Summary'!F6)	=> 'https://portal.pwiworks.com/projects/projects/new?autofill__sold_by_brand=bra_recSbCzfZdDLZ5HGS&autofill__date_sold=2026-11-16T00:00:00.000Z&autofill__project_expedited=0&autofill__payment_terms=pte_recfLAoTRLEogaM8V&autofill__project_description=&autofill__quoted_shop_hours=0&autofill__quoted_installation_hours=0&autofill__quoted_service_hours=0&autofill__quoted_engineering_hours=0&autofill__mezzanines=0&autofill__cranes=0&autofill__cranes_copy=0&autofill__work_platforms=0&autofill__work_platforms_copy=0&autofill__\noutbound_freight_delivery=0&autofill__standalone_structural_deck=0&autofill__standalone_structural_deck_copy=0&autofill__fall_protection=0&autofill__inspections=0&autofill__paymentstatus=NOT%20PAID&autofill__preuseinspections=Yes&autofill__traveler_deadlines_json='
+DM288	F	=CONCATENATE(Quote!B5,"  ","#"," ",Quote!B8)	=> '  #  '
+DM289	V	'Margin Calculator'
+DN289	V	'Tab Gross Margin Total'
+DO289	V	'Subtotals from Project'
+DP289	V	'Gross Margin Per Product Line'
+DM290	V	'Standard Parts & Products'
+DN290	F	='Main Summary'!B64	=> 0
+DO290	F	='Main Summary'!D64	=> 0
+DP290	F	='Main Summary'!E64	=> 0
+DM291	V	'Hoist & Crane Vendor Items'
+DN291	F	='Main Summary'!B65	=> 0
+DO291	F	='Main Summary'!D65	=> 0
+DP291	F	='Main Summary'!E65	=> 0
+DM292	V	'Cost Based Special Items'
+DN292	F	='Main Summary'!B66	=> 0
+DO292	F	='Main Summary'!D66	=> 0
+DP292	F	='Main Summary'!E66	=> 0
+DM293	V	'Stairways'
+DN293	F	='Main Summary'!B67	=> '#REF!'
+DO293	F	='Main Summary'!D67	=> 0
+DP293	F	='Main Summary'!E67	=> 0
+DM294	V	'Structural'
+DN294	F	='Main Summary'!B68	=> 0
+DO294	F	='Main Summary'!D68	=> 0
+DP294	F	='Main Summary'!E68	=> 0
+DM295	V	'Concrete'
+DN295	F	='Main Summary'!B69	=> 0
+DO295	F	='Main Summary'!D69	=> 0
+DP295	F	='Main Summary'!E69	=> 0
+DM296	V	'Work Platforms'
+DN296	F	='Main Summary'!B70	=> 0
+DO296	F	='Main Summary'!D70	=> 0
+DP296	F	='Main Summary'!E70	=> 0
+DM297	V	'Plate'
+DN297	F	='Main Summary'!B71	=> '#VALUE!'
+DO297	F	='Main Summary'!D71	=> 0
+DP297	F	='Main Summary'!E71	=> 0
+DM298	V	'VRCs'
+DN298	F	='Main Summary'!B72	=> 0
+DO298	F	='Main Summary'!D72	=> 0
+DP298	F	='Main Summary'!E72	=> 0
+DM299	V	'Painting Charges'
+DN299	F	='Main Summary'!B73	=> 0
+DO299	F	='Main Summary'!D73	=> 0
+DP299	F	='Main Summary'!E73	=> 0
+DM300	V	'Project Management & Marketing Fees'
+DN300	F	='Main Summary'!B74	=> 0
+DO300	F	='Main Summary'!D74	=> 0
+DP300	F	='Main Summary'!E74	=> 0
+DM301	V	'AutoCad Design Charges'
+DN301	F	='Main Summary'!B75	=> 0
+DO301	F	='Main Summary'!D75	=> 0
+DP301	F	='Main Summary'!E75	=> 0
+DM302	V	'Engineering Charges'
+DN302	F	='Main Summary'!B76	=> 0
+DO302	F	='Main Summary'!D76	=> 0
+DP302	F	='Main Summary'!E76	=> 0
+DM303	V	'PWI Capacity Decals'
+DN303	F	='Main Summary'!B77	=> 0
+DO303	F	='Main Summary'!D77	=> 0
+DP303	F	='Main Summary'!E77	=> 0
+DM304	V	'Misc Steel Materials'
+DN304	F	='Main Summary'!B78	=> 0
+DO304	F	='Main Summary'!D78	=> 0
+DP304	F	='Main Summary'!E78	=> 0
+DM305	V	'Additional PCR Charge for Ultra Lite Crane'
+DN305	F	='Main Summary'!B79	=> 0
+DO305	F	='Main Summary'!D79	=> 0
+DP305	F	='Main Summary'!E79	=> 0
+DM306	V	'Additional PCR Charge for Stair Stringers'
+DN306	F	='Main Summary'!B80	=> 0
+DO306	F	='Main Summary'!D80	=> 0
+DP306	F	='Main Summary'!E80	=> 0
+DM307	V	'X-Bracing Package'
+DN307	F	='Main Summary'!B81	=> 0
+DO307	F	='Main Summary'!D81	=> 0
+DP307	F	='Main Summary'!E81	=> 0
+DM308	V	'Inbound Freight Charges (use freight calculator at right) '
+DN308	F	='Main Summary'!B82	=> 0
+DO308	F	='Main Summary'!D82	=> 0
+DP308	F	='Main Summary'!E82	=> 0
+DM309	V	'Travel Cost Charges'
+DN309	F	='Main Summary'!B83	=> 0
+DO309	F	='Main Summary'!D83	=> 0
+DP309	F	='Main Summary'!E83	=> 0
+DM310	V	'On-Site Equipment Rentals'
+DN310	F	='Main Summary'!B84	=> 0
+DO310	F	='Main Summary'!D84	=> 0
+DP310	F	='Main Summary'!E84	=> 0
+DM311	V	'Total Shop Fab Labor Hours / Manually Entered Charges'
+DN311	F	='Main Summary'!B85	=> 0
+DO311	F	='Main Summary'!D85	=> 0
+DP311	F	='Main Summary'!E85	=> 0
+DM312	V	'Total On-site Labor Hours / Manually Entered Charges'
+DN312	F	='Main Summary'!B86	=> 0
+DO312	F	='Main Summary'!D86	=> 0
+DP312	F	='Main Summary'!E86	=> 0
+DM313	V	'Outbound Freight Charges'
+DN313	F	='Main Summary'!B87	=> 0
+DO313	F	='Main Summary'!D87	=> 0
+DP313	F	='Main Summary'!E87	=> 0
+DM314	V	'Pre-Use Inspections and Load Tests'
+DN314	F	='Main Summary'!B88	=> 0
+DO314	F	='Main Summary'!D88	=> 0
+DP314	F	='Main Summary'!E88	=> 0
+DM315	V	'Total'
+DN315	F	='Main Summary'!B89	=> '#REF!'
+DO315	F	='Main Summary'!D89	=> 0
+DP315	F	='Main Summary'!E89	=> '#DIV/0!'
+DM317	V	'Project Sell Price'
+DN317	F	=DO315	=> 0
+DM318	V	'Gross Profit'
+DN318	F	=DN315	=> '#REF!'
+DM319	V	'Gross Profit Margin'
+DN319	F	=DN318/DN317	=> '#REF!'
+DM320	V	'Average Profit Per Category'
+DN320	F	=DP315	=> '#DIV/0!'

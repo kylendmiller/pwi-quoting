@@ -13,14 +13,30 @@ export interface Catalog {
   vendor(part: string): { list: number; description: string; vendor: string } | null;
   vendorParts(prefix: string): { part: string; list: number; description: string }[];
   discount(vendor: string): { pwi: number; customer: number };
-  shape(name: string): { lbPerFt: number; pricePerLb: number } | null;
+  shape(name: string): { lbPerFt: number; pricePerLb: number; group?: string } | null;
   plate: { pricePerLb: number; markupPct: number; dropFactor: number };
   structuralMarkupPct: number;
   decalSell(name: string): number | null;
   equip(item: string): { daily: number; weekly: number; monthly: number } | null;
   rate?(item: string): number | null;                  // painting / travel rate items (live, editable)
+  steelCost?: SteelCost | null;                         // dated steel $/lb by price group (settings.steel_cost); wins over shape/plate prices
   stdAll?(): { description: string; part: string | null; sell: number; hours: number; info: string | null; section: string | null }[];   // whole catalog (product configurators)
 }
+/** settings.steel_cost — one dated steel price per price group (reference/steel_price_groups.json groups + "Plate").
+ *  Updated weekly from the steel brief (tools/steel-cost-from-brief.md). Missing groups fall back to the catalog. */
+export interface SteelCost { effective: string; source: string; perLb: Record<string, number> }
+/** Validates a steel_cost setting; returns null (and why) when it can't be used. */
+export function readSteelCost(x: unknown): { sc: SteelCost | null; problem?: string } {
+  if (x == null) return { sc: null };
+  const o = x as any;
+  if (typeof o !== 'object' || typeof o.perLb !== 'object' || o.perLb == null) return { sc: null, problem: 'steel_cost setting has no perLb table — using catalog steel prices' };
+  if (typeof o.effective !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(o.effective)) return { sc: null, problem: 'steel_cost.effective must be YYYY-MM-DD — using catalog steel prices' };
+  const perLb: Record<string, number> = {};
+  for (const [k, v] of Object.entries(o.perLb)) if (typeof v === 'number' && isFinite(v) && v > 0 && v < 20) perLb[k] = v;
+  return { sc: { effective: o.effective, source: String(o.source ?? ''), perLb } };
+}
+/** Catalog with a steel_cost setting applied (Kit reads cat.steelCost). */
+export const withSteelCost = (cat: Catalog, sc: SteelCost | null): Catalog => (sc ? { ...cat, steelCost: sc } : cat);
 export interface Assumption { field: string; value: unknown; why: string; alt?: unknown; altLabel?: string }
 export interface Factors { production: number; install: number }
 
@@ -64,6 +80,9 @@ export class Kit {
   lbs = 0; units = 0; heaviestLb = 0; longest = 0; builtHrs = 0; site = 0; smtShopHours = 0; freight = 0; workHrs = 0;
   constructor(public cat: Catalog, public fam: string, public f: Factors) {}
 
+  /** Steel $/lb for a price group: dated steel_cost setting first, then the catalog value. */
+  steelPerLb(group: string | undefined, fallback: number) { const v = group ? this.cat.steelCost?.perLb[group] : undefined; return v ?? fallback; }
+  platePerLb() { return this.cat.steelCost?.perLb.Plate ?? this.cat.plate.pricePerLb; }
   private push(l: Omit<QuoteLine, 'key' | 'family'>) { this.lines.push({ key: key(), family: this.fam, ...l } as QuoteLine); }
   unitsFor(qty: number, len: number) { return qty * Math.max(1, Math.ceil(len / R.paint.maxLenFt - 1e-9)); }
 
@@ -71,7 +90,7 @@ export class Kit {
   steel(desc: string, shape: string, qty: number, len: number, opts: { paint?: boolean } = {}) {
     if (qty <= 0) return 0;
     const sh = this.cat.shape(shape); if (!sh) { this.notes.push(`Shape ${shape} not in steel list.`); return 0; }
-    this.push({ kind: 'material', category: 'structural', description: `${desc} — ${shape} × ${len}'`, qty, unitCost: Math.round(sh.lbPerFt * len * sh.pricePerLb * 100) / 100, markupPct: this.cat.structuralMarkupPct });
+    this.push({ kind: 'material', category: 'structural', description: `${desc} — ${shape} × ${len}'`, qty, unitCost: Math.round(sh.lbPerFt * len * this.steelPerLb(sh.group, sh.pricePerLb) * 100) / 100, markupPct: this.cat.structuralMarkupPct });
     if (opts.paint !== false) this.units += this.unitsFor(qty, len);
     this.heaviestLb = Math.max(this.heaviestLb, sh.lbPerFt * len); this.longest = Math.max(this.longest, len);
     this.lbs += sh.lbPerFt * len * qty; return sh.lbPerFt * len;
@@ -80,13 +99,13 @@ export class Kit {
   plate(desc: string, qty: number, t: number, w: number, l: number) {
     if (qty <= 0) return;
     const lb = t * w * l * 0.2833 * this.cat.plate.dropFactor; this.lbs += lb * qty;
-    this.push({ kind: 'material', category: 'plate', description: `${desc} — ${t}" × ${w}" × ${l}"`, qty, unitCost: Math.round(lb * this.cat.plate.pricePerLb * 100) / 100, markupPct: this.cat.plate.markupPct });
+    this.push({ kind: 'material', category: 'plate', description: `${desc} — ${t}" × ${w}" × ${l}"`, qty, unitCost: Math.round(lb * this.platePerLb() * 100) / 100, markupPct: this.cat.plate.markupPct });
   }
   /** Built-up / box member priced by plf (Plate tab box rows: plf × ft × 1.03). */
   box(desc: string, qty: number, plf: number, len: number) {
     if (qty <= 0) return 0;
     const lb = plf * len * 1.03; this.lbs += lb * qty; this.units += this.unitsFor(qty, len); this.heaviestLb = Math.max(this.heaviestLb, lb); this.longest = Math.max(this.longest, len);
-    this.push({ kind: 'material', category: 'plate', description: `${desc} — ${plf} plf × ${len}'`, qty, unitCost: Math.round(lb * this.cat.plate.pricePerLb * 100) / 100, markupPct: this.cat.plate.markupPct });
+    this.push({ kind: 'material', category: 'plate', description: `${desc} — ${plf} plf × ${len}'`, qty, unitCost: Math.round(lb * this.platePerLb() * 100) / 100, markupPct: this.cat.plate.markupPct });
     return lb;
   }
   /** Standard Parts & Products line at catalog sell price (+ its built shop hours). */
@@ -133,11 +152,14 @@ export class Kit {
   matSell() {
     return this.lines.filter(l => l.kind === 'material').reduce((a, l) => a + (l.unitSell != null && l.unitCost == null ? l.unitSell * l.qty : (l.unitCost ?? 0) * l.qty * (1 + (l.markupPct ?? 0) / 100)), 0);
   }
-  /** Shop labor: SMT-method hours × production factor; adds built-part hours and the handling rule. */
+  /** Shop labor: SMT-method hours × production factor, plus the handling rule. Built-part hours are tracked, not priced. */
   shop(ops: [string, number][], opts: { handling?: boolean; builtParts?: boolean } = {}) {
     const O = R.shopOps;
     const list = [...ops];
-    if (opts.builtParts !== false) list.push(['PWI built standard parts', this.builtHrs]);
+    // SMT Labor row 49 "PWI Built Items" only counts these hours (no $ column) — the standard-part sell price already
+    // carries the labor. Pricing them again double-counted (fixed 11/20). They stay in smtShopHours for scheduling.
+    if (opts.builtParts === true) list.push(['PWI built standard parts', this.builtHrs]);
+    else this.smtShopHours += this.builtHrs;
     if (opts.handling !== false) list.push(['Handling / shipping', Math.max(O.handling.min, Math.round(O.handling.pctOfMaterialSell * this.matSell() / O.handling.perHour))]);
     for (const [d, h] of list) {
       this.smtShopHours += h;
@@ -202,21 +224,33 @@ export class Kit {
       this.push({ kind: 'equipment', category: 'equipment', description: 'Rental delivery / pickup', qty: 1 + (handler && handler !== 'Rental Fork Lift' ? 1 : 0), unitCost: E.deliveryFee, markupPct: 0 });
       this.A.push({ field: 'equipment', value: `${liftItem}, ${handler ?? '15K telehandler + crane?'}${o.generator ? ', generator' : ''} × ${weeks} wk`, why: `Work height ≈ ${o.workTopFt.toFixed(1)}', heaviest pick ≈ ${Math.round(o.heaviestPickLb)} lb, ${crewDays} crew days` });
       }
-  /** PM + CAD hours scale with job size (fitted on sold jobs). */
+  /** PM + CAD hours scale with job size: $ = k·(materials + shop $, in $k)^exp (fitted on sold crane jobs). */
   pmCad(mult = 1, mins?: { pm?: number; cad?: number }) {
-    const base0 = this.matSell() + this.smtShopHours * this.f.production * (140 + 38.6);
-    const pm = Math.max(mins?.pm ?? R.pmCad.pmMin, Math.round(R.pmCad.pmHrsPer10k * base0 / 1e4 * mult));
-    const cad = Math.max(mins?.cad ?? R.pmCad.cadMin, Math.round(R.pmCad.cadHrsPer10k * base0 / 1e4 * 0.98 * mult));
+    const P = R.pmCad as any;
+    const rest = this.matSell() + this.smtShopHours * this.f.production * P.shopRate;
+    const dollars = P.k * Math.pow(Math.max(rest, 1000) / 1000, P.exp) * mult;
+    const pm = Math.max(mins?.pm ?? P.pmMin, Math.round(dollars * P.pmShare / P.pmRate));
+    const cad = Math.max(mins?.cad ?? P.cadMin, Math.round(dollars * (1 - P.pmShare) / P.cadRate));
     this.push({ kind: 'pm', category: 'pmMarketing', description: 'Project management', qty: pm });
     this.push({ kind: 'cad', category: 'cad', description: 'AutoCAD design / approval drawings', qty: cad });
+  }
+  /** Fixed PM / CAD hours (products priced per unit on their SMT tab, e.g. work platform sets). */
+  pmCadFixed(pmHrs: number, cadHrs: number) {
+    if (pmHrs > 0) this.push({ kind: 'pm', category: 'pmMarketing', description: 'Project management', qty: Math.round(pmHrs * 10) / 10 });
+    if (cadHrs > 0) this.push({ kind: 'cad', category: 'cad', description: 'AutoCAD design / approval drawings', qty: Math.round(cadHrs * 10) / 10 });
   }
   /** Engineering (P.E. stamp) hours. */
   pe(hours: number) { if (hours > 0) this.push({ kind: 'engineering', category: 'engineering', description: 'P.E. calculations / stamped drawings', qty: hours }); }
   done() { for (const n of this.notes) if (/not found|not in/.test(n)) this.blockers.push(n); }
 }
 
+/** Conservative Ix estimate for a W shape from nominal depth and weight: 0.04·w·d² is below the AISC Ix of the W shapes
+ *  checked in W_SHAPES, incl. the light-for-depth worst cases W24x55, W30x90, W36x135 (the old 0.05 over-stated W24x55
+ *  by 17% and W30x90 by 12% — unconservative). Replace with a real Ix column when steel_shapes gets one. */
+export const IX_COEF = 0.04;
+export const ixOf = (shape: string) => { const m = /^W(\d+) x (\d+(?:\.\d+)?)$/.exec(shape); return m ? IX_COEF * Number(m[2]) * Number(m[1]) ** 2 : 0; };
 /** W-shape sizing by deflection + bending when a chart doesn't cover the case.
- *  Ix ≈ 0.05·w·d² (fits AISC W shapes within ~10%); Sx ≈ 2·Ix/d. Picks the lightest W from the steel list. */
+ *  Ix from ixOf() (conservative); Sx ≈ 2·Ix/d. Picks the lightest W from the steel list. */
 export function sizeBeam(cat: Catalog, opts: { spanFt: number; wPlf?: number; pointLb?: number; liveFrac?: number; deflLimit: number; maxDepthIn?: number; minDepthIn?: number; allowKsi?: number }) {
   const L = opts.spanFt * 12, E = 29e6, w = (opts.wPlf ?? 0) / 12, P = opts.pointLb ?? 0;
   const live = opts.liveFrac ?? 1;
@@ -232,12 +266,12 @@ export function sizeBeam(cat: Catalog, opts: { spanFt: number; wPlf?: number; po
     if (opts.maxDepthIn && d > opts.maxDepthIn) continue;
     if (opts.minDepthIn && d < opts.minDepthIn) continue;
     if (!cat.shape(name)) continue;
-    const I = 0.05 * wt * d * d, S = 2 * I / d;
+    const I = IX_COEF * wt * d * d, S = 2 * I / d;
     if (I >= Ireq && M / S <= allow && (!best || wt < best.w)) best = { shape: name, w: wt };
   }
   return best?.shape ?? null;
 }
-const W_SHAPES = ['W6 x 15', 'W6 x 20', 'W6 x 25', 'W8 x 18', 'W8 x 21', 'W8 x 24', 'W8 x 31', 'W8 x 35', 'W10 x 19', 'W10 x 22', 'W10 x 26', 'W10 x 30', 'W10 x 33', 'W10 x 39', 'W10 x 45',
+export const W_SHAPES = ['W6 x 15', 'W6 x 20', 'W6 x 25', 'W8 x 18', 'W8 x 21', 'W8 x 24', 'W8 x 31', 'W8 x 35', 'W10 x 19', 'W10 x 22', 'W10 x 26', 'W10 x 30', 'W10 x 33', 'W10 x 39', 'W10 x 45',
   'W12 x 19', 'W12 x 22', 'W12 x 26', 'W12 x 30', 'W12 x 35', 'W12 x 40', 'W12 x 45', 'W12 x 50', 'W12 x 53', 'W14 x 22', 'W14 x 26', 'W14 x 30', 'W14 x 34', 'W14 x 38', 'W14 x 43', 'W14 x 48',
   'W14 x 53', 'W14 x 61', 'W16 x 26', 'W16 x 31', 'W16 x 36', 'W16 x 40', 'W16 x 45', 'W16 x 50', 'W16 x 57', 'W16 x 67', 'W18 x 35', 'W18 x 40', 'W18 x 46', 'W18 x 50', 'W18 x 55', 'W18 x 60',
   'W18 x 65', 'W18 x 71', 'W18 x 76', 'W18 x 86', 'W21 x 44', 'W21 x 50', 'W21 x 57', 'W21 x 62', 'W21 x 68', 'W21 x 73', 'W21 x 83', 'W21 x 93', 'W21 x 101', 'W24 x 55', 'W24 x 62', 'W24 x 68',

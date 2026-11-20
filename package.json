@@ -7,7 +7,8 @@
     "typecheck": "tsc --noEmit",
     "dev": "vite",
     "build": "vite build",
-    "bundle:api": "node tools/bundle-api.mjs"
+    "bundle:api": "node tools/bundle-api.mjs",
+    "calibrate": "CALIBRATE_WRITE=1 vitest run tests/calibration.test.ts"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",

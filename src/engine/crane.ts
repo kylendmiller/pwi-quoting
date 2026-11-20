@@ -2,7 +2,7 @@
 // building, or bridge only on an existing runway — top running or underhung. Calibrated on PWI's
 // sold SMT quotes (rules/freestanding_rules.json) with AQT sizing charts for steel.
 import CH from './rules/aqt_sizing_charts.json';
-import { Kit, RULES as R, pick, depthIn, STD_COLORS, check, keep, volt, ftIn, hgt, tons, type Catalog, type Assumption, type Factors } from './kit';
+import { Kit, RULES as R, W_SHAPES, ixOf, pick, depthIn, STD_COLORS, check, keep, volt, ftIn, hgt, tons, type Catalog, type Assumption, type Factors } from './kit';
 import type { QuoteLine } from './manual';
 
 export type Support = 'freestanding' | 'building_runway' | 'crane_columns' | 'bridge_only';
@@ -16,6 +16,8 @@ export interface CraneSpec {
   liftFt?: number; columnsPerSystem?: number; bridgesPerSystem?: number; hoistsPerBridge?: number;
   buildingBayFt?: number;                   // building column spacing (building_runway)
   runwayElectrification?: boolean;          // bridge_only: add runway conductor bar
+  railFt?: number;                          // total ASCE rail feet when it isn't 2 × runway OAL (runway extensions / completion packages)
+  runwayElectrificationFt?: number;         // total runway conductor-bar feet when it isn't the runway OAL
   bridgeDrive: 'manual' | 'motorized'; trolley?: 'manual' | 'motorized';
   voltage: string; control?: 'radio' | 'pendant';
   collisionAvoidance?: boolean; asceRail?: boolean; doubleGirder?: boolean; bracing?: boolean;
@@ -23,6 +25,8 @@ export interface CraneSpec {
   colors?: { columns?: string; runways?: string; bridge?: string };
   install: boolean; miles?: number; crewMen?: number; travelMode?: 'drive' | 'fly' | 'local';
   bracedToBuilding?: boolean; preUseInspection?: boolean;
+  serviceClass?: 'C' | 'D';
+  bracketsByOthers?: boolean;               // building_runway: crane brackets / seats come with the building (PEMB) — PWI supplies beams only (sold 28772)                 // CMAA class; D (heavy service) = hoist one size up, derated (sold 29562, 28723)
 }
 export interface BuildResult { lines: QuoteLine[]; assumptions: Assumption[]; notes: string[]; wording: string; suggestedInstallHours: number; smtShopHours: number;
   outboundFreight: number; preUse: number; blockers: string[]; geometry: Record<string, number | string>; tons: number;
@@ -31,8 +35,8 @@ export interface BuildOpts { skipTravel?: boolean }
 
 type Norm = CraneSpec & { support: Support; hanging: 'top_running' | 'underhung'; series: 'UL' | 'M' | 'GM' | 'HL'; systems: number; runwayOalFt: number; trolley: 'manual' | 'motorized'; control: 'radio' | 'pendant'; voltage: '460V/3' | '230V/3' | '208V/3' };
 const KEYS = ['series', 'support', 'hanging', 'systems', 'runwayOalFt', 'spanFt', 'capacityTons', 'overallHeightFt', 'hookHeightFt', 'liftFt', 'columnsPerSystem', 'bridgesPerSystem', 'hoistsPerBridge',
-  'buildingBayFt', 'runwayElectrification', 'bridgeDrive', 'trolley', 'voltage', 'control', 'collisionAvoidance', 'asceRail', 'doubleGirder', 'bracing', 'foundation', 'colors', 'install', 'miles',
-  'crewMen', 'travelMode', 'bracedToBuilding', 'preUseInspection'] as const;
+  'buildingBayFt', 'runwayElectrification', 'railFt', 'runwayElectrificationFt', 'bridgeDrive', 'trolley', 'voltage', 'control', 'collisionAvoidance', 'asceRail', 'doubleGirder', 'bracing', 'foundation', 'colors', 'install', 'miles',
+  'crewMen', 'travelMode', 'bracedToBuilding', 'preUseInspection', 'serviceClass', 'bracketsByOthers'] as const;
 
 export function normalize(x0: CraneSpec): Norm {
   const support: Support = x0.support ?? 'freestanding';
@@ -43,11 +47,12 @@ export function normalize(x0: CraneSpec): Norm {
   check('runwayOalFt', x0.runwayOalFt, 8, 600, support !== 'bridge_only');
   check('overallHeightFt', x0.overallHeightFt, 8, 45); check('hookHeightFt', x0.hookHeightFt, 6, 42); check('systems', x0.systems, 1, 10);
   check('bridgesPerSystem', x0.bridgesPerSystem, 1, 4); check('hoistsPerBridge', x0.hoistsPerBridge, 1, 2); check('columnsPerSystem', x0.columnsPerSystem, 4, 60);
-  check('liftFt', x0.liftFt, 8, 80); check('crewMen', x0.crewMen, 2, 4); check('buildingBayFt', x0.buildingBayFt, 8, 40);
+  check('liftFt', x0.liftFt, 8, 80); check('railFt', x0.railFt, 0, 4000); check('runwayElectrificationFt', x0.runwayElectrificationFt, 0, 4000); check('crewMen', x0.crewMen, 2, 4); check('buildingBayFt', x0.buildingBayFt, 8, 40);
   if (x0.install || x0.miles != null) check('miles', x0.miles, 0, 3500, true);
   const series = x0.series ?? (x0.bridgeDrive === 'motorized' ? (x0.capacityTons >= 3 ? 'GM' : 'M') : 'M');
   if (!['UL', 'M', 'GM', 'HL'].includes(series)) throw new Error(`Unknown series ${series}.`);
   if (!['manual', 'motorized'].includes(x0.bridgeDrive)) throw new Error('bridgeDrive must be manual or motorized.');
+  if (x0.serviceClass != null && !['C', 'D'].includes(x0.serviceClass)) throw new Error('serviceClass must be C or D.');
   const x = keep<CraneSpec>(x0, KEYS);
   return { ...x, support, series, hanging: x.hanging ?? 'top_running', systems: Math.max(1, x.systems ?? 1), runwayOalFt: x.runwayOalFt ?? 0,
     trolley: x.trolley ?? x.bridgeDrive, control: x.control ?? (x.bridgeDrive === 'motorized' ? 'radio' : 'pendant'), voltage: volt(x.voltage) as Norm['voltage'] };
@@ -100,12 +105,17 @@ export function buildCrane(spec: CraneSpec, cat: Catalog, f: Factors = { product
     else throw new Error(`${bayFt.toFixed(1)}' bays at ${cap} t are past the sizing chart — add columns or quote by hand.`);
   }
   let girder = s.series === 'UL' || s.series === 'HL' ? null : chartPick(CH.girder_by_span, 'spanFt', s.spanFt, cap);
+  let boxPlf = 0;
   if (girder === null && s.series !== 'UL' && s.series !== 'HL') {
-    girder = chartMax(CH.girder_by_span);
-    K.blockers.push(`${s.spanFt}' span at ${cap} t is past the AQT girder chart — engineering must size the girder (priced as ${girder} placeholder).`);
+    const g = sizeGirder(cat, s.spanFt, cap, doubleGirder);
+    if (g.shape) { girder = g.shape; A.push({ field: 'girder', value: girder, why: `${s.spanFt}' span at ${cap} t is past the AQT girder chart — sized at L/${R.boxGirder.deflLimit} (rated load + hoist + self weight) as the lightest W ≤ ${R.boxGirder.maxWDepthIn}" deep; engineering to confirm` }); }
+    else { boxPlf = g.boxPlf; A.push({ field: 'girder', value: `box ${boxPlf} plf`, why: `No W shape ≤ ${R.boxGirder.maxWDepthIn}" deep meets L/${R.boxGirder.deflLimit} at ${s.spanFt}' / ${cap} t → plate box girder ${g.depthIn}" deep, ${boxPlf} plf (Ireq ≈ ${Math.round(g.Ireq)} in⁴); engineering to confirm` }); }
   }
   const builtUp = hasCols && (s.support === 'crane_columns' ? cap >= 5 || !column : cap >= R.columnType.builtUpFromCap || !column || overall > R.columnType.maxChartHeightFt + 2);
-  const builtUpPlf = s.support === 'crane_columns' ? pick([[5, 40], [10, 48], [20, 90], [999, 162]] as [number, number][], cap) : pick(R.columnType.builtUpPlfByCap as [number, number][], cap);   // crane columns: tapered 3-plate (sold 28192 48 plf @10 t, 28970 162 plf @25 t)
+  const SC = (R.columnType as any).builtUpShortColumn;
+  const colLen0 = Math.ceil((overall - (runway ? depthIn(runway) / 12 : 1.5) - (rail ? R.height.railHeightFt : 0) - R.height.topPlateFt) / R.height.roundColumnToFt) * R.height.roundColumnToFt;
+  const builtUpPlf = s.support === 'crane_columns' ? pick([[5, 40], [10, 48], [20, 90], [999, 162]] as [number, number][], cap)
+    : SC && colLen0 <= SC.maxColumnFt && cap <= 10 ? pick(SC.plfByCap as [number, number][], cap) : pick(R.columnType.builtUpPlfByCap as [number, number][], cap);   // crane columns: tapered 3-plate (sold 28192 48 plf @10 t, 28970 162 plf @25 t)
   A.push({ field: 'steelSource', value: 'chart', why: 'Steel from the AQT sizing chart (height × capacity, bay × capacity, span × capacity) — engineering to confirm' });
   const runDepthFt = runway ? depthIn(runway) / 12 : 1.5;
   const colLen = hasCols ? Math.ceil((overall - runDepthFt - (rail ? R.height.railHeightFt : 0) - R.height.topPlateFt) / R.height.roundColumnToFt) * R.height.roundColumnToFt : 0;
@@ -116,8 +126,10 @@ export function buildCrane(spec: CraneSpec, cat: Catalog, f: Factors = { product
   // ---------- structural + plate ----------
   if (hasCols) { if (builtUp) K.box('Built-up plate columns', cols, builtUpPlf, colLen); else K.steel('Columns', column!, cols, colLen); }
   if (hasRunway) K.steel('Runways', runway!, 2 * piecesPerLine * n, pieceFt);
-  const girderLb = girder ? K.steel(doubleGirder ? 'Bridge girders (double)' : 'Bridge girder', girder, bridges * (doubleGirder ? 2 : 1), Math.ceil(s.spanFt + 2)) * (doubleGirder ? 2 : 1) : 0;
-  const bracing = s.support === 'freestanding' && (s.bracing ?? (columnType === 'tube' && (colsPer >= 6 || cap >= 3)));
+  const girderLb = girder ? K.steel(doubleGirder ? 'Bridge girders (double)' : 'Bridge girder', girder, bridges * (doubleGirder ? 2 : 1), Math.ceil(s.spanFt + 2)) * (doubleGirder ? 2 : 1)
+    : boxPlf ? K.box(doubleGirder ? 'Plate box girders (double)' : 'Plate box girder', bridges * (doubleGirder ? 2 : 1), boxPlf, Math.ceil(s.spanFt + 2)) * (doubleGirder ? 2 : 1) : 0;
+  const BR = (R as any).bracing ?? { tubeFromColumns: 6, tubeFromCap: 3 };
+  const bracing = s.support === 'freestanding' && (s.bracing ?? (columnType === 'tube' && (colsPer >= BR.tubeFromColumns || cap >= BR.tubeFromCap)));
   if (bracing) K.steel('Bracing', 'ST 3 x 3 x 1/4', 6 * n, 20);
   if (hasCols) {
     const bp = (R.basePlate as [number, number, number][]).find(([m]) => cap <= m) ?? [0, 1, 24];
@@ -127,11 +139,12 @@ export function buildCrane(spec: CraneSpec, cat: Catalog, f: Factors = { product
   }
   if (s.support === 'building_runway') {
     if (under) { /* hung from building steel with drop rods — std parts below */ }
+    else if (s.bracketsByOthers) A.push({ field: 'bracketsByOthers', value: true, why: 'Runway beams set on crane brackets supplied with the building — PWI supplies beams, rail and hardware only', alt: false });
     else { K.plate('Runway seat brackets', supports, 0.75, 12, 18); K.plate('Runway bracket stiffeners', supports * 2, 0.5, 6, 12); K.plate('Runway tie-back clips', supports, 0.5, 8, 12); }
   }
   if (hasRunway && cap >= 5) K.plate('Runway web stiffeners', 2 * piecesPerLine * n * 2, 0.3125, 6, 16);
   if (hasRunway) K.plate('Runway splice / end plates', 2 * (piecesPerLine + 1) * n, 0.375, 8, 14);
-  if (girder) K.plate('Bridge end plates', bridges * 2, 0.375, 15, 21);
+  if (girder || boxPlf) K.plate('Bridge end plates', bridges * 2, 0.375, 15, 21);
 
   // ---------- standard parts ----------
   if (hasCols) {
@@ -143,14 +156,16 @@ export function buildCrane(spec: CraneSpec, cat: Catalog, f: Factors = { product
   K.std(cap >= 2 ? '3/4" Structural Bolt and Nut' : '5/8" Structural Bolt and Nut', boltCount);
   if (s.support === 'building_runway' && under) K.std('Drop Rod Connection', supports);
   const amps = cap >= 5 || bridges > 1 ? '120' : '65';
-  const runwayElec = hasRunway ? true : !!s.runwayElectrification && oal > 0;
-  if (runwayElec) K.std(`Runway Electrification Package (4-Conductor x ${amps} amp max)`, Math.ceil(oal) * n);
+  const elecFt = s.runwayElectrificationFt ?? oal * n;
+  const runwayElec = hasRunway ? true : (!!s.runwayElectrification || s.runwayElectrificationFt != null) && elecFt > 0;
+  if (runwayElec) K.std(`Runway Electrification Package (4-Conductor x ${amps} amp max)`, Math.ceil(elecFt));
   K.std(motor ? 'Motorized Bridge Crane Electrification Package (per foot)' : 'Manual Bridge Crane Electrification Package (per foot)', Math.ceil(s.spanFt) * bridges);
   K.std(motor && amps === '120' ? '120 Amp Tandem Collector Set (for VFD)' : '65 Amp Single Collector Set  (Non-VFD)', bridges * (motor && amps === '120' ? 2 : 1));
   if (hasRunway) K.std('Beam End Stop Kit for Runway System (4 total per kit)', n);
   K.std('PWI HD Adjustable End Stop Kit (slides on Flange)', 2 * bridges);
   if (motor && s.spanFt >= 10) K.std(cap <= 2 ? 'End Truck Plug & Play Upcharge (2 ton or smaller)' : 'End Truck Plug & Play Upcharge (3 ton or larger)', bridges);
-  if (rail && oal > 0) K.std(cap <= 10 ? '30# ASCE Crane Rail (per linear foot including clips and splicers)' : '40# ASCE Crane Rail (per linear foot including clips and splicers)', 2 * Math.ceil(oal) * n);
+  const railFt = s.railFt ?? (rail ? 2 * Math.ceil(oal) * n : 0);
+  if (railFt > 0) K.std(cap <= 10 ? '30# ASCE Crane Rail (per linear foot including clips and splicers)' : '40# ASCE Crane Rail (per linear foot including clips and splicers)', Math.ceil(railFt));
   if (s.series === 'UL') K.std(cap <= 0.5 ? '1/2 Ton Manual Ultra-Lite End Truck Kit  39.5"' : cap <= 1 ? '1 Ton Manual Ultra-Lite End Truck Kit 39.5"' : cap <= 2 ? '2 Ton Manual Ultra-Lite End Truck Kit 39.5"' : '3 Ton Manual Ultra-Lite End Truck Kit', bridges);
   else if (!motor) {
     const len = s.spanFt <= 20 ? '32.5"' : s.spanFt <= 30 ? '38.25"' : '50.25"';
@@ -161,7 +176,9 @@ export function buildCrane(spec: CraneSpec, cat: Catalog, f: Factors = { product
   const v = s.voltage.startsWith('460') ? '460V' : '230V';
   const lift = s.liftFt ?? Math.max(10, Math.ceil((hook + 2) / 5) * 5);
   if (s0.liftFt == null) A.push({ field: 'liftFt', value: lift, why: `Hook ${hook.toFixed(1)}' + 2' → next stocked lift`, alt: lift + 10 });
-  const hoistPart = pickHoist(cat, cap, lift, v, s.trolley, doubleGirder);
+  const classD = s.serviceClass === 'D', CD = (R as any).classD;
+  const hoistPart = pickHoist(cat, classD ? cap * CD.hoistCapFactor : cap, lift, v, s.trolley, doubleGirder);
+  if (classD) A.push({ field: 'serviceClass', value: 'D', why: `Class D (heavy service): hoist sized at ${CD.hoistCapFactor}× rated capacity and derated to ${cap} t (sold 29562, 28723)`, alt: 'C' });
   if (cap > 3) A.push({ field: 'hoistFamily', value: `Starke ${doubleGirder ? 'STW' : 'SMW'} wire rope`, why: '≥5 t sold jobs used wire rope (SMW single girder 29331/28192; STW double girder 29523)' });
   if (hoistPart) K.vend(hoistPart, hoists); else K.notes.push(`No hoist found for ${cap} t / ${lift}' / ${v} — pick in editor.`);
   if (motor) {
@@ -188,10 +205,12 @@ export function buildCrane(spec: CraneSpec, cat: Catalog, f: Factors = { product
     ['Cut list', O.cutList * n],
     ...(hasCols ? [[`Column fab (${columnType})`, columnType === 'built_up' ? O.colBuiltUpPerFt * colLen * cols : columnType === 'wide_flange' ? O.colWideFlangeMoment * cols : O.colTubeGusset * cols] as [string, number]] : []),
     ...(hasRunway ? [[`PCR runways (${runBeams})`, (pieceFt > 20 ? O.pcrRunwayGT20 : O.pcrRunwayLE20) * runBeams] as [string, number]] : []),
-    ...(s.support === 'building_runway' && !under ? [[`Runway bracket fab (${supports})`, 1.5 * supports] as [string, number]] : []),
+    ...(s.support === 'building_runway' && !under && !s.bracketsByOthers ? [[`Runway bracket fab (${supports})`, 1.5 * supports] as [string, number]] : []),
     ...(hasRunway && cap >= O.webStiffenersPerBeamFromCap[0] ? [['Runway web stiffeners', O.webStiffenersPerBeamFromCap[1] * runBeams] as [string, number]] : []),
     [`Bridge fab + after-paint (${bType})`, ((O.bridge as any)[bType] + (s.spanFt > 70 ? O.bridge.over70ftAdd : 0)) * bridges],
+    ...(boxPlf ? [[`Box girder fab (${bridges * (doubleGirder ? 2 : 1)} × ${Math.ceil(s.spanFt + 2)}')`, R.boxGirder.fabHrsPerFt * Math.ceil(s.spanFt + 2) * bridges * (doubleGirder ? 2 : 1)] as [string, number]] : []),
     ...(s.collisionAvoidance ? [['Collision avoidance', O.collisionAvoidPerBridge * bridges] as [string, number]] : []),
+    ...(classD ? [['Hoist derating setup', CD.deratingHrsPerBridge * bridges] as [string, number]] : []),
   ]);
 
   // ---------- install ----------
@@ -203,23 +222,45 @@ export function buildCrane(spec: CraneSpec, cat: Catalog, f: Factors = { product
     site: [
       { desc: 'Unload, set up, layout', hours: S2.setup },
       { desc: `Install columns (${cols})`, hours: S2.column * cols },
-      { desc: `Install runway ${under ? 'hangers' : 'brackets'} (${s.support === 'building_runway' ? supports : 0})`, hours: s.support === 'building_runway' ? 2 * supports : 0 },
+      { desc: `Install runway ${under ? 'hangers' : 'brackets'} (${s.support === 'building_runway' && !s.bracketsByOthers ? supports : 0})`, hours: s.support === 'building_runway' && !s.bracketsByOthers ? 2 * supports : 0 },
       { desc: `Install runway beams (${runBeams})`, hours: (pieceFt > 40 ? S2.runwayPieceOver40 : S2.runwayPiece) * runBeams },
       { desc: 'Install runway end stops', hours: hasRunway ? S2.endStops * n : 0 },
-      { desc: 'Install electrification', hours: runwayElec ? S2.electrificationPer100ftOal * oal * n / 100 : 2 * bridges },
+      { desc: 'Install electrification', hours: runwayElec ? S2.electrificationPer100ftOal * elecFt / 100 : 2 * bridges },
       { desc: `Install bridge (${bridges})`, hours: (!motor ? S2.manualBridge : bridgeLb >= 8000 ? S2.bridgeOver8k : S2.bridgeUnder8k) * bridges },
-      { desc: 'Install ASCE rail', hours: rail && oal ? S2.railPer100ftOal * oal * n / 100 : 0 },
+      { desc: 'Install ASCE rail', hours: railFt > 0 ? S2.railPer100ftOal * railFt / 2 / 100 : 0 },
       { desc: 'Collision avoidance', hours: s.collisionAvoidance ? S2.collisionAvoidPerBridge * bridges : 0 },
       { desc: 'Install bracing', hours: bracing ? S2.bracingPerLocation * 6 * n : 0 },
     ],
   });
-  K.pmCad(s.support === 'freestanding' ? 1 : 1.1);
+  K.pmCad(1);   // bridge was 1.1; the PM/CAD power law is fitted on FSTR and bridge jobs together (tuned 11/20)
   K.done();
 
-  const geo = { overall, hook, colLen, colsPer, bayFt, rail, motor, doubleGirder, lift, bridges, builtUp, foundation, supports, runwayElec, cols };
+  const geo = { overall, hook, colLen, colsPer, bayFt, rail, motor, doubleGirder, lift, bridges, builtUp, foundation, supports, runwayElec, cols, railFt, elecFt };
   return { lines: K.lines, assumptions: A, notes: K.notes, blockers: K.blockers, wording: wording(s, geo), preUse: s.preUseInspection ? 1500 * n : 0, suggestedInstallHours: Math.round(K.site * 10) / 10,
     smtShopHours: K.smtShopHours, outboundFreight: K.freight, tons: K.lbs / 2000, job: { ...job, workHrs: K.workHrs },
-    geometry: { overall: +overall.toFixed(2), hook: +hook.toFixed(2), colLen, column: !hasCols ? '' : builtUp ? `built-up ${builtUpPlf} plf` : column!, runway: runway ?? '', girder: girder ?? '', bays, bayFt: +bayFt.toFixed(1), pieceFt, piecesPerLine, units: K.units } };
+    geometry: { overall: +overall.toFixed(2), hook: +hook.toFixed(2), colLen, column: !hasCols ? '' : builtUp ? `built-up ${builtUpPlf} plf` : column!, runway: runway ?? '', girder: girder ?? (boxPlf ? `box ${boxPlf} plf` : ''), bays, bayFt: +bayFt.toFixed(1), pieceFt, piecesPerLine, units: K.units } };
+}
+
+/** Girder past the AQT chart: lightest W (≤ maxWDepthIn) meeting L/600 under rated load + hoist + self weight and
+ *  24 ksi bending, else a plate box girder sized for the same I (and 24 ksi bending). W-shape Ix from ixOf() (conservative). */
+export function sizeGirder(cat: Catalog, spanFt: number, cap: number, double: boolean): { shape: string | null; boxPlf: number; depthIn: number; Ireq: number } {
+  const B = R.boxGirder, L = spanFt * 12, E = 29e6, lim = L / B.deflLimit;
+  const P = (cap * 2000 + cap * B.hoistLbPerTon + 300) / (double ? 2 : 1);
+  const Ireq = (w: number) => P * L ** 3 / (48 * E * lim) + 5 * (w / 12) * L ** 4 / (384 * E * lim);
+  // lightest W meeting deflection with its own weight and bending (24 ksi on Sx ≈ 2·Ix/d, 15% impact)
+  const cands = W_SHAPES.map(n => ({ n, d: depthIn(n), wt: Number(/x (\d+(?:\.\d+)?)/.exec(n)?.[1] ?? 0) })).filter(x => x.d <= B.maxWDepthIn && cat.shape(x.n)).sort((a, b) => a.wt - b.wt);
+  for (const c of cands) {
+    const I = ixOf(c.n), M = P * 1.15 * L / 4 + (c.wt / 12) * L * L / 8;
+    if (I >= Ireq(c.wt) && M / (2 * I / c.d) <= 24000) return { shape: c.n, boxPlf: 0, depthIn: c.d, Ireq: Ireq(c.wt) };
+  }
+  const d = Math.min(B.maxDepthIn, Math.max(B.minDepthIn, Math.round(L * B.depthInPerSpanIn)));
+  let plf = 150, I = 0;
+  for (let i = 0; i < 6; i++) {
+    const M = P * 1.15 * L / 4 + (plf / 12) * L * L / 8;
+    I = Math.max(Ireq(plf), M * (d / 2) / 24000);          // deflection or bending, whichever needs more (webs ignored: conservative)
+    const Af = 2 * I / (d * d); plf = Math.round(B.lbPerIn2Ft * (2 * Af + 2 * d * B.webIn) * B.fabFactor);
+  }
+  return { shape: null, boxPlf: plf, depthIn: d, Ireq: I };
 }
 
 export function pickHoist(cat: Catalog, cap: number, lift: number, v: string, trolley: string, doubleGirder: boolean): string | undefined {
@@ -230,8 +271,10 @@ export function pickHoist(cat: Catalog, cap: number, lift: number, v: string, tr
     return codes.find(x => x.t >= need - 1e-9)?.c;
   };
   if (cap <= 3) {
-    const code = pickCode('STK', cap, 10); if (!code) return undefined;
-    return cat.vendorParts(`STK${code}`).filter(p => p.part.includes(`-${v}-3PH-${trolley === 'motorized' ? 'C' : 'B'}`) && liftOf(p.part) >= lift).sort((a, b) => liftOf(a.part) - liftOf(b.part))[0]?.part;
+    const code = pickCode('STK', cap, 10);
+    const stk = code ? cat.vendorParts(`STK${code}`).filter(p => p.part.includes(`-${v}-3PH-${trolley === 'motorized' ? 'C' : 'B'}`) && liftOf(p.part) >= lift).sort((a, b) => liftOf(a.part) - liftOf(b.part))[0]?.part : undefined;
+    if (stk) return stk;
+    // no STK chain hoist at this lift → SMW wire rope (sold 28772: 2 t bridge with 30' lift on an SMW0322-30)
   }
   const fam2 = doubleGirder ? 'STW' : 'SMW'; const code = pickCode(fam2, cap, 1); if (!code) return undefined;
   return cat.vendorParts(`${fam2}${code}`).filter(p => p.part.includes(`-${v}`) && liftOf(p.part) >= lift && !/V$/.test(p.part)).sort((a, b) => liftOf(a.part) - liftOf(b.part))[0]?.part;
@@ -252,11 +295,12 @@ function wording(s: Norm, x: any): string {
   if (s.overallHeightFt != null || s.hookHeightFt != null) out.push(`- Hook Height:\t${hgt(x.hook, 'floor')}`, `- ${s.support === 'freestanding' ? 'Overall Height' : 'Top of Runway'}:\t${hgt(x.overall, 'ceil')}`);
   out.push(`- System Voltage:\t${s.voltage.replace('/3', '/3 phase')}`, '',
     '## Crane Classification:',
-    '> Class C (Moderate Service): This service covers cranes whose service requirements are deemed moderate, handling loads which average 50 percent of the rated capacity with 5 to 10 lifts per hour, averaging 15 feet, with not over 50 percent of the lifts at rated capacity.', '');
+    s.serviceClass === 'D' ? '> Class D (Heavy Service): This service covers cranes which may be used in heavy machine shops, foundries, fabricating plants, steel warehouses, container yards, lumber mills, etc., and standard duty bucket and magnet operations where heavy duty production is required. In this type of service, loads approaching 50 percent of the rated capacity will be handled constantly during the working period.'
+      : '> Class C (Moderate Service): This service covers cranes whose service requirements are deemed moderate, handling loads which average 50 percent of the rated capacity with 5 to 10 lifts per hour, averaging 15 feet, with not over 50 percent of the lifts at rated capacity.', '');
   if (s.support !== 'bridge_only') {
     out.push('## Runway Package');
     if (s.support === 'freestanding' || s.support === 'crane_columns') out.push(`- (${x.colsPer}) ${x.builtUp ? 'Built-up plate' : 'Structural'} ${s.support === 'crane_columns' ? 'crane ' : ''}columns spaced at approx. ${ftIn(Math.round(x.bayFt))} bays`);
-    else out.push(`- Runway beams ${s.hanging === 'underhung' ? 'hung from the existing building structure with drop rod connections' : 'mounted to the existing building columns with PWI runway brackets'} (approx. ${ftIn(Math.round(x.bayFt))} spacing)`, '- Customer to confirm the building structure can support the crane loads (PWI to provide reactions)');
+    else out.push(`- Runway beams ${s.hanging === 'underhung' ? 'hung from the existing building structure with drop rod connections' : s.bracketsByOthers ? 'set on the crane brackets supplied with the building (brackets by others)' : 'mounted to the existing building columns with PWI runway brackets'} (approx. ${ftIn(Math.round(x.bayFt))} spacing)`, '- Customer to confirm the building structure can support the crane loads (PWI to provide reactions)');
     out.push(`- ${ftIn(s.runwayOalFt)} x ${T} Ton capacity WF beam runway system`);
     if (x.rail) out.push('- 30# ASCE crane rail with standard weld clips');
     if (s.support === 'freestanding') out.push('- Runway system will include lateral and longitudinal tie back bracing');
@@ -268,8 +312,8 @@ function wording(s: Norm, x: any): string {
   } else {
     out.push('## Existing Runway');
     out.push('- Bridge crane to run on the customer\'s existing runway system', '- Runway capacity, alignment and condition to be verified by the customer');
-    if (x.rail) out.push(`- New 30# ASCE crane rail with standard weld clips (${ftIn(s.runwayOalFt * 2)} total)`);
-    if (x.runwayElec) out.push(`- New ElectroTrack runway electrification (${ftIn(s.runwayOalFt)})`);
+    if (x.railFt > 0) out.push(`- New ${s.capacityTons <= 10 ? '30#' : '40#'} ASCE crane rail with standard weld clips (${ftIn(x.railFt)} total)`);
+    if (x.runwayElec) out.push(`- New ElectroTrack runway electrification (${ftIn(x.elecFt)})`);
     out.push('');
   }
   out.push(`## (${x.bridges}) ${ftIn(s.spanFt)} x ${T} Ton Capacity ${x.doubleGirder ? 'Double Girder ' : ''}${s.hanging === 'underhung' ? 'Underhung' : 'Top Runner'} ${x.motor ? 'Motorized' : 'Manual'} Bridge Crane`,

@@ -1,6 +1,6 @@
 ---
 name: "pwi-quote"
-description: "Turn a spoken or typed PWI job description (freestanding, bridge, gantry, monorail, jib, mezzanine, VRC, fall protection, catalog items) into a link that builds the full quote in the PWI quote app. Use when a PWI salesperson describes a project to quote."
+description: "Turn a spoken or typed PWI job description (freestanding, bridge, gantry, monorail, jib, mezzanine, work platform, VRC, fall protection, catalog items) into a link that builds the full quote in the PWI quote app. Use when a PWI salesperson describes a project to quote."
 ---
 
 # PWI Quote
@@ -104,8 +104,8 @@ Required:
 | `series` | `UL` Ultra-Lite / `M` motorized-standard top running / `GM` girder motorized / `HL` Hyper-Lite |
 | `capacityTons` | 0.25–10 |
 | `spanFt` | 5–60 |
-| `runwayOalFt` | 8–400 |
-| height | `overallHeightFt` (8–30) **or** `hookHeightFt` (6–28) |
+| `runwayOalFt` | 8–600 |
+| height | `overallHeightFt` (8–45) **or** `hookHeightFt` (6–42) |
 | `bridgeDrive` | `manual` / `motorized` |
 | `voltage` | `460V/3` / `230V/3` / `208V/3` |
 | `install` | true / false |
@@ -118,6 +118,7 @@ Optional, only if said:
 - `colors { columns, runways, bridge }`
 - `crewMen`, `travelMode` (`drive` / `fly` / `local`)
 - `bracedToBuilding`, `preUseInspection`
+- `serviceClass`: `D` only when they say Class D / heavy service (foundry, steel yard, constant near-capacity lifts) — the app sizes the hoist up and derates it; default Class C
 
 **Out of range**
 
@@ -129,15 +130,42 @@ The auto-builder only handles the ranges above. For anything bigger, or for spec
 - `support`: `building_runway` (default — runway on the building's columns) / `crane_columns` (new PWI columns) / `bridge_only` (existing runway)
 - `hanging`: `top_running` (default) / `underhung`
 - `buildingBayFt` (building column spacing, default 20), `runwayElectrification` (bridge_only)
+- `bracketsByOthers: true` when the building (e.g. a new metal building) comes with crane brackets — PWI supplies runway beams only
+- `railFt` (total ASCE rail feet) and `runwayElectrificationFt` (total runway conductor-bar feet) only when they differ from the runway length — runway extensions / completion packages
+- Spans past the sizing chart (e.g. 70' at 10 t) are sized automatically — a heavier W beam or a plate box girder
 - `capacityTons` up to 20; `runwayOalFt` not needed for bridge_only
 
 **Gantry** — `type: "gantry"`: `capacityTons` (≤10), `spanFt` (≤65), `heightUnderBeamFt` or `hookHeightFt`, `motorized` (default true), `qty`, `hoists`, `liftFt`, `voltage`, `control`, `floorTrackFt` (0 = rolls on floor), `colors.gantry`
 
-**Monorail** — `type: "monorail"`: `lengthFt`, `capacityTons` (≤10), `support` (`freestanding` / `ceiling` / `building_brackets`), `overallHeightFt` or `hookHeightFt`, optional `frame` (`single_post` / `goal_post`), `frameWidthFt`, `supportSpacingFt`, `systems`, `hoists`, `trolley`, `electrification` (`conductor` / `festoon`), `voltage`, `control`, `colors`
+**Monorail** — `type: "monorail"`: `lengthFt`, `capacityTons` (≤10), `support` (`freestanding` / `ceiling` / `building_brackets`), `overallHeightFt` or `hookHeightFt`, optional `frame` (`single_post` / `goal_post`; default single post up to 2 t), `frameWidthFt`, `supportSpacingFt` (default ≤25' up to 2 t), `parallelBeams` (`2` = two parallel monorails hung from shared goal-post frames), `components` (`false` when the customer supplies the hoists/trolleys — "no components"), `systems`, `hoists` (per system, all beams), `trolley`, `electrification` (`conductor` / `festoon`), `voltage`, `control`, `colors`
 
 **Mezzanine** — `type: "mezzanine"`: `lengthFt`, `widthFt`, `deckHeightFt`, optional `liveLoadPsf` (125 storage default), `deck` (`bdeck_advantech` default / `bdeck_resindek` / `grating` / `treadplate` / `bdeck_only` / `none`), `guardrail` (`osha` / `ibc` / `removable`), `guardrailFt`, `stairs`, `stairType` (`straight` / `switchback`), `stairPrice` (StairZone sell per stair — **without it the quote can't be sent**), `gates: [{type, qty}]` (`manual_rolling` / `manual_pivot` / `pneumatic_pivot` / `motorized_rolling` / `motorized_rollup` / `safety`), `bracing` (`knee` / `x` / `building` / `none`), `primerOnly`, `stamped`, `colors.structure`
 
 **Jib** — `type: "jib"`: `capacityTons` (≤5), `spanFt` (reach, ≤30), `overallHeightFt` or `heightUnderBoomFt`, `mount` (`floor` default / `foundationless` / `wall`), `rotation` (180/270/360), `hoist` (default true), `trolley`, `liftFt`, `voltage`, `qty`
+
+**Work platform (Guardian RV work platform set)** — `type: "work_platform"`. One set = (2) truss platforms, (4) towers, (4) Starke chain hoists with secondary brakes.
+
+Required: `lengthFt` (platform length without end extensions, 20–90), `install`, `miles` when installed.
+
+Optional, only if said:
+
+| Field | Values |
+|---|---|
+| `sets` | number of sets (default 1) |
+| `widthFt` | platform width, default 4 (30" = 2.5); wider than 4' adds runner tubes and $500/ft |
+| `tallestUnitFt` | tallest customer unit; over 14' → 30' towers (default 24') |
+| `fingerRacks`, `motorizedWidth` | true forces the box truss (also used over 57' long or 6' wide) |
+| `fingerRackFt` | line feet of finger racks for trim storage |
+| `woodFloor` | true = PWI supplies 3/4" Advantech (default: flooring by others) |
+| `crosswalks` | `{ standard, pivot, expandable, aluminum, expandedLengthFt, wideUnits }` counts per set |
+| `gapProtection`, `vNose` | true / false |
+| `telescopingGuardrail`, `telescopingLengthFt` | sections per set, extended length |
+| `camGateFrontFt`, `camGateRearFt` | feet of unit covered by cam gates (adds interior guardrail) |
+| `endExtensions` | 0–4 per set (with swing gates); the other ends get end caps |
+| `treadPlateExtensions`, `longestUnitFt` | slide-out tread plate sheets |
+| `ladder`, `extraTrackRuns` | ladder access; extra runs of 300 series track |
+
+The app picks the truss (triangular / box), hoist size (1 t to 40', 2 t to 62', 3 t over) and tower height from those. Example: "Guardian set, 51 foot by 30 inch platforms, two pivot crosswalks, installed in Elkhart" → `{ "type": "work_platform", "lengthFt": 51, "widthFt": 2.5, "crosswalks": { "pivot": 2 }, "install": true, "miles": 25 }`.
 
 **Fall protection (AnchorPoint)** — `type: "fall_protection"`: `lengthFt`, `supportSpacingFt` (default 20; >20 uses 10" truss), `people` (1–2), `trolleys`, `srl` (20/30/50), `harnesses`, `systems`
 
@@ -145,7 +173,7 @@ The auto-builder only handles the ranges above. For anything bigger, or for spec
 
 **Anything in the price lists** (frame rotators, below-the-hook, AERO work cells, parts) — `type: "catalog"`: `item` (part number or name), `qty`, optional `unitPrice` and `description` if it isn't in the lists, `installHours` if installed.
 
-Ask only for what each product truly needs (size, capacity, height, installed or not). Stairs and work platforms alone still go as an item with a `wording` string; the app keeps it for hand lines.
+Ask only for what each product truly needs (size, capacity, height, installed or not). Standalone stairs still go as an item with a `wording` string; the app keeps it for hand lines.
 
 **Changes later**
 

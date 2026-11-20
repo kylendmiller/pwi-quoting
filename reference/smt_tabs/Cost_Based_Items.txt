@@ -1,0 +1,88 @@
+A1	V	' Misc Cost Based Items'
+A3	V	'Description'
+B3	V	'QTY'
+C3	V	'Cost Each'
+D3	V	'Total Cost'
+E3	V	'Markup %'
+F3	V	'Sell Price'
+A4	V	'Crane Items'
+D5	F	=C5*B5	=> 0
+E5	V	26
+F5	F	=D5*(E5/100+1)	=> 0
+A6	V	' '
+D6	F	=C6*B6	=> 0
+E6	V	26
+F6	F	=D6*(E6/100+1)	=> 0
+A7	V	' '
+D7	F	=C7*B7	=> 0
+E7	V	26
+F7	F	=D7*(E7/100+1)	=> 0
+A8	V	' '
+D8	F	=C8*B8	=> 0
+E8	V	26
+F8	F	=D8*(E8/100+1)	=> 0
+A9	V	' '
+D9	F	=C9*B9	=> 0
+E9	V	26
+F9	F	=D9*(E9/100+1)	=> 0
+A10	V	' '
+D10	F	=C10*B10	=> 0
+E10	V	26
+F10	F	=D10*(E10/100+1)	=> 0
+A11	V	'Mezzanine Items'
+D12	F	=C12*B12	=> 0
+E12	V	26
+F12	F	=D12*(E12/100+1)	=> 0
+A13	V	' '
+D13	F	=C13*B13	=> 0
+E13	V	26
+F13	F	=D13*(E13/100+1)	=> 0
+A14	V	' '
+D14	F	=C14*B14	=> 0
+E14	V	26
+F14	F	=D14*(E14/100+1)	=> 0
+A15	V	' '
+D15	F	=C15*B15	=> 0
+E15	V	26
+F15	F	=D15*(E15/100+1)	=> 0
+A16	V	' '
+D16	F	=C16*B16	=> 0
+E16	V	26
+F16	F	=D16*(E16/100+1)	=> 0
+A17	V	' '
+D17	F	=C17*B17	=> 0
+E17	V	26
+F17	F	=D17*(E17/100+1)	=> 0
+A18	V	'Misc. Items'
+D19	F	=C19*B19	=> 0
+E19	V	26
+F19	F	=D19*(E19/100+1)	=> 0
+A20	V	' '
+D20	F	=C20*B20	=> 0
+E20	V	26
+F20	F	=D20*(E20/100+1)	=> 0
+A21	V	' '
+D21	F	=C21*B21	=> 0
+E21	V	26
+F21	F	=D21*(E21/100+1)	=> 0
+A22	V	' '
+D22	F	=C22*B22	=> 0
+E22	V	26
+F22	F	=D22*(E22/100+1)	=> 0
+A23	V	' '
+D23	F	=C23*B23	=> 0
+E23	V	26
+F23	F	=D23*(E23/100+1)	=> 0
+A24	V	' '
+D24	F	=C24*B24	=> 0
+E24	V	26
+F24	F	=D24*(E24/100+1)	=> 0
+A27	V	'Total Net Cost'
+D27	F	=SUM(D4:D24)	=> 0
+A29	V	'Total Sell Price '
+F29	F	=SUM(F4:F24)	=> 0
+A31	V	'Total Profit '
+D31	F	=F29-D27	=> 0
+G42	V	' '
+A47	V	' '
+B47	V	' '

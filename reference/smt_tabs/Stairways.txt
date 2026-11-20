@@ -1,0 +1,163 @@
+A1	V	'Stairways'
+A3	V	'Description'
+B3	V	'Standalone '
+C3	V	'QTY'
+D3	V	'Height of Ladder (ft.)'
+E3	V	'Stairzone Cost Each'
+F3	V	'Total Cost'
+G3	V	'Markup %'
+H3	V	'Sell Price'
+I3	V	'Standalone Subtotal'
+J3	V	'Non Standalone Subtotal'
+A4	V	'Flight #1'
+B4	V	False
+E4	V	0
+F4	F	=E4*C4	=> 0
+G4	V	0
+H4	F	=F4*(G4/100+1)	=> 0
+I4	F	=IF(B4=TRUE,H4,0)	=> 0
+J4	F	=IF(B4=TRUE,0,H4)	=> 0
+N4	F	=H4-F4	=> 0
+A5	V	'Flight #2'
+B5	V	False
+F5	F	=E5*C5	=> 0
+G5	V	0
+H5	F	=F5*(G5/100+1)	=> 0
+I5	F	=IF(B5=TRUE,H5,0)	=> 0
+J5	F	=IF(B5=TRUE,0,H5)	=> 0
+N5	F	=H5-F5	=> 0
+A6	V	'Flight #3'
+B6	V	False
+F6	F	=E6*C6	=> 0
+G6	V	0
+H6	F	=F6*(G6/100+1)	=> 0
+I6	F	=IF(B6=TRUE,H6,0)	=> 0
+J6	F	=IF(B6=TRUE,0,H6)	=> 0
+N6	F	=H6-F6	=> 0
+A7	V	'Flight #4'
+B7	V	False
+F7	F	=E7*C7	=> 0
+G7	V	0
+H7	F	=F7*(G7/100+1)	=> 0
+I7	F	=IF(B7=TRUE,H7,0)	=> 0
+J7	F	=IF(B7=TRUE,0,H7)	=> 0
+N7	F	=H7-F7	=> 0
+A8	V	'Flight #5'
+F8	F	=E8*C8	=> 0
+G8	V	0
+H8	F	=F8*(G8/100+1)	=> 0
+I8	F	=IF(B8=TRUE,H8,0)	=> 0
+J8	F	=IF(B8=TRUE,0,H8)	=> 0
+N8	F	=H8-F8	=> 0
+A9	V	'Flight #6'
+B9	V	False
+F9	F	=E9*C9	=> 0
+G9	V	0
+H9	F	=F9*(G9/100+1)	=> 0
+I9	F	=IF(B9=TRUE,H9,0)	=> 0
+J9	F	=IF(B9=TRUE,0,H9)	=> 0
+N9	F	=H9-F9	=> 0
+A10	V	'Flight #7'
+F10	F	=E10*C10	=> 0
+G10	V	0
+H10	F	=F10*(G10/100+1)	=> 0
+I10	F	=IF(B10=TRUE,H10,0)	=> 0
+J10	F	=IF(B10=TRUE,0,H10)	=> 0
+N10	F	=H10-F10	=> 0
+A11	V	'Flight #8'
+F11	F	=E11*C11	=> 0
+G11	V	0
+H11	F	=F11*(G11/100+1)	=> 0
+I11	F	=IF(B11=TRUE,H11,0)	=> 0
+J11	F	=IF(B11=TRUE,0,H11)	=> 0
+N11	F	=H11-F11	=> 0
+A12	V	'Landing #1'
+B12	V	False
+F12	F	=E12*C12	=> 0
+G12	V	0
+H12	F	=F12*(G12/100+1)	=> 0
+I12	F	=IF(B12=TRUE,H12,0)	=> 0
+J12	F	=IF(B12=TRUE,0,H12)	=> 0
+N12	F	=H12-F12	=> 0
+A13	V	'Landing #2'
+B13	V	False
+F13	F	=E13*C13	=> 0
+G13	V	0
+H13	F	=F13*(G13/100+1)	=> 0
+I13	F	=IF(B13=TRUE,H13,0)	=> 0
+J13	F	=IF(B13=TRUE,0,H13)	=> 0
+N13	F	=H13-F13	=> 0
+A14	V	'Landing #3'
+B14	V	False
+F14	F	=E14*C14	=> 0
+G14	V	0
+H14	F	=F14*(G14/100+1)	=> 0
+I14	F	=IF(B14=TRUE,H14,0)	=> 0
+J14	F	=IF(B14=TRUE,0,H14)	=> 0
+N14	F	=H14-F14	=> 0
+A15	V	'Landing #4'
+B15	V	False
+F15	F	=E15*C15	=> 0
+G15	V	0
+H15	F	=F15*(G15/100+1)	=> 0
+I15	F	=IF(B15=TRUE,H15,0)	=> 0
+J15	F	=IF(B15=TRUE,0,H15)	=> 0
+N15	F	=H15-F15	=> 0
+A16	V	'Landing #5'
+B16	V	False
+F16	F	=E16*C16	=> 0
+G16	V	0
+H16	F	=F16*(G16/100+1)	=> 0
+I16	F	=IF(B16=TRUE,H16,0)	=> 0
+J16	F	=IF(B16=TRUE,0,H16)	=> 0
+A17	V	'Safety Yellow Ships Ladder (Per Foot)'
+B17	V	False
+D17	V	8
+E17	F	=D17*275	=> 2200
+F17	F	=E17*C17	=> 0
+G17	V	0
+H17	F	=F17*(G17/100+1)	=> 0
+I17	F	=IF(B17=TRUE,H17,0)	=> 0
+J17	F	=IF(B17=TRUE,0,H17)	=> 0
+A18	V	'Safety Yellow Ships Ladder (Per Foot)'
+B18	V	False
+D18	V	12
+E18	F	=D18*275	=> 3300
+F18	F	=E18*C18	=> 0
+G18	V	0
+H18	F	=F18*(G18/100+1)	=> 0
+I18	F	=IF(B18=TRUE,H18,0)	=> 0
+J18	F	=IF(B18=TRUE,0,H18)	=> 0
+A19	V	'Safety Yellow Alternating Tread Device (Per Foot)'
+B19	V	False
+D19	V	8
+E19	F	=D19*375	=> 3000
+F19	F	=E19*C19	=> 0
+G19	V	0
+H19	F	=F19*(G19/100+1)	=> 0
+I19	F	=IF(B19=TRUE,H19,0)	=> 0
+J19	F	=IF(B19=TRUE,0,H19)	=> 0
+A20	V	'Safety Yellow Alternating Tread Device (Per Foot)'
+B20	V	False
+D20	V	12
+E20	F	=D20*375	=> 4500
+F20	F	=E20*C20	=> 0
+G20	V	0
+H20	F	=F20*(G20/100+1)	=> 0
+I20	F	=IF(B20=TRUE,H20,0)	=> 0
+J20	F	=IF(B20=TRUE,0,H20)	=> 0
+M21	V	'Margin %'
+N21	V	0.4
+A22	V	'Total Standalone'
+H22	F	=SUM(I4:I20)	=> 0
+M22	V	'Margin'
+N22	F	=#REF!*N21	=> '#REF!'
+A23	V	'Total Part of Mezz/Platform'
+H23	F	=SUM(J4:J20)	=> 0
+M23	V	'Total Margin'
+N23	F	=SUM(N4:N20)+N22	=> '#REF!'
+A24	V	'Total Sell Price '
+H24	F	=SUM(H22:H23)	=> 0
+I37	V	' '
+A42	V	' '
+C42	V	' '

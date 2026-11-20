@@ -1,7 +1,7 @@
 // Smaller product lines: jib cranes, AnchorPoint fall protection, Apex VRCs, and catalog products
 // (frame rotators, below-the-hook devices, AERO work cells, anything in the price lists).
 import V from './rules/vrc_rules.json';
-import { Kit, check, keep, volt, ftIn, hgt, tons, type Catalog, type Factors } from './kit';
+import { Kit, check, keep, volt, ftIn, hgt, tons, ixOf, type Catalog, type Factors } from './kit';
 import { pickHoist, type BuildResult, type BuildOpts } from './crane';
 
 const result = (K: Kit, wording: string, job: any, geometry: Record<string, number | string> = {}): BuildResult => {
@@ -33,7 +33,7 @@ export function buildJib(spec: JibSpec, cat: Catalog, f: Factors = { production:
   const hub = s.heightUnderBoomFt ?? (s.overallHeightFt ?? 16) - 1.5, overall = s.overallHeightFt ?? hub + 1.5, hook = hub - 2.5;
   // boom: cantilever, deflection ≤ L/150 at the tip with 1.25× load
   const P = cap * 2000 * 1.25, L = s.spanFt * 12, Ireq = P * L ** 3 / (3 * 29e6 * (L / 150));
-  const boom = W_BY_I.find(w => { const m = /^W(\d+) x (\d+)$/.exec(w)!; const d = Number(m[1]), wt = Number(m[2]); return 0.05 * wt * d * d >= Ireq && cat.shape(w); }) ?? 'W24 x 104';
+  const boom = W_BY_I.find(w => ixOf(w) >= Ireq && cat.shape(w)) ?? 'W24 x 104';
   const mast = cap <= 0.5 ? 'ST 8 x 8 x 1/4' : cap <= 1 ? 'ST 10 x 10 x 3/8' : cap <= 2 ? 'ST 12 x 12 x 3/8' : 'ST 14 x 14 x 3/8';
   K.A.push({ field: 'members', value: `${mast} mast / ${boom} boom`, why: `${tons(cap)} t at ${s.spanFt}' reach, tip deflection ≤ L/150 → ${boom}; mast ${mast} — engineering to confirm`, alt: mount === 'floor' ? 'foundationless' : 'floor' });
   if (mount !== 'wall') K.steel('Jib mast', mast, n, Math.ceil(overall - 1));
@@ -119,6 +119,7 @@ export function buildFallProtection(spec: FallProtectionSpec, cat: Catalog, f: F
 // ------------------------------------------------------------------------- VRC
 export interface VrcSpec { model: keyof typeof V.models; qty?: number; noPit?: boolean; hdColumns?: boolean; install: boolean; miles?: number; crewMen?: number; travelMode?: 'drive' | 'fly' | 'local' }
 export function buildVrc(spec: VrcSpec, cat: Catalog, f: Factors = { production: 0.73, install: 1.02 }, bo: BuildOpts = {}): BuildResult {
+  if (!spec.model) throw new Error(`Missing VRC model. Models: ${Object.keys(V.models).join(', ')}`);
   const m = (V.models as any)[spec.model]; if (!m) throw new Error(`Unknown VRC model ${spec.model}. Models: ${Object.keys(V.models).join(', ')}`);
   check('qty', spec.qty, 1, 10); if (spec.install || spec.miles != null) check('miles', spec.miles, 0, 3500, true);
   const n = spec.qty ?? 1, K = new Kit(cat, 'vrc', f);
@@ -142,6 +143,7 @@ export function buildVrc(spec: VrcSpec, cat: Catalog, f: Factors = { production:
 // ------------------------------------------------------------------------- catalog products
 export interface CatalogSpec { item: string; qty?: number; unitPrice?: number; description?: string; installHours?: number; install?: boolean; miles?: number; wording?: string }
 export function buildCatalogItem(spec: CatalogSpec, cat: Catalog, f: Factors = { production: 0.76, install: 1 }, bo: BuildOpts = {}): BuildResult {
+  if (typeof spec.item !== 'string' || !spec.item.trim()) throw new Error('Missing item (part number or description).');
   check('qty', spec.qty, 1, 500); check('unitPrice', spec.unitPrice, 0, 1e6); check('installHours', spec.installHours, 0, 2000);
   const n = spec.qty ?? 1, K = new Kit(cat, 'other', f);
   const hit = findStd(cat, spec.item);

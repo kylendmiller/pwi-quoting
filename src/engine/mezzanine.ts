@@ -97,7 +97,9 @@ export function buildMezzanine(spec: MezzanineSpec, cat: Catalog, f: Factors = {
 
   // ---------- paint, labor
   const custom = s.colors?.structure && !/^(gray|grey|standard)/i.test(s.colors.structure) ? s.colors.structure : null;
-  K.paint(custom ? K.units : 0, custom ? `structure: ${custom}` : null, { primerOnly: s.primerOnly });
+  // Gray structure = gray primer booth runs unless they ask for a finish coat (sold mezz 28527, 27793, 27893 all priced primer runs).
+  const primer = s.primerOnly ?? M.paint.primerByDefault;
+  K.paint(custom ? K.units : 0, custom ? `structure: ${custom}` : null, { primerOnly: primer });
   K.decal(sqft > 2000 ? '(13"x 30") Mezzanine Decal' : sqft > 600 ? '(10" x 26") Mezzanine Decal' : '(6" x 18") Mezzanine Decal', n * Math.max(1, stairs));
   const S = M.shop, X = M.site;
   K.shop([
@@ -147,7 +149,7 @@ export function buildMezzanine(spec: MezzanineSpec, cat: Catalog, f: Factors = {
     '- Standard structural WF beam frame design with bolted connections on all columns and crossmembers',
     bracing === 'knee' ? '- Knee bracing package included (details to be included in approval drawings)' : bracing === 'x' ? '- X-bracing package included (details to be included in approval drawings)' : bracing === 'building' ? '- Structure braced: lateral loads transferred to the existing building structure (customer accepts)' : '- No bracing: customer requires this mezzanine to be unbraced (customer accepts)',
     '- PWI packages include all anchoring and assembly hardware',
-    `- All structural steel will be industrial coated ${custom ?? (s.primerOnly ? 'with gray primer' : 'Gray')}`, '- Includes rated capacity decals',
+    `- All structural steel will be industrial coated ${custom ?? (primer ? 'Gray (primer)' : 'Gray')}`, '- Includes rated capacity decals',
     ...(s.stamped ? ['- Approval drawings stamped by a licensed P.E.'] : []), '',
     '## Supplied Component Breakdown:', ...deckLines[deck],
     ...(guardFt > 0 ? [`- Guardrail Package: 42" tubular guardrail system with mid-rail and toe-kick (${gType === 'ibc' ? 'IBC' : 'OSHA'} approved design), ${Math.ceil(guardFt * n)} linear ft, Spark Orange industrial coating`] : []),

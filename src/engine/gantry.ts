@@ -36,7 +36,9 @@ export function buildGantry(spec: GantrySpec, cat: Catalog, f: Factors = { produ
   // girder: bracket length, sized for the hoist load at L/600 (tab's deflection criterion)
   const gLen = up(s.spanFt, G.girderLenBrackets);
   const loadLb = cap * 2000 * 1.15 + hoistsPer * 150 * Math.max(1, cap);
-  const girder = sizeBeam(cat, { spanFt: s.spanFt, pointLb: loadLb, deflLimit: 600, wPlf: 0 }) ?? 'W24 x 104';
+  // two passes so the girder's own weight is in the deflection check (was point load only)
+  let girder = sizeBeam(cat, { spanFt: s.spanFt, pointLb: loadLb, deflLimit: 600, wPlf: 0 }) ?? 'W24 x 104';
+  for (let i = 0; i < 4; i++) { const g = sizeBeam(cat, { spanFt: s.spanFt, pointLb: loadLb, deflLimit: 600, wPlf: cat.shape(girder)?.lbPerFt ?? 60 }) ?? 'W24 x 104'; if (g === girder) break; girder = g; }
   A.push({ field: 'girder', value: girder, why: `${s.spanFt}' span, ${tons(cap)} t + hoist at L/600 deflection → ${girder} (engineering to confirm)` });
   const girderLb = (cat.shape(girder)?.lbPerFt ?? 60) * gLen;
 

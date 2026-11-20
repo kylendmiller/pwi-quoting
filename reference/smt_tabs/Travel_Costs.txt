@@ -1,0 +1,46 @@
+A1	V	'Drive Time - Hotels - Per Diem'
+A3	F	='Main Summary'!A1	=> '  #  '
+E3	V	'Markup %'
+E4	V	10
+A6	V	'Item Description'
+B6	V	'QTY'
+C6	V	'Last Updated'
+D6	V	'Cost of Item'
+E6	V	'Price'
+A7	V	'Hotels (one room per person)'
+B7	V	0
+C7	V	datetime.datetime(2024, 11, 24, 0, 0)
+D7	V	170
+E7	F	=D7*B7*($E$4/100+1)	=> 0
+A8	V	'Per diem costs'
+B8	V	0
+C8	V	datetime.datetime(2024, 11, 24, 0, 0)
+D8	V	75
+E8	F	=D8*B8*($E$4/100+1)	=> 0
+A9	V	'Rental Car (Weekly)'
+B9	V	0
+C9	V	datetime.datetime(2024, 11, 24, 0, 0)
+D9	V	650
+E9	F	=D9*B9*($E$4/100+1)	=> 0
+A10	V	'PWI Flights (Per Hour)'
+B10	V	0
+C10	V	datetime.datetime(2024, 11, 24, 0, 0)
+D10	V	1300
+E10	F	=D10*B10*($E$4/100+1)	=> 0
+A11	V	'Commercial Flights (Check Google Flights)'
+B11	V	0
+D11	V	0
+E11	F	=D11*B11*1.75*($E$4/100+1)	=> 0
+A12	V	'LTL Tool Return to PWI'
+B12	V	0
+D12	V	2000
+E12	F	=D12*B12*($E$4/100+1)	=> 0
+B13	V	0
+E13	F	=D13*B13*($E$4/100+1)	=> 0
+B14	V	0
+E14	F	=D14*B14*($E$4/100+1)	=> 0
+B15	V	0
+E15	F	=D15*B15*($E$4/100+1)	=> 0
+H15	V	'Gross Margin'
+E16	F	=SUM(E7:E15)	=> 0
+H16	F	=E16*0.08	=> 0
