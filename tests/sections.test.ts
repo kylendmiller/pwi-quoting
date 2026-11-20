@@ -54,7 +54,7 @@ describe('line data from the builders', () => {
     const { doc } = run([BRIDGE]);
     const runway = doc.lines.find(l => l.role === 'runway' && l.detail?.type === 'steel')!;
     expect(runway.basis).toMatchObject({ source: 'chart', chart: 'AQT runway_by_bay', assumption: 'buildingBayFt' });
-    expect(runway.basis!.row).toMatch(/t column × bay ≤/);
+    expect(runway.basis!.row).toMatch(/t runway × bay ≤/);
     const girder = doc.lines.find(l => l.role === 'girder')!;
     expect(girder.basis?.chart).toMatch(/PWI bridge chart|AQT girder/);
 

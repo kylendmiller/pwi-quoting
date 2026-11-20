@@ -79,9 +79,9 @@ function pwiGirder(cap: number, span: number, double: boolean): string | null {
   return r ? r[2] : null;
 }
 /** Which chart cell chartPick() read, for the editor's basis ("5 t column × overallHeightFt ≤ 20'"). */
-function chartCell(rows: any[], keyName: string, x: number, cap: number): string {
+function chartCell(rows: any[], keyName: string, x: number, cap: number, what = 'column'): string {
   const c = (CH.capacities as number[]).find(v => v >= cap - 1e-9); const row = rows.find(r => r[keyName] >= x - 1e-9);
-  return row && c != null ? `${c} t column × ${keyName.replace(/Ft$/, '')} ≤ ${row[keyName]}' (asked ${cap} t, ${+x.toFixed(1)}')` : 'off chart';
+  return row && c != null ? `${c} t ${what} × ${keyName.replace(/Ft$/, '')} ≤ ${row[keyName]}' (asked ${cap} t, ${+x.toFixed(1)}')` : 'off chart';
 }
 function pwiCell(cap: number, span: number, double: boolean): string {
   const rows = (double ? PC.double : PC.motor) as [number, number, string][];
@@ -159,11 +159,11 @@ export function buildCrane(spec: CraneSpec, cat: Catalog, f: Factors = { product
   const colBasis: Basis = builtUp
     ? { source: 'rule', text: s.support === 'crane_columns' ? `Tapered 3-plate crane column, ${builtUpPlf} plf for ${cap} t (sold 28192 / 28970)` : `Built-up plate column ${builtUpPlf} plf for ${cap} t (${!column ? 'past the AQT column chart' : overall > R.columnType.maxChartHeightFt + 2 ? `taller than the ${R.columnType.maxChartHeightFt}' chart` : `≥ ${R.columnType.builtUpFromCap} t`})`, chart: 'freestanding_rules columnType.builtUpPlfByCap', assumption: 'steelSource', flag: 'Engineering to confirm' }
     : { source: 'chart', chart: 'AQT column_by_overall_height', row: chartCell(CH.column_by_overall_height, 'overallHeightFt', overall, cap), text: `${column} from the AQT column chart at ${overall.toFixed(1)}' overall, ${cap} t; ${colLen}' long (overall − runway depth${rail ? ' − rail' : ''} − top plate, rounded up to ${R.height.roundColumnToFt}')`, assumption: 'steelSource' };
-  const runBasis: Basis = { source: 'chart', chart: 'AQT runway_by_bay', row: chartCell(CH.runway_by_bay, 'bayFt', bayFt, cap), text: `${runway} from the AQT runway chart for ${bayFt.toFixed(1)}' bays at ${cap} t; ${piecesPerLine} piece${piecesPerLine > 1 ? 's' : ''}/line × ${pieceFt}' (${perPiece} bay${perPiece > 1 ? 's' : ''} per piece)`, assumption: s.support === 'building_runway' ? 'buildingBayFt' : 'columnsPerSystem',
+  const runBasis: Basis = { source: 'chart', chart: 'AQT runway_by_bay', row: chartCell(CH.runway_by_bay, 'bayFt', bayFt, cap, 'runway'), text: `${runway} from the AQT runway chart for ${bayFt.toFixed(1)}' bays at ${cap} t; ${piecesPerLine} piece${piecesPerLine > 1 ? 's' : ''}/line × ${pieceFt}' (${perPiece} bay${perPiece > 1 ? 's' : ''} per piece)`, assumption: s.support === 'building_runway' ? 'buildingBayFt' : 'columnsPerSystem',
     ...(K.blockers.some(b => /past the AQT runway chart/.test(b)) ? { flag: 'Past the runway chart — placeholder until engineering sizes it' } : {}) };
   let girdBasis: Basis | undefined;
   if (girder && girderSrc === 'PWI bridge chart') girdBasis = { source: 'chart', chart: `PWI bridge chart (${doubleGirder ? 'double' : 'motor'})`, row: pwiCell(cap, s.spanFt, doubleGirder), text: `${girder} from the PWI Sizing Wizard bridge chart, ${cap} t × ${s.spanFt}' span${doubleGirder ? ', each of 2 girders' : ''}; cut ${Math.ceil(s.spanFt + 2)}' (span + 2')`, assumption: 'girder' };
-  else if (girder && girderUnity == null) girdBasis = { source: 'chart', chart: 'AQT girder_by_span', row: chartCell(CH.girder_by_span, 'spanFt', s.spanFt, cap), text: `${girder} from the AQT girder chart (not on the PWI bridge chart), ${cap} t × ${s.spanFt}' span`, assumption: 'girder', flag: 'AQT chart fallback — not a confirmed PWI chart size' };
+  else if (girder && girderUnity == null) girdBasis = { source: 'chart', chart: 'AQT girder_by_span', row: chartCell(CH.girder_by_span, 'spanFt', s.spanFt, cap, 'girder'), text: `${girder} from the AQT girder chart (not on the PWI bridge chart), ${cap} t × ${s.spanFt}' span`, assumption: 'girder', flag: 'AQT chart fallback — not a confirmed PWI chart size' };
   else if (girder) girdBasis = calcBasis(`${girder} sized at L/${R.boxGirder.deflLimit} (rated load + hoist + self weight) and 24 ksi bending, past the PWI bridge chart`, girderUnity, 'girder');
   else if (boxPlf) { const cb = calcBasis(`Plate box girder ${boxDepth}" deep, ${boxPlf} plf, sized to L/${R.boxGirder.deflLimit} and 24 ksi (webs ignored — conservative)`, girderUnity, 'girder');
     girdBasis = { ...cb, flag: `Plate box girder — engineering to confirm${cb.flag ? `; ${cb.flag}` : ''}` }; }

@@ -188,7 +188,8 @@ export function priceManual(doc: QuoteDoc, s: Settings): Priced {
   if (/class\s*d\b/i.test(doc.wording)) flags.push({ rule: 'CLASS_D', detail: {} });
 
   return {
-    lines: lines.map(l => ({ ...l, cost: r2(l.cost), sell: r2(l.sell) })),
+    // S6: priced lines reference doc lines by key; detail / basis / edits live only in the doc (no double storage).
+    lines: lines.map(({ detail: _d, basis: _b, edited: _e, builtDetail: _bd, ...l }) => ({ ...l, cost: r2(l.cost), sell: r2(l.sell) })),
     rollup: ro,
     totals: { cost: r2(cost), sell: r2(sell), grossMargin: r2(sell - cost), grossMarginPct: sell ? (sell - cost) / sell : 0, shopHours, installHours, cadHours, productionValue: r2(productionValue) },
     flags,
