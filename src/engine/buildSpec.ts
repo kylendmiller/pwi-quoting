@@ -18,7 +18,8 @@ export const BUILDERS: Record<string, { fam: string; build: Builder; def: [numbe
   bridge: { fam: 'bridge', def: [0.58, 1.0], build: (s, c, f, b) => buildCrane({ support: 'building_runway', ...drive(s) }, c, f, b) },
   gantry: { fam: 'gantry', def: [0.69, 1.09], build: buildGantry },
   monorail: { fam: 'monorail', def: [0.7, 1.02], build: buildMonorail },
-  mezzanine: { fam: 'mezzanine', def: [0.83, 1.11], build: buildMezzanine },
+  // mezzanine production 0.83 → 0.60 (tuned 11/20): builder shop $ ÷ sold = 0.55 on 28527 and 0.66 on 27893.
+  mezzanine: { fam: 'mezzanine', def: [0.6, 1.11], build: buildMezzanine },
   jib: { fam: 'jib', def: [0.77, 1.25], build: buildJib },
   fall_protection: { fam: 'fall_protection', def: [0.7, 1.09], build: buildFallProtection },
   vrc: { fam: 'vrc', def: [0.73, 1.02], build: buildVrc },

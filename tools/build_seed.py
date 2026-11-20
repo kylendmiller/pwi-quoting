@@ -13,7 +13,7 @@ settings = {
   'onsite_adders': ({'A': 30, 'B': 15, 'C': 30}, 'On-site wage adders $/hr (names to confirm)'),
   'pm_rate': (95, 'Project management $/hr'), 'cad_rate': (120, 'AutoCAD design $/hr'), 'pe_rate': (180, 'P.E. calcs $/hr'),
   'production_factor': ({'freestanding': .56, 'stairs': .65, 'bridge': .58, 'gantry': .69, 'monorail': .70, 'fall_protection': .70,
-                         'vrc': .73, 'jib': .77, 'rv_rotator': .81, 'work_platform': .82, 'mezzanine': .83, 'other': .76}, 'Shop hours = SMT-method hours x factor'),
+                         'vrc': .73, 'jib': .77, 'rv_rotator': .81, 'work_platform': .82, 'mezzanine': .60, 'other': .76}, 'Shop hours = SMT-method hours x factor'),
   'install_factor': ({'jib': 1.25, 'stairs': 1.22, 'mezzanine': 1.11, 'gantry': 1.09, 'fall_protection': 1.09, 'freestanding': 1.02,
                       'monorail': 1.02, 'vrc': 1.02, 'bridge': 1.0, 'rv_rotator': .99, 'work_platform': .95, 'other': .98}, 'Suggested install x factor'),
   'cad_factor': ({'mezzanine': 1.40, 'stairs': 1.40, 'other': 1.28, 'rv_rotator': 1.19, 'work_platform': 1.13, 'jib': 1.11,

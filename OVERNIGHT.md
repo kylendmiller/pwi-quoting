@@ -29,7 +29,7 @@
       moves more than 2 points from the table (so later changes can't silently drift).
 - [BLOCKED: ±3% not reachable inside the rules — mean abs gap 11.0% → 7.7% (5 jobs, mean +3.7%). What's left is AQT-chart steel heavier than the sold steel on 29354/28640 (can't size below the chart), 29331 spec'd all-10 t (sold half 5 t), and 29140 under (sold PM 60 h, 20' stock columns). See Summary.] 4. Tune **freestanding** to ±3% (all FSTR fixtures).
 - [x] 5. Tune **bridge** (building runway / crane columns / bridge only). When no W shape meets L/600 within depth limits, add a plate box-girder line via `Kit.box` (check 28426, 29562, 28192). — Done: box girder via `Kit.box` (29562 → 187 plf vs 189 sold), L/600 W sizing past the chart, bridge factor 0.58, PM ×1.0, `railFt`/`runwayElectrificationFt`. Mean abs gap 16.7% → 8.5%; 28426 −1.1%, 28192 +7.1% (chart runway heavier than sold), 29562 −17% (sold 15 t hoists derated to 10 t).
-- [ ] 6. Tune **mezzanine**.
+- [x] 6. Tune **mezzanine**. — Gray steel = primer runs by default, mezz production factor 0.83 → 0.60. 28527 +6.2% → −2.9%. 27793 / 27893 are customer-engineered (AVM) frames kept as outliers; 27823 not modeled (bought-in joist package).
 - [ ] 7. Tune **gantry**.
 - [ ] 8. Tune **monorail** — replace guessed geometry defaults (support spacing, frame type) with what the monorail fixtures show.
 - [ ] 9. Tune **jib** and **fall protection** if any fixtures exist; otherwise BLOCKED: "no sold jobs in repo".
