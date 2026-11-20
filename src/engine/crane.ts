@@ -86,7 +86,7 @@ export function buildCrane(spec: CraneSpec, cat: Catalog, f: Factors = { product
   if (s.support === 'building_runway') A.push({ field: 'buildingBayFt', value: bayFt.toFixed(1), why: `Runway beams supported at the building columns every ≈${bayFt.toFixed(1)}' (${supports} ${under ? 'hanger' : 'bracket'} locations) — confirm building columns can take the crane loads`, alt: 20 });
   const perPiece = bayFt * 2 <= R.bays.combineBaysUpToFt ? 2 : 1;
   const piecesPerLine = hasRunway ? Math.ceil(bays / perPiece) : 0, pieceFt = hasRunway ? Math.ceil(bayFt * perPiece + 0.5) : 0;
-  const doubleGirder = s.doubleGirder ?? cap >= 15, doubleGirder0 = doubleGirder;
+  const doubleGirder = s.doubleGirder ?? cap >= 15;
   if (s0.doubleGirder == null && s.series === 'GM') A.push({ field: 'doubleGirder', value: doubleGirder, why: doubleGirder ? '≥15 t → double girder' : 'Single girder is the sold default up to 10 t (29354, 29331); double only for headroom/specials (29523)', alt: !doubleGirder, altLabel: doubleGirder ? 'Single girder' : 'Double girder (+45 shop h/bridge)' });
 
   const basis: 'overall' | 'hook' = s.overallHeightFt != null ? 'overall' : 'hook';
@@ -106,7 +106,7 @@ export function buildCrane(spec: CraneSpec, cat: Catalog, f: Factors = { product
   let girder = s.series === 'UL' || s.series === 'HL' ? null : chartPick(CH.girder_by_span, 'spanFt', s.spanFt, cap);
   let boxPlf = 0;
   if (girder === null && s.series !== 'UL' && s.series !== 'HL') {
-    const g = sizeGirder(cat, s.spanFt, cap, doubleGirder0);
+    const g = sizeGirder(cat, s.spanFt, cap, doubleGirder);
     if (g.shape) { girder = g.shape; A.push({ field: 'girder', value: girder, why: `${s.spanFt}' span at ${cap} t is past the AQT girder chart — sized at L/${R.boxGirder.deflLimit} (rated load + hoist + self weight) as the lightest W ≤ ${R.boxGirder.maxWDepthIn}" deep; engineering to confirm` }); }
     else { boxPlf = g.boxPlf; A.push({ field: 'girder', value: `box ${boxPlf} plf`, why: `No W shape ≤ ${R.boxGirder.maxWDepthIn}" deep meets L/${R.boxGirder.deflLimit} at ${s.spanFt}' / ${cap} t → plate box girder ${g.depthIn}" deep, ${boxPlf} plf (Ireq ≈ ${Math.round(g.Ireq)} in⁴); engineering to confirm` }); }
   }
@@ -230,7 +230,7 @@ export function buildCrane(spec: CraneSpec, cat: Catalog, f: Factors = { product
       { desc: 'Install bracing', hours: bracing ? S2.bracingPerLocation * 6 * n : 0 },
     ],
   });
-  K.pmCad(1);   // bridge was 1.1; sold bridge PM/CAD share (28192 ex-gantries, 28426, 29562) ≈ FSTR → 1.0 (tuned 11/20)
+  K.pmCad(1);   // bridge was 1.1; the PM/CAD power law is fitted on FSTR and bridge jobs together (tuned 11/20)
   K.done();
 
   const geo = { overall, hook, colLen, colsPer, bayFt, rail, motor, doubleGirder, lift, bridges, builtUp, foundation, supports, runwayElec, cols, railFt, elecFt };
@@ -239,8 +239,8 @@ export function buildCrane(spec: CraneSpec, cat: Catalog, f: Factors = { product
     geometry: { overall: +overall.toFixed(2), hook: +hook.toFixed(2), colLen, column: !hasCols ? '' : builtUp ? `built-up ${builtUpPlf} plf` : column!, runway: runway ?? '', girder: girder ?? (boxPlf ? `box ${boxPlf} plf` : ''), bays, bayFt: +bayFt.toFixed(1), pieceFt, piecesPerLine, units: K.units } };
 }
 
-/** Girder past the AQT chart: lightest W (≤ maxWDepthIn) meeting L/600 under rated load + hoist + self weight,
- *  else a plate box girder sized for the same I. Ix ≈ 0.05·w·d² for W shapes (as sizeBeam). */
+/** Girder past the AQT chart: lightest W (≤ maxWDepthIn) meeting L/600 under rated load + hoist + self weight and
+ *  24 ksi bending, else a plate box girder sized for the same I (and 24 ksi bending). W-shape Ix from ixOf() (conservative). */
 export function sizeGirder(cat: Catalog, spanFt: number, cap: number, double: boolean): { shape: string | null; boxPlf: number; depthIn: number; Ireq: number } {
   const B = R.boxGirder, L = spanFt * 12, E = 29e6, lim = L / B.deflLimit;
   const P = (cap * 2000 + cap * B.hoistLbPerTon + 300) / (double ? 2 : 1);
@@ -253,7 +253,11 @@ export function sizeGirder(cat: Catalog, spanFt: number, cap: number, double: bo
   }
   const d = Math.min(B.maxDepthIn, Math.max(B.minDepthIn, Math.round(L * B.depthInPerSpanIn)));
   let plf = 150, I = 0;
-  for (let i = 0; i < 6; i++) { I = Ireq(plf); const Af = 2 * I / (d * d); plf = Math.round(B.lbPerIn2Ft * (2 * Af + 2 * d * B.webIn) * B.fabFactor); }
+  for (let i = 0; i < 6; i++) {
+    const M = P * 1.15 * L / 4 + (plf / 12) * L * L / 8;
+    I = Math.max(Ireq(plf), M * (d / 2) / 24000);          // deflection or bending, whichever needs more (webs ignored: conservative)
+    const Af = 2 * I / (d * d); plf = Math.round(B.lbPerIn2Ft * (2 * Af + 2 * d * B.webIn) * B.fabFactor);
+  }
   return { shape: null, boxPlf: plf, depthIn: d, Ireq: I };
 }
 

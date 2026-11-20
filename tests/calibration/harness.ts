@@ -22,15 +22,18 @@ export const CAT_LABEL: Partial<Record<CategoryKey, string>> = {
 };
 const BASE_CATS = (Object.keys(ROW) as CategoryKey[]).filter(k => ROW[k] <= 22 || ROW[k] === 25);
 
-/** $ change in the sold base if its structural + plate steel were bought at the steel_cost seed (incl. markup and the 1%). */
-export function steelReprice(f: Fixture): number {
-  let d = 0;
+/** Per-category $ change if the sold job were bought / sold at today's prices (before the 1%): structural + plate steel
+ *  at the steel_cost seed (sold markups kept), vendor items and standard parts at today's price lists, standard paint
+ *  booth runs at today's rates. Rows whose shape / part / description isn't in today's lists stay as sold. */
+export function reprice(f: Fixture): Partial<Record<CategoryKey, number>> {
+  const d: Partial<Record<CategoryKey, number>> = {};
+  const add = (k: CategoryKey, x: number) => { d[k] = (d[k] ?? 0) + x; };
   const S = 'Structural', mS = num(f, S, 'I4');
   for (const r of rows(f, S)) {
     if (r < 8 || !num(f, S, `B${r}`) || typeof raw(f, S, `C${r}`) !== 'string') continue;
     const g = groupOf(String(raw(f, S, `C${r}`))), old = num(f, S, `F${r}`), tons = num(f, S, `G${r}`);
     if (!g || !old || !tons || perLb[g] == null) continue;
-    d += tons * 2000 * (perLb[g] - old) * (1 + mS / 100);
+    add('structural', tons * 2000 * (perLb[g] - old) * (1 + mS / 100));
   }
   const P = 'Plate';
   for (const r of rows(f, P)) {
@@ -38,40 +41,33 @@ export function steelReprice(f: Fixture): number {
     const old = num(f, P, `F${r}`), tons = num(f, P, `H${r}`);
     if (!old || !tons || old > 5) continue;
     const mref = /\$J\$(\d+)/.exec(formula(f, P, `J${r}`) ?? '')?.[1] ?? '4';
-    d += tons * 2000 * (perLb.Plate - old) * (1 + num(f, P, `J${mref}`) / 100);
+    add('plate', tons * 2000 * (perLb.Plate - old) * (1 + num(f, P, `J${mref}`) / 100));
   }
-  return d * 1.01;
-}
-
-/** $ change in the sold base if its vendor items, standard parts and paint booth runs were sold at today's price lists / rates (incl. the 1%).
- *  Rows whose part / description isn't in today's lists are left as sold. */
-export function listReprice(f: Fixture): number {
-  let d = 0;
   const V = 'Hoist & Crane Vendor Items';
   for (const r of rows(f, V)) {
     const part = raw(f, V, `A${r}`), qty = num(f, V, `C${r}`), sold = num(f, V, `I${r}`);
     if (typeof part !== 'string' || !qty || !sold) continue;
     const p = testCatalog.vendor(part.trim()); if (!p) continue;
-    const now = p.list * (1 - testCatalog.discount(p.vendor).customer / 100) * qty;
-    d += now - sold;
+    add('vendor', p.list * (1 - testCatalog.discount(p.vendor).customer / 100) * qty - sold);
   }
-  const S = 'Standard Parts & Products';
-  for (const r of rows(f, S)) {
-    const desc = raw(f, S, `A${r}`), qty = num(f, S, `B${r}`), sold = num(f, S, `G${r}`);
+  const SP = 'Standard Parts & Products';
+  for (const r of rows(f, SP)) {
+    const desc = raw(f, SP, `A${r}`), qty = num(f, SP, `B${r}`), sold = num(f, SP, `G${r}`);
     if (typeof desc !== 'string' || !qty || !sold) continue;
     const each = testCatalog.stdSell(desc); if (each == null) continue;
-    d += each * qty - sold;
+    add('stdParts', each * qty - sold);
   }
-  // paint booth runs at today's rates (standard template run names only)
   const PA = 'Painting', rate: [RegExp, string][] = [[/^Standard Paint Full Booth Run/i, 'Standard Paint Full Booth Run'], [/^Primer Full Booth Run/i, 'Primer Full Booth Run'], [/^Custom Color Paint Full Booth Run/i, 'Custom Color Paint Full Booth Run']];
   for (const r of rows(f, PA)) {
     const desc = String(raw(f, PA, `A${r}`) ?? ''), qty = num(f, PA, `B${r}`), sold = num(f, PA, `D${r}`);
     const hit = rate.find(([re]) => re.test(desc.trim())); if (!hit || !qty || !sold) continue;
     const now = testCatalog.rate?.(hit[1]); if (now == null) continue;
-    d += now * qty - sold;
+    add('painting', now * qty - sold);
   }
-  return d * 1.01;
+  return d;
 }
+/** Total re-pricing of the sold base, incl. the 1% adder. */
+export const repriceTotal = (f: Fixture) => Object.values(reprice(f)).reduce((a, b) => a + (b ?? 0), 0) * 1.01;
 
 export interface CalRow {
   job: string; product: string; outlier?: string; note?: string;
@@ -91,9 +87,10 @@ export function runCase(c: CalCase, fx: Fixture): CalRow {
   const p = priceManual({ ...b.doc, freestandingShopHours: shop, pvPerHourOverride: null } as any, CAL_SETTINGS);
   const builtCat: Partial<Record<CategoryKey, number>> = {};
   for (const l of p.lines) builtCat[l.category] = (builtCat[l.category] ?? 0) + l.sell;
-  const sold = soldBase(fx), soldAdj = sold + (fx.aqt ? 0 : steelReprice(fx) + listReprice(fx));
+  const rp = fx.aqt ? {} : reprice(fx);
+  const sold = soldBase(fx), soldAdj = sold + (fx.aqt ? 0 : repriceTotal(fx));
   const built = p.rollup.basePrice;
-  const diffs = fx.aqt ? [] : BASE_CATS.map(cat => ({ cat, sold: num(fx, 'Main Summary', `D${ROW[cat]}`), built: builtCat[cat] ?? 0 }))
+  const diffs = fx.aqt ? [] : BASE_CATS.map(cat => ({ cat, sold: num(fx, 'Main Summary', `D${ROW[cat]}`) + ((rp as any)[cat] ?? 0), built: builtCat[cat] ?? 0 }))
     .filter(d => Math.abs(d.built - d.sold) > 1).sort((a, b) => Math.abs(b.built - b.sold) - Math.abs(a.built - a.sold));
   return { job: c.job, product: c.product, outlier: c.outlier, note: c.note, sold, soldAdj, built, gapPct: (built / soldAdj - 1) * 100, diffs, blockers: b.blockers };
 }
@@ -125,7 +122,7 @@ export function likely(r: CalRow): string {
 }
 
 export function table(rowsIn: CalRow[], before?: Record<string, number>): string {
-  const head = `| Job | Product | Sold base | Sold base @ today's prices | Built base | Gap % |${before ? ' Before % |' : ''} Biggest category differences (built − sold) | Likely cause |\n|---|---|---:|---:|---:|---:|${before ? '---:|' : ''}---|---|`;
+  const head = `| Job | Product | Sold base | Sold base @ today's prices | Built base | Gap % |${before ? ' Before % |' : ''} Biggest category differences (built − sold @ today's prices) | Likely cause |\n|---|---|---:|---:|---:|---:|${before ? '---:|' : ''}---|---|`;
   const body = rowsIn.map(r => `| ${r.job} | ${r.product}${r.outlier ? ' (outlier)' : ''} | ${money(r.sold)} | ${money(r.soldAdj)} | ${money(r.built)} | ${r.gapPct >= 0 ? '+' : ''}${r.gapPct.toFixed(1)} |${before ? ` ${before[r.job] == null ? '—' : (before[r.job] >= 0 ? '+' : '') + before[r.job].toFixed(1)} |` : ''} ${cause(r)} | ${likely(r)} |`);
   return [head, ...body].join('\n');
 }

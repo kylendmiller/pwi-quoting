@@ -244,8 +244,9 @@ export class Kit {
   done() { for (const n of this.notes) if (/not found|not in/.test(n)) this.blockers.push(n); }
 }
 
-/** Conservative Ix estimate for a W shape from nominal depth and weight: 0.04·w·d² is below the AISC Ix of every
- *  shape in W_SHAPES (the old 0.05 over-stated light-for-depth shapes, e.g. W24x55 by 17%, W30x90 by 12%). */
+/** Conservative Ix estimate for a W shape from nominal depth and weight: 0.04·w·d² is below the AISC Ix of the W shapes
+ *  checked in W_SHAPES, incl. the light-for-depth worst cases W24x55, W30x90, W36x135 (the old 0.05 over-stated W24x55
+ *  by 17% and W30x90 by 12% — unconservative). Replace with a real Ix column when steel_shapes gets one. */
 export const IX_COEF = 0.04;
 export const ixOf = (shape: string) => { const m = /^W(\d+) x (\d+(?:\.\d+)?)$/.exec(shape); return m ? IX_COEF * Number(m[2]) * Number(m[1]) ** 2 : 0; };
 /** W-shape sizing by deflection + bending when a chart doesn't cover the case.
