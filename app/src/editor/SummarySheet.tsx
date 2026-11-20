@@ -93,7 +93,7 @@ export function SummarySheet({ doc, priced, settings, locked, hideCost, openFlag
         );
       })}
       <div className="qe-sheet-tools">
-        <label><input type="checkbox" checked={showAll} onChange={e => setShowAll(e.target.checked)} /> show all {ROWS.length} rows</label>
+        <label className="inline"><input type="checkbox" checked={showAll} onChange={e => setShowAll(e.target.checked)} /> show all {ROWS.length} rows</label>
         <button className="link" onClick={() => setOpen(new Set(visible.map(s => s.def.key)))}>expand all</button>
         <button className="link" onClick={() => setOpen(new Set())}>collapse all</button>
         <span className="muted">↑↓ rows · → open · ← close · in a grid: Enter edits, Tab moves, Esc cancels, =2*40 or 20'6" work</span>

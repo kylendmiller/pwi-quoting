@@ -42,8 +42,11 @@ export const price = (doc: QuoteDoc, s: Settings): Priced => priceManual(effecti
 
 /** Std-part cost each. TODO(S7): S sets cost = sell × (1 − std_parts.gm_pct) in the engine; until then
  *  std parts carry no cost, so their GM is unknown (never shown as 100%). */
+const SELL_ONLY_ROWS = ['stdParts', 'decals', 'painting', 'ultraLitePcr', 'stairStringerPcr', 'stairways', 'workPlatforms', 'vrc', 'concrete'];
 export function stdCostKnown(l: QuoteLine): boolean {
-  return S_READY.stdCost || !(l.unitSell != null && l.unitCost == null && l.kind === 'material');
+  if (!(l.unitSell != null && l.unitCost == null && l.kind === 'material')) return true;
+  if (S_READY.stdCost && l.category === 'stdParts') return true;
+  return !SELL_ONLY_ROWS.includes(l.category);     // e.g. a price adjustment in Cost Based has no cost: GM is known
 }
 
 // ---------------------------------------------------------------- parseNum (safe arithmetic, no eval)
