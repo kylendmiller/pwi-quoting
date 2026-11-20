@@ -26,8 +26,8 @@ const PT = 10.8;                         // body size used throughout the templa
 const st = StyleSheet.create({
   page: { fontFamily: 'Poppins', fontWeight: 200, fontSize: PT, color: BLACK, paddingTop: 36, paddingBottom: 56, paddingLeft: 44, paddingRight: 44 },
   abs: { position: 'absolute' },
-  title: { fontSize: 15.6, fontWeight: 700, marginTop: 9.4, marginBottom: 14 },
-  h: { fontSize: 13.8, fontWeight: 700, marginTop: 10, marginBottom: 15 },
+  title: { fontSize: 15.6, fontWeight: 700, marginTop: 9.4, marginBottom: 6 },
+  h: { fontSize: 13.8, fontWeight: 700, marginTop: 12, marginBottom: 4 },
   row: { flexDirection: 'row', fontSize: PT, lineHeight: 1.5 },
   o: { fontFamily: 'Courier', fontSize: PT, width: 22, marginLeft: 0.5, position: 'relative', top: 1.6 },
   dot: { fontFamily: 'Helvetica', fontSize: PT, width: 21.2, marginLeft: 36.1, position: 'relative', top: 1.6 },

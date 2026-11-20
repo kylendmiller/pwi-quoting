@@ -127,7 +127,7 @@ export function buildMonorail(spec: MonorailSpec, cat: Catalog, f: Factors = { p
     '## Crane Classification:',
     '> Class C (Moderate Service): This service covers cranes whose service requirements are deemed moderate, handling loads which average 50 percent of the rated capacity with 5 to 10 lifts per hour, averaging 15 feet, with not over 50 percent of the lifts at rated capacity.', '',
     '## Monorail Package',
-    beamsPer === 2 ? `- (2) parallel ${ftIn(s.lengthFt)} x ${T} Ton capacity WF beam monorails${s.frameWidthFt ? ` spaced at ${ftIn(s.frameWidthFt)}` : ''}` : `- ${ftIn(s.lengthFt)} x ${T} Ton capacity WF beam monorail`,
+    beamsPer === 2 ? `- (2) parallel ${ftIn(s.lengthFt)} x ${T} Ton capacity monorails${s.frameWidthFt ? ` spaced at ${ftIn(s.frameWidthFt)}` : ''}` : `- ${ftIn(s.lengthFt)} x ${T} Ton capacity monorail`,
     ...(support === 'freestanding' ? [frame === 'goal_post' ? `- (${supportsPer}) goal-post support frames with structural columns and headers at approx. ${ftIn(Math.round(spanFt))} spacing` : `- (${supportsPer}) single-post support columns with cantilever arms at approx. ${ftIn(Math.round(spanFt))} spacing`,
       '- Support columns with gusseted base plates designed for 6" concrete slab']
       : support === 'ceiling' ? [`- Hung from the existing building structure with drop rod connections at approx. ${ftIn(Math.round(spanFt))} spacing`, '- Customer to confirm the building structure can support the monorail loads (PWI to provide reactions)']
@@ -138,7 +138,7 @@ export function buildMonorail(spec: MonorailSpec, cat: Catalog, f: Factors = { p
       `- Starke - ${cap > 3 ? 'wire rope' : 'STK Series'} ${T} ton electric ${cap > 3 ? '' : 'chain '}hoist`, `-- ${lift}' lift`, `-- ${v.startsWith('460') ? '460V/3ph' : '230V/3ph'}`,
       `- Starke ${trolley === 'motorized' ? 'Motorized' : 'Manual'} Trolley${trolley === 'motorized' ? ' — 2-speed/VFD' : ''}`, '']
       : ['## Hoists & Trolleys', `- (${hoists}) hoists and trolleys supplied by the customer`, '']),
-    ...(control === 'radio' ? ['## Radio Remote Control System', '- STARKE Radio Remote Control system', '- Includes (1) spare transmitter', ''] : ['## Pendant Control', '- Pendant control for hoist' + (trolley === 'motorized' ? ' and trolley' : ''), '']),
+    ...(control === 'radio' ? ['## Radio Remote Control System', '- Starke Echo Series radio remote control system', '- Includes (1) spare transmitter', ''] : ['## Pendant Control', '- Pendant control for hoist' + (trolley === 'motorized' ? ' and trolley' : ''), '']),
     ...(s.install ? ['## Installation', '- Complete installation by PWI crew, including setup, anchoring, electrification and final adjustments', '- Customer to provide power to the main disconnect', ''] : ['## Shipping', '- Ship only — installation by others', '']),
     '[image:monorail]',
   ].join('\n');

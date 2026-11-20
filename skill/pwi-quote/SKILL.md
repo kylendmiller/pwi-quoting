@@ -117,7 +117,7 @@ Optional, only if said:
 - `collisionAvoidance`, `asceRail`, `doubleGirder`, `foundation` (`slab` / `foundation`)
 - `colors { columns, runways, bridge }`
 - `crewMen`, `travelMode` (`drive` / `fly` / `local`)
-- `bracedToBuilding`, `preUseInspection`
+- `bracedToBuilding`, `preUseInspection`, `backupPendant` (radio plus a backup pendant — bridge goes to festoon)
 - `serviceClass`: `D` only when they say Class D / heavy service (foundry, steel yard, constant near-capacity lifts) — the app sizes the hoist up and derates it; default Class C
 
 **Out of range**

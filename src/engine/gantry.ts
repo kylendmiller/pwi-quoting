@@ -133,7 +133,7 @@ export function buildGantry(spec: GantrySpec, cat: Catalog, f: Factors = { produ
     '- PWI HD end stops', `- ${custom ? `Painted ${custom} (custom color)` : 'Spark Orange industrial coating'}`, '- Includes rated capacity decals', '',
     ...(control === 'radio' ? ['## Radio Remote Control System', '- Starke Echo Series radio remote control system', `- Capable of ${motor ? '3 Motion/2 Step control (N/S - E/W - Up/Down)' : 'hoist and trolley control'}`, '- Includes (1) spare transmitter', '']
       : ['## Pendant Control', '- Pendant control for gantry drive, hoist and trolley', '']),
-    ...(motor ? ['## Starke Control Panel', '- Equipped with VFD control for programmable 2-step control and start - stop operation', '- Warning strobe light to indicate gantry is in motion', ''] : []),
+    ...(motor ? ['## Control Panel', '- Starke VFD control panel', '- Programmable 2-step control and start - stop operation', '- Warning strobe light to indicate gantry is in motion', ''] : []),
     ...(s.install ? ['## Installation', '- Complete installation by PWI crew, including assembly, electrification and final adjustments', '- Customer to provide power to the main disconnect', ''] : ['## Shipping', '- Ship only — installation by others', '']),
     '[image:gantry]',
   ].join('\n');

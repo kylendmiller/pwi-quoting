@@ -26,6 +26,7 @@ export interface CraneSpec {
   colors?: { columns?: string; runways?: string; bridge?: string };
   install: boolean; miles?: number; crewMen?: number; travelMode?: 'drive' | 'fly' | 'local';
   bracedToBuilding?: boolean; preUseInspection?: boolean;
+  backupPendant?: boolean;                  // radio + backup pendant (forces festoon on the bridge)
   serviceClass?: 'C' | 'D';
   bracketsByOthers?: boolean;               // building_runway: crane brackets / seats come with the building (PEMB) — PWI supplies beams only (sold 28772)                 // CMAA class; D (heavy service) = hoist one size up, derated (sold 29562, 28723)
 }
@@ -35,7 +36,7 @@ export interface BuildResult { lines: QuoteLine[]; assumptions: Assumption[]; no
 export interface BuildOpts { skipTravel?: boolean }
 
 type Norm = CraneSpec & { support: Support; hanging: 'top_running' | 'underhung'; series: 'UL' | 'M' | 'GM' | 'HL'; systems: number; runwayOalFt: number; trolley: 'manual' | 'motorized'; control: 'radio' | 'pendant'; voltage: '460V/3' | '230V/3' | '208V/3' };
-const KEYS = ['series', 'support', 'hanging', 'systems', 'runwayOalFt', 'spanFt', 'capacityTons', 'overallHeightFt', 'hookHeightFt', 'liftFt', 'columnsPerSystem', 'bridgesPerSystem', 'hoistsPerBridge',
+const KEYS = ['backupPendant', 'series', 'support', 'hanging', 'systems', 'runwayOalFt', 'spanFt', 'capacityTons', 'overallHeightFt', 'hookHeightFt', 'liftFt', 'columnsPerSystem', 'bridgesPerSystem', 'hoistsPerBridge',
   'buildingBayFt', 'runwayElectrification', 'railFt', 'runwayElectrificationFt', 'bridgeDrive', 'trolley', 'voltage', 'control', 'collisionAvoidance', 'asceRail', 'doubleGirder', 'bracing', 'foundation', 'colors', 'install', 'miles',
   'crewMen', 'travelMode', 'bracedToBuilding', 'preUseInspection', 'serviceClass', 'bracketsByOthers'] as const;
 
@@ -253,7 +254,10 @@ export function buildCrane(spec: CraneSpec, cat: Catalog, f: Factors = { product
   K.pmCad(1);   // bridge was 1.1; the PM/CAD power law is fitted on FSTR and bridge jobs together (tuned 11/20)
   K.done();
 
-  const geo = { overall, hook, colLen, colsPer, bayFt, rail, motor, doubleGirder, lift, bridges, builtUp, foundation, supports, runwayElec, cols, railFt, elecFt };
+  const wireRope = !!hoistPart && /^S[MT]W/.test(hoistPart);
+  const festoon = !!s.backupPendant || (!motor && s.spanFt < 30 && cap <= 3);
+  if (s.backupPendant) K.notes.push('Backup pendant requested — add the pendant price (bridge set to festoon).');
+  const geo = { wireRope, festoon, overall, hook, colLen, colsPer, bayFt, rail, motor, doubleGirder, lift, bridges, builtUp, foundation, supports, runwayElec, cols, railFt, elecFt };
   return { lines: K.lines, assumptions: A, notes: K.notes, blockers: K.blockers, wording: wording(s, geo), preUse: s.preUseInspection ? 1500 * n : 0, suggestedInstallHours: Math.round(K.site * 10) / 10,
     smtShopHours: K.smtShopHours, outboundFreight: K.freight, tons: K.lbs / 2000, job: { ...job, workHrs: K.workHrs },
     geometry: { overall: +overall.toFixed(2), hook: +hook.toFixed(2), colLen, column: !hasCols ? '' : builtUp ? `built-up ${builtUpPlf} plf` : column!, runway: runway ?? '', girder: girder ?? (boxPlf ? `box ${boxPlf} plf` : ''), bays, bayFt: +bayFt.toFixed(1), pieceFt, piecesPerLine, units: K.units } };
@@ -317,10 +321,10 @@ function wording(s: Norm, x: any): string {
       : '> Class C (Moderate Service): This service covers cranes whose service requirements are deemed moderate, handling loads which average 50 percent of the rated capacity with 5 to 10 lifts per hour, averaging 15 feet, with not over 50 percent of the lifts at rated capacity.', '');
   if (s.support !== 'bridge_only') {
     out.push('## Runway Package');
-    if (s.support === 'freestanding' || s.support === 'crane_columns') out.push(`- (${x.colsPer}) ${x.builtUp ? 'Built-up plate' : 'Structural'} ${s.support === 'crane_columns' ? 'crane ' : ''}columns spaced at approx. ${ftIn(Math.round(x.bayFt))} bays`);
+    if (s.support === 'freestanding' || s.support === 'crane_columns') out.push(`- (${x.colsPer}) Structural ${s.support === 'crane_columns' ? 'crane ' : ''}columns spaced at approx. ${ftIn(Math.round(x.bayFt))} bays`);
     else out.push(`- Runway beams ${s.hanging === 'underhung' ? 'hung from the existing building structure with drop rod connections' : s.bracketsByOthers ? 'set on the crane brackets supplied with the building (brackets by others)' : 'mounted to the existing building columns with PWI runway brackets'} (approx. ${ftIn(Math.round(x.bayFt))} spacing)`, '- Customer to confirm the building structure can support the crane loads (PWI to provide reactions)');
-    out.push(`- ${ftIn(s.runwayOalFt)} x ${T} Ton capacity WF beam runway system`);
-    if (x.rail) out.push('- 30# ASCE crane rail with standard weld clips');
+    out.push(`- ${ftIn(s.runwayOalFt)} x ${T} Ton capacity runway system`);
+    if (x.rail) out.push('- ASCE crane rail with standard weld clips');
     if (s.support === 'freestanding') out.push('- Runway system will include lateral and longitudinal tie back bracing');
     out.push('- (4) HD end stops', '- Complete ElectroTrack electrification system',
       `- ${custom(c.runways) ? `Runways painted ${c.runways} (custom color)` : 'Runways painted gray'}${x.cols ? `, ${custom(c.columns) ? `columns painted ${c.columns} (custom color)` : 'columns painted gray'}` : ''}`);
@@ -330,22 +334,24 @@ function wording(s: Norm, x: any): string {
   } else {
     out.push('## Existing Runway');
     out.push('- Bridge crane to run on the customer\'s existing runway system', '- Runway capacity, alignment and condition to be verified by the customer');
-    if (x.railFt > 0) out.push(`- New ${s.capacityTons <= 10 ? '30#' : '40#'} ASCE crane rail with standard weld clips (${ftIn(x.railFt)} total)`);
+    if (x.railFt > 0) out.push(`- New ASCE crane rail with standard weld clips (${ftIn(x.railFt)} total)`);
     if (x.runwayElec) out.push(`- New ElectroTrack runway electrification (${ftIn(x.elecFt)})`);
     out.push('');
   }
   out.push(`## (${x.bridges}) ${ftIn(s.spanFt)} x ${T} Ton Capacity ${x.doubleGirder ? 'Double Girder ' : ''}${s.hanging === 'underhung' ? 'Underhung' : 'Top Runner'} ${x.motor ? 'Motorized' : 'Manual'} Bridge Crane`,
     x.motor ? `- Includes ${T} ton ${s.hanging === 'underhung' ? 'underhung' : 'top running'} motorized end trucks with 2-speed/VFD` : `- Includes ${T} ton manual ${s.hanging === 'underhung' ? 'underhung' : 'top running'} end trucks`,
-    `- (${n}) Starke - ${s.capacityTons > 3 ? 'wire rope' : 'STK Series'} ${T} ton electric ${s.capacityTons > 3 ? '' : 'chain '}hoist`,
+    `- (${n}) Starke ${x.wireRope ? 'SMW Series' : 'STK Series'} ${T} ton electric ${x.wireRope ? 'wire rope' : 'chain'} hoist`,
     `-- ${x.lift}' lift`,
     `-- ${s.voltage.startsWith('460') ? '460V/3ph' : s.voltage.startsWith('208') ? '208V/3ph' : '230V/3ph'}`,
-    `- (${n}) Starke ${s.trolley === 'motorized' ? 'Motorized' : 'Manual'} Trolley`,
-    ...(s.trolley === 'motorized' ? ['-- 2-speed/VFD'] : []),
-    '- Festoon electrification system on bridge', '- PWI HD end stops at each end of bridge crane',
+    // wire rope hoists come with their own trolley; only chain hoists list the trolley separately
+    ...(x.wireRope ? [`-- Integral ${s.trolley === 'motorized' ? 'motorized trolley, 2-speed/VFD' : 'trolley'}`]
+      : [`- (${n}) Starke ${s.trolley === 'motorized' ? 'motorized' : 'manual'} trolley`, ...(s.trolley === 'motorized' ? ['-- 2-speed/VFD'] : [])]),
+    x.festoon ? '- Festoon electrification system on bridge' : '- ElectroTrack electrification system on bridge', '- PWI HD end stops at each end of bridge crane',
     `- ${custom(c.bridge) ? `Bridge painted ${c.bridge} (custom color)` : 'Spark Orange industrial coating'}`, '- Rated capacity decals', '',
-    ...(s.control === 'radio' ? ['## Radio Remote Control System', '- STARKE Radio Remote Control system', `- Capable of ${x.motor ? '3 Motion/2 Step control   (N/S - E/W - Up/Down)' : 'hoist and trolley control'}`, '- Includes (1) spare transmitter', '']
+    ...(s.control === 'radio' ? ['## Radio Remote Control System', '- Starke Echo Series radio remote control system', `- Capable of ${x.motor ? '3 Motion/2 Step control   (N/S - E/W - Up/Down)' : 'hoist and trolley control'}`, '- Includes (1) spare transmitter',
+        ...(s.backupPendant ? ['- Backup pendant control on festoon'] : []), '']
       : ['## Pendant Control', '- Pendant control for hoist and trolley', '']),
-    ...(x.motor ? ['## Starke Control Panel', '- Equipped with VFD control for programmable 2-step control and start - stop operation', '- Warning strobe light to indicate bridge is in motion', ''] : []),
+    ...(x.motor ? ['## Control Panel', '- Starke VFD bridge control panel', '- Programmable 2-step control and start - stop operation', '- Warning strobe light to indicate bridge is in motion', ''] : []),
     ...(s.collisionAvoidance ? ['## Collision Avoidance', '- Starke Collision Avoidance for bridge crane to bridge crane and bridge crane to end stops', '- Increased safety for operators especially when transporting heavy loads', '- Simple uni-directional bridge collision avoidance with (2) adjustable events (0-200 ft)', ''] : []),
     ...(s.install ? ['## Installation', '- Complete installation by PWI crew, including setup, anchoring, electrification and final adjustments', '- Customer to provide power to the main disconnect', ''] : ['## Shipping', '- Ship only — installation by others', '']),
     `[image:${s.support === 'freestanding' ? 'fstr' : 'bridge'}]`);
