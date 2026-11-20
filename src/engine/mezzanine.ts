@@ -87,8 +87,10 @@ export function buildMezzanine(spec: MezzanineSpec, cat: Catalog, f: Factors = {
   const gates = s.gates ?? [];
   const gateOpen = gates.reduce((a, g) => a + g.qty * (g.type === 'safety' ? 3 : 10), 0);
   const stairs = s.stairs ?? 0;
-  const guardFt = s.guardrailFt ?? Math.max(0, 2 * (s.lengthFt + s.widthFt) - stairs * 4 - gateOpen);
-  if (s.guardrailFt == null) A.push({ field: 'guardrailFt', value: guardFt, why: `Full perimeter ${2 * (s.lengthFt + s.widthFt)}' less stair and gate openings — set the real open sides`, alt: Math.round(guardFt / 2) });
+  // Guardrail not given: a share of the perimeter (mezzanines back onto walls; sold OSHA rail ft ÷ perimeter, rules guardrailDefaultPctOfPerimeter).
+  const gPct = (M as any).guardrailDefaultPctOfPerimeter ?? 1, perim = 2 * (s.lengthFt + s.widthFt);
+  const guardFt = s.guardrailFt ?? Math.max(0, Math.round(gPct * perim) - stairs * 4 - gateOpen);
+  if (s.guardrailFt == null) A.push({ field: 'guardrailFt', value: guardFt, why: gPct < 1 ? `${Math.round(gPct * 100)}% of the ${perim}' perimeter (typical open sides on sold PWI mezzanines) less stair and gate openings — set the real open sides` : `Full perimeter ${perim}' less stair and gate openings — set the real open sides`, alt: gPct < 1 ? Math.max(0, perim - stairs * 4 - gateOpen) : Math.round(guardFt / 2) });
   const gType = s.guardrail ?? 'osha';
   K.cost(`42" ${gType === 'ibc' ? 'IBC' : gType === 'removable' ? 'OSHA pocket removable' : 'OSHA bolt-together'} guardrail with mid-rail and toe-kick (per ft)`, Math.ceil(guardFt) * n, (M.guardrailPerFtCost as any)[gType], mk, 'stdParts');
   let gateSite = 0;

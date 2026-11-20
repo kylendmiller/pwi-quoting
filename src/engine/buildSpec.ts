@@ -14,7 +14,9 @@ const drive = (s: any) => s.bridgeDrive || s.motorized == null ? s : { ...s, bri
 type Builder = (spec: any, cat: Catalog, f: Factors, bo: BuildOpts) => BuildResult;
 /** Every product the app can build. `fam` picks the production / install factor in settings. */
 export const BUILDERS: Record<string, { fam: string; build: Builder; def: [number, number] }> = {
-  freestanding: { fam: 'freestanding', def: [0.56, 1.02], build: (s, c, f, b) => buildCrane({ ...drive(s), support: 'freestanding' }, c, f, b) },
+  // freestanding production 0.56 → 0.60 (wide calibration round 3, docs/round3/TUNING.md): shop $ built/sold median 0.85 on n=26 FSTR jobs;
+  // 0.66 would centre shop $ but pushes the family's total gap up (vendor/plate run high on the same small jobs), 0.60 is the best value that lowers it.
+  freestanding: { fam: 'freestanding', def: [0.6, 1.02], build: (s, c, f, b) => buildCrane({ ...drive(s), support: 'freestanding' }, c, f, b) },
   // bridge production stays 0.68: once built-part hours stopped being double-priced (11/20), builder shop $ ÷ sold = 0.89 / 0.81 / 0.84 / 1.43 on 28192 / 28426 / 29562 / 28772.
   bridge: { fam: 'bridge', def: [0.68, 1.0], build: (s, c, f, b) => buildCrane({ support: 'building_runway', ...drive(s) }, c, f, b) },
   gantry: { fam: 'gantry', def: [0.69, 1.09], build: buildGantry },

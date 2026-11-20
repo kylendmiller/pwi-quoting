@@ -91,7 +91,7 @@ function pwiCell(cap: number, span: number, double: boolean): string {
 }
 const chartMax = (rows: any[]) => { const r = rows[rows.length - 1].byCap; const ks = Object.keys(r).map(Number).sort((a, b) => a - b); return r[String(ks[ks.length - 1])]; };
 
-export function buildCrane(spec: CraneSpec, cat: Catalog, f: Factors = { production: 0.56, install: 1.02 }, bo: BuildOpts = {}): BuildResult {
+export function buildCrane(spec: CraneSpec, cat: Catalog, f: Factors = { production: 0.6, install: 1.02 }, bo: BuildOpts = {}): BuildResult {
   const s = normalize(spec), s0 = spec;
   const fam = s.support === 'freestanding' ? 'freestanding' : 'bridge';
   const K = new Kit(cat, fam, f), A = K.A;

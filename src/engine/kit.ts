@@ -44,6 +44,11 @@ export interface Assumption { field: string; value: unknown; why: string; alt?: 
 export interface LineMeta { role?: Role; basis?: Basis }
 export interface Factors { production: number; install: number }
 
+/** Shop-hour size taper: 1 up to fromMatSell, straight line down to minMult at toMatSell, flat after (rules shopOps.sizeTaper). */
+export function shopTaper(fam: string, matSell: number, T: any = (R.shopOps as any).sizeTaper): number {
+  if (!T || !T.families.includes(fam) || matSell <= T.fromMatSell) return 1;
+  return Math.round((1 - (1 - T.minMult) * Math.min(1, (matSell - T.fromMatSell) / (T.toMatSell - T.fromMatSell))) * 1000) / 1000;
+}
 export const pick = <T>(tbl: [number, T][], x: number): T => (tbl.find(([m]) => x <= m) ?? tbl[tbl.length - 1])[1];
 export const depthIn = (shape: string) => Number(/^(?:W|ST|RT|TC|C|MC)\s*(\d+)/.exec(shape)?.[1] ?? 12);
 export const STD_COLORS = /^(gray|grey|spark orange|two-tone|standard|white primer|primer)/i;
@@ -193,16 +198,19 @@ export class Kit {
     const ms = this.matSell();
     if (opts.handling !== false) list.push(['Handling / shipping', Math.max(O.handling.min, Math.round(O.handling.pctOfMaterialSell * ms / O.handling.perHour))]);
     const blk = smtLaborBlock(this.fam);
+    // Size taper (wide calibration, round 3): big crane jobs carry fewer shop hours per op than the SMT method gives.
+    const taper = shopTaper(this.fam, ms), pf = Math.round(this.f.production * taper * 1000) / 1000;
+    const tTxt = taper < 1 ? ` × size taper ${taper.toFixed(3)} (material sell $${Math.round(ms).toLocaleString('en-US')})` : '';
     list.forEach(([d, h], i) => {
       this.smtShopHours += h;
       const kind = i < nOps ? 'op' : d === 'Handling / shipping' ? 'handling' : 'built';
-      const hours = Math.round(h * this.f.production * 10) / 10;
+      const hours = Math.round(h * pf * 10) / 10;
       const basis: Basis = kind === 'handling'
-        ? { source: 'rule', text: `max(${O.handling.min} h, ${O.handling.pctOfMaterialSell * 100}% of material sell $${Math.round(ms).toLocaleString('en-US')} ÷ $${O.handling.perHour}/h) × production ${this.f.production}` }
-        : kind === 'built' ? { source: 'rule', text: `Built-in hours of the PWI-built standard parts on this item × production ${this.f.production}` }
-        : { source: 'rule', text: `SMT labor op ${Math.round(h * 10) / 10} h × ${this.fam} production factor ${this.f.production}` };
+        ? { source: 'rule', text: `max(${O.handling.min} h, ${O.handling.pctOfMaterialSell * 100}% of material sell $${Math.round(ms).toLocaleString('en-US')} ÷ $${O.handling.perHour}/h) × production ${this.f.production}${tTxt}` }
+        : kind === 'built' ? { source: 'rule', text: `Built-in hours of the PWI-built standard parts on this item × production ${this.f.production}${tTxt}` }
+        : { source: 'rule', text: `SMT labor op ${Math.round(h * 10) / 10} h × ${this.fam} production factor ${this.f.production}${tTxt}` };
       if (h > 0) this.push({ kind: 'shop_labor', category: 'shopLabor', description: d, qty: hours, laborOp: 'shop_other' },
-        { role: 'shop_labor', basis, detail: { type: 'labor', where: 'shop', op: d, smtRow: kind === 'handling' ? blk.handlingRow : kind === 'built' ? 'Labor A49 PWI Built Items' : blk.block, baseHrs: h, factor: this.f.production, factorName: 'production', hours } });
+        { role: 'shop_labor', basis, detail: { type: 'labor', where: 'shop', op: d, smtRow: kind === 'handling' ? blk.handlingRow : kind === 'built' ? 'Labor A49 PWI Built Items' : blk.block, baseHrs: h, factor: pf, factorName: 'production', hours } });
     });
   }
   /** On-site install, crew size, travel, lodging, per diem, equipment, then freight. */
