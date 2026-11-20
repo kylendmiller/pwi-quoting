@@ -39,12 +39,18 @@ export function effectiveDoc(doc: QuoteDoc): QuoteDoc {
   return doc.family === 'freestanding' ? { ...doc, freestandingShopHours: shop } : { ...doc, freestandingShopHours: 0 };
 }
 export const price = (doc: QuoteDoc, s: Settings): Priced => priceManual(effectiveDoc(doc), s);
+/** The customer numbers. S9: `priced.quote` (each part rounded once, total = sum of parts); fallback: rollup.quote. */
+export interface QuoteMoney { base: number; installation: number; freight: number; preUse: number | null; tax: number; total: number }
+export const quoteMoney = (p: Priced): QuoteMoney => (p as any).quote ?? p.rollup.quote;
+/** S: priced.costBasis.*Assumed → label labor GM as "assumed labor cost". Fallback: always assumed. */
+export const laborCostAssumed = (p: Priced): boolean => { const c = (p as any).costBasis; return c ? !!(c.shopAssumed || c.siteAssumed) : true; };
 
 /** Std-part cost each. TODO(S7): S sets cost = sell × (1 − std_parts.gm_pct) in the engine; until then
  *  std parts carry no cost, so their GM is unknown (never shown as 100%). */
 const SELL_ONLY_ROWS = ['stdParts', 'decals', 'painting', 'ultraLitePcr', 'stairStringerPcr', 'stairways', 'workPlatforms', 'vrc', 'concrete'];
 export function stdCostKnown(l: QuoteLine): boolean {
   if (!(l.unitSell != null && l.unitCost == null && l.kind === 'material')) return true;
+  if (typeof (l as any).gmPct === 'number') return true;          // S7: cost = sell × (1 − gmPct) is priced in
   if (S_READY.stdCost && l.category === 'stdParts') return true;
   return !SELL_ONLY_ROWS.includes(l.category);     // e.g. a price adjustment in Cost Based has no cost: GM is known
 }
@@ -52,7 +58,11 @@ export function stdCostKnown(l: QuoteLine): boolean {
 // ---------------------------------------------------------------- parseNum (safe arithmetic, no eval)
 /** "=2*40+6", "20'6\"", "20' 6", "1,250", "(3+4)/2". Returns null when not a finite number ≥ −1e9..1e9.
  *  TODO(S): swap for S's parseNum when published (same contract). */
-export function parseNum(input: string): number | null {
+export function parseNum(input: string, opts: { allowNegative?: boolean } = {}): number | null {
+  const v = parseAny(input);
+  return v == null || (v < 0 && !opts.allowNegative) ? null : v;
+}
+function parseAny(input: string): number | null {
   let s = String(input ?? '').trim();
   if (!s) return null;
   if (s.length > 64) return null;
@@ -83,7 +93,7 @@ export function parseNum(input: string): number | null {
   const expr = (): number => { let v = term(); while (peek() === '+' || peek() === '-') { const op = s[i++]; const r = term(); v = op === '+' ? v + r : v - r; } return v; };
   try {
     const v = expr();
-    if (i !== s.length || !isFinite(v) || Math.abs(v) > 1e9) return null;
+    if (i !== s.length || !isFinite(v) || Math.abs(v) > 1e9) return null;   // includes division by zero
     return round6(v);
   } catch { return null; }
 }
@@ -164,6 +174,12 @@ export function revertLine(l: EditorLine): EditorLine {
   let out = l; for (const p of Object.keys(l.edited ?? {})) out = revertField(out, p); return out;
 }
 
+/** Cells the rep changed on a line → builder value. Fallback keeps field paths (incl. detail.*) in `edited`.
+ *  TODO(S5/S8): S records only priced fields (qty, unitCost, markupPct, unitSell, description, category, kind) in
+ *  `edited`; when swapping, map those here (a detail edit then shows on the cost / sell cells it moved). */
+export const changedPaths = (l: EditorLine): Record<string, unknown> => l.edited ?? {};
+export const isChanged = (l: EditorLine, path: string) => path in changedPaths(l);
+
 // ---------------------------------------------------------------- stable refs (S4)
 const stem = (d: string) => d.split(' — ')[0].replace(/\(.*?\)/g, '').trim().toLowerCase().replace(/[^a-z0-9]+/g, '-');
 /** Stable ref per auto line. TODO(S4): S stores `ref = itemId:slot` on every built line; the fallback
@@ -181,7 +197,7 @@ export const refOf = (doc: QuoteDoc, key: string) => withRefs(linesOf(doc)).find
 
 // ---------------------------------------------------------------- planRebuild / applyPlan (S5)
 export interface FieldChange { field: string; from: unknown; to: unknown }
-export interface Conflict { ref: string; key: string; description: string; field: string; yours: unknown; builderWas: unknown; builderNow: unknown }
+export interface Conflict { id: string; ref: string; key: string; description: string; field: string; yours: unknown; builderWas: unknown; builderNow: unknown }
 export interface RebuildPlan {
   adds: EditorLine[];
   removes: EditorLine[];                                        // old auto lines the builder no longer makes
@@ -195,8 +211,10 @@ export interface RebuildPlan {
   before: Priced; after: Priced;
   flagsNew: Flag[]; flagsCleared: Flag[];
   fallback: boolean;                                             // true until S's planRebuild is wired in
+  /** internal: what applyPlan needs (S's plan carries `next` / `builderDoc` instead) */
+  _old: EditorDoc; _fresh: QuoteDoc; notes: string[]; blockers: string[];
 }
-export type Choices = Record<string, 'yours' | 'builder'>;        // per conflict `${ref}::${field}`
+export type Choices = Record<string, 'mine' | 'builder'>;        // per Conflict.id (`${ref}|${field}`), default 'mine'
 
 const PRICED_FIELDS = ['qty', 'unitCost', 'markupPct', 'unitSell', 'description', 'category'] as const;
 const DETAIL_FIELDS = ['detail.shape', 'detail.lengthFt', 'detail.plf', 'detail.tIn', 'detail.wIn', 'detail.lIn', 'detail.part'] as const;
@@ -206,21 +224,27 @@ export function buildFresh(doc: QuoteDoc, spec: QuoteSpec, cat: Catalog, setting
   return buildFromSpec(spec, cat, settings, { ...doc, lines: [] });
 }
 
-/** What a rebuild would change. Pure. TODO(S5): swap for S's planRebuild (which also separates
- *  price-list-only drift from spec changes and keys refs by permanent item id). */
-export function planRebuild(old: EditorDoc, fresh: QuoteDoc, settings: Settings): RebuildPlan {
+/** What a rebuild to `spec` would change. Pure. TODO(S5): swap for S's planRebuild(old, newSpec, cat, settings)
+ *  (it also splits price-list-only drift from spec changes and keys refs by permanent item id) and map its
+ *  priceUpdates/specChanges/money.bySection/flags onto this shape. */
+export function planRebuild(old: EditorDoc, spec: QuoteSpec, cat: Catalog, settings: Settings & Record<string, unknown>): RebuildPlan {
+  const b = buildFresh(old, spec, cat, settings);
+  return planFrom(old, b.doc, settings, b.notes, b.blockers);
+}
+function planFrom(old: EditorDoc, fresh: QuoteDoc, settings: Settings, notes: string[], blockers: string[]): RebuildPlan {
   const O = withRefs(linesOf(old).filter(l => l.auto)), N = withRefs(linesOf(fresh));
   const removed = new Set(old.removed ?? []);
   const oBy = new Map(O.map(l => [l._ref, l])), nBy = new Map(N.map(l => [l._ref, l]));
   const plan: RebuildPlan = { adds: [], removes: [], updates: [], conflicts: [], keptEdits: [], stayDeleted: [], handKept: linesOf(old).filter(l => !l.auto).length,
-    docChanges: [], money: [], before: null as any, after: null as any, flagsNew: [], flagsCleared: [], fallback: !S_READY.planRebuild };
+    docChanges: [], money: [], before: null as any, after: null as any, flagsNew: [], flagsCleared: [], fallback: !S_READY.planRebuild,
+    _old: old, _fresh: fresh, notes, blockers };
   for (const n of N) {
     const o = oBy.get(n._ref);
     if (!o) { if (removed.has(n._ref)) plan.stayDeleted.push(n.description); else plan.adds.push(n); continue; }
     const kept = Object.keys(o.edited ?? {});
     for (const p of kept) {
       const now = getPath(n, p);
-      if (!same(o.edited![p], now)) plan.conflicts.push({ ref: n._ref, key: o.key, description: o.description, field: p, yours: getPath(o, p), builderWas: o.edited![p], builderNow: now });
+      if (!same(o.edited![p], now)) plan.conflicts.push({ id: `${n._ref}|${p}`, ref: n._ref, key: o.key, description: o.description, field: p, yours: getPath(o, p), builderWas: o.edited![p], builderNow: now });
     }
     if (kept.length) plan.keptEdits.push({ ref: n._ref, description: o.description, fields: kept });
   }
@@ -229,7 +253,7 @@ export function planRebuild(old: EditorDoc, fresh: QuoteDoc, settings: Settings)
   if (old.outboundFreight !== fresh.outboundFreight) plan.docChanges.push(`Outbound freight $${Math.round(old.outboundFreight).toLocaleString()} → $${Math.round(fresh.outboundFreight).toLocaleString()}`);
   if ((old.preUse ?? 0) !== (fresh.preUse ?? 0)) plan.docChanges.push(`Pre-use inspections $${old.preUse} → $${fresh.preUse}`);
   if ((old.suggestedInstallHours ?? 0) !== (fresh.suggestedInstallHours ?? 0)) plan.docChanges.push(`Suggested install ${r1(old.suggestedInstallHours ?? 0)} h → ${r1(fresh.suggestedInstallHours ?? 0)} h`);
-  const after = applyPlan(old, fresh, plan, {});
+  const after = applyPlan(plan, {});
   // What actually changes on each matched line once your edits are re-applied (so the list matches the totals).
   const aBy = new Map(linesOf(after).map(l => [l.key, l]));
   for (const o of O) {
@@ -252,7 +276,8 @@ export function planRebuild(old: EditorDoc, fresh: QuoteDoc, settings: Settings)
 
 /** Apply a plan: builder lines with the rep's edits re-applied (default keep yours), removed refs stay removed,
  *  hand lines kept, auto lines the builder dropped are kept as hand lines if the rep had edited them. */
-export function applyPlan(old: EditorDoc, fresh: QuoteDoc, plan: RebuildPlan, choices: Choices): EditorDoc {
+export function applyPlan(plan: RebuildPlan, choices: Choices = {}): EditorDoc {
+  const old = plan._old, fresh = plan._fresh;
   const removed = new Set(old.removed ?? []);
   const O = new Map(withRefs(linesOf(old).filter(l => l.auto)).map(l => [l._ref, l]));
   const out: EditorLine[] = [];
@@ -264,7 +289,7 @@ export function applyPlan(old: EditorDoc, fresh: QuoteDoc, plan: RebuildPlan, ch
     if (o?.edited) {
       const ed: Record<string, unknown> = {};
       for (const [p, builderWas] of Object.entries(o.edited)) {
-        if (choices[`${_ref}::${p}`] === 'builder') continue;
+        if (choices[`${_ref}|${p}`] === 'builder') continue;
         l = setPath(l, p, getPath(o, p));
         ed[p] = getPath(n, p) ?? builderWas;
       }

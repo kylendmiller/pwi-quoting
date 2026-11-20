@@ -1,6 +1,6 @@
 // Rebuild diff dialog (U6): what a spec change does before it is applied.
 import { useEffect, useRef, useState } from 'react';
-import type { RebuildPlan, Choices } from './engineApi';
+import { quoteMoney, type RebuildPlan, type Choices } from './engineApi';
 import { rowOf, fmtMoney, fmtNum } from './smt';
 import { FLAG_TEXT } from './flags';
 
@@ -17,7 +17,7 @@ export function RebuildDialog({ title, plan, approvedRules, onCancel, onApply }:
   // Focus the dialog itself, not Apply: the Enter that opened it must not also apply it.
   useEffect(() => { box.current?.focus(); }, []);
   const b = plan.before, a = plan.after;
-  const dT = a.rollup.quote.total - b.rollup.quote.total;
+  const dT = quoteMoney(a).total - quoteMoney(b).total;
   const dGm = a.totals.grossMarginPct - b.totals.grossMarginPct;
   const nChanges = plan.adds.length + plan.removes.length + plan.updates.length + plan.conflicts.length;
   const voided = approvedRules.filter(r => plan.flagsNew.some(f => f.rule === r));
@@ -27,7 +27,7 @@ export function RebuildDialog({ title, plan, approvedRules, onCancel, onApply }:
       <div className="qe-dialog" role="dialog" aria-label="Rebuild" tabIndex={-1} ref={box}>
         <h3>Rebuild: {title}</h3>
         <div className="qe-dlg-total">
-          <span>Total <b>${fmtMoney(b.rollup.quote.total)}</b> → <b>${fmtMoney(a.rollup.quote.total)}</b> <span className={dT >= 0 ? 'up' : 'dn'}>({dT >= 0 ? '+' : '−'}${fmtMoney(Math.abs(dT))})</span></span>
+          <span>Total <b>${fmtMoney(quoteMoney(b).total)}</b> → <b>${fmtMoney(quoteMoney(a).total)}</b> <span className={dT >= 0 ? 'up' : 'dn'}>({dT >= 0 ? '+' : '−'}${fmtMoney(Math.abs(dT))})</span></span>
           <span>GM {(b.totals.grossMarginPct * 100).toFixed(1)}% → {(a.totals.grossMarginPct * 100).toFixed(1)}% <span className={Math.round(dGm * 1000) >= 0 ? 'up' : 'dn'}>({Math.round(dGm * 1000) > 0 ? '+' : Math.round(dGm * 1000) < 0 ? '−' : '±'}{Math.abs(dGm * 100).toFixed(1)} pt)</span></span>
           <span>Shop {fmtNum(b.totals.shopHours)} → {fmtNum(a.totals.shopHours)} h · Install {fmtNum(b.totals.installHours)} → {fmtNum(a.totals.installHours)} h</span>
         </div>
@@ -44,10 +44,10 @@ export function RebuildDialog({ title, plan, approvedRules, onCancel, onApply }:
         </div>
         {plan.conflicts.length > 0 && <div className="qe-dlg-conf">
           <b>The builder now says something different on {plan.conflicts.length} value{plan.conflicts.length > 1 ? 's' : ''} you changed:</b>
-          {plan.conflicts.map(c => { const id = `${c.ref}::${c.field}`; return (
+          {plan.conflicts.map(c => { const id = c.id; return (
             <div key={id} className="row">
               <span style={{ flex: 1 }}>{c.description.split(' — ')[0]} · {FIELD[c.field] ?? c.field.replace('detail.', '')}: builder had {v(c.builderWas)}, now says {v(c.builderNow)}</span>
-              <label><input type="radio" checked={choices[id] !== 'builder'} onChange={() => setChoices({ ...choices, [id]: 'yours' })} /> keep yours ({v(c.yours)})</label>
+              <label><input type="radio" checked={choices[id] !== 'builder'} onChange={() => setChoices({ ...choices, [id]: 'mine' })} /> keep yours ({v(c.yours)})</label>
               <label><input type="radio" checked={choices[id] === 'builder'} onChange={() => setChoices({ ...choices, [id]: 'builder' })} /> take builder's</label>
             </div>); })}
         </div>}

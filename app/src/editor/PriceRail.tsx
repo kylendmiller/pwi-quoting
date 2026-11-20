@@ -5,6 +5,7 @@ import { fmtMoney } from './smt';
 import { FLAG_TEXT } from './flags';
 import type { Change } from './changes';
 import { TargetPrice } from './TargetPrice';
+import { quoteMoney } from './engineApi';
 
 export interface RailProps {
   priced: Priced; doc: QuoteDoc; settings: Settings; locked: boolean; dirty: boolean; busy: boolean; hideCost: boolean; setHideCost: (b: boolean) => void;
@@ -19,7 +20,7 @@ export interface RailProps {
 export function PriceRail(r: RailProps) {
   const [showChanges, setShowChanges] = useState(false);
   const [target, setTarget] = useState(false);
-  const q = r.priced.rollup.quote;
+  const q = quoteMoney(r.priced);
   const errors = r.lint.filter(l => l.level === 'error');
   const reasons = [
     ...(r.dirty ? ['Save your changes first'] : []),

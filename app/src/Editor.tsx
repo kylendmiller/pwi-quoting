@@ -19,7 +19,7 @@ import './editor/editor.css';
 const LIBRARY = library.split(/^=== /m).filter(Boolean).map(b => {
   const [head, ...rest] = b.split('\n'); return { title: rest.find(l => l.trim()) ?? head, text: rest.join('\n').trim() };
 });
-const FLAG_TEXT = (rule: string) => flagText({ rule });
+const FLAG_TEXT = (rule: string) => flagText({ rule });   // classic-view banners
 const CLASSIC_KEY = 'pwi.editor.classic';
 
 export function Editor({ quoteId, me, mode = 'edit' }: { quoteId: string; me: Profile; mode?: 'review' | 'edit' }) {
@@ -124,8 +124,8 @@ export function Editor({ quoteId, me, mode = 'edit' }: { quoteId: string; me: Pr
   }
   const send = async () => {
     const ok = await act('send', { revision_id: rev.id }, `Sent — R${rev.rev} locked`);
-    // TODO(S9): the PDF should render from the server's priced result; use it when the send response carries one.
-    if (ok) downloadPdf({ quote, rev: { ...rev, locked: true, sent_at: new Date().toISOString() }, doc, priced: (ok as any)?.revision?.priced ?? priced!, me, number });
+    // S9: the send response carries the server-priced result; the PDF renders from it (falls back to the screen's).
+    if (ok) downloadPdf({ quote, rev: { ...rev, locked: true, sent_at: new Date().toISOString() }, doc: (ok as any)?.revision?.doc ?? doc, priced: (ok as any)?.priced ?? (ok as any)?.revision?.priced ?? priced!, me, number });
   };
   const revise = () => act('revise', { quote_id: quote.id, from_revision_id: rev.id }, 'New revision started');
   const win = async () => {
@@ -154,14 +154,15 @@ export function Editor({ quoteId, me, mode = 'edit' }: { quoteId: string; me: Pr
     addLine(newLine('vendor', fam, { description: `${p.vendor} ${p.part} — ${p.description}`, qty: 1, unitCost: Math.round(cost * 100) / 100, markupPct: Math.round(((sell / cost) - 1) * 10000) / 100 }));
     setVendorQ('');
   };
-  const importBox = (onBuilt: (fresh: QuoteDoc, label: string, notes: string[]) => void) => <ImportSpec doc={doc} settings={settings} onApply={(d, h, notes) => {
+  // A pasted Claude spec goes through the same rebuild dialog as a spec chip (nothing applies unseen).
+  const importBox = (onSpec: (spec: any, label: string) => void) => <ImportSpec doc={doc} settings={settings} onApply={(d, h) => {
     setHead({ ...header, project_name: header.project_name || h.project_name, job_location: header.job_location || h.job_location });
-    onBuilt(d, 'pasted spec from Claude', notes);
+    onSpec(d.spec, 'pasted spec from Claude');
   }} />;
   const rail = priced && <PriceRail priced={priced} doc={doc} settings={settings} locked={!!locked} dirty={dirty} busy={busy} hideCost={hideInternal} setHideCost={setHideInternal}
     openFlags={openFlags} approvedRules={approvedRules} isManager={isMgr} lint={priced.lint} msg={msg} changes={diffDocs(saved, doc)} voids={voidsOf()}
     undo={{ can: H.canUndo, label: H.undoLabel, run: H.undo }} redo={{ can: H.canRedo, label: H.redoLabel, run: H.redo }}
-    onSave={save} onSend={send} onPdf={() => downloadPdf({ quote, rev, doc, priced: priced!, me, number })} onApprove={rule => act('approve', { revision_id: rev.id, rule }, 'Approved')}
+    onSave={save} onSend={send} onPdf={() => downloadPdf({ quote, rev, doc, priced: priced!, me, number })} onApprove={rule => act('approve', { revision_id: rev.id, rule, doc_version: rev.doc_version }, 'Approved')}
     onRevise={revise} onWin={!quote.job_id ? win : undefined} rev={rev.rev} onTarget={(d, l) => H.set(d, l)} />;
   const newView = mode === 'edit' && !classic;
 

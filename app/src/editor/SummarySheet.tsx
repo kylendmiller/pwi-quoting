@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { Priced, QuoteDoc, Settings, Flag } from '../../../src/engine/manual';
 import type { CategoryKey } from '../../../src/engine/rollup';
-import { linesOf, stdCostKnown, type EditorLine } from './engineApi';
+import { linesOf, changedPaths, quoteMoney, laborCostAssumed, type EditorLine } from './engineApi';
 import { ROWS, PEEK_ROWS, rowStats, peek, fmtMoney, fmtNum, fmtPct, type RowStats } from './smt';
 import { colsFor } from './tabs';
 import { Grid } from './Grid';
@@ -37,9 +37,9 @@ export function SummarySheet({ doc, priced, settings, locked, hideCost, openFlag
   const shapes = useMemo(() => refData.shapes.map(s => s.shape), [refData]);
   const rowsRef = useRef<(HTMLDivElement | null)[]>([]);
   const visible = stats.filter(s => showAll || s.lines.length || (s.def.key === 'costBased' && priced.totals.productionValue));
-  const flagsFor = (k: CategoryKey) => openFlags.filter(f => flagRow(f.rule) === k);
+  const flagsFor = (k: CategoryKey) => openFlags.filter(f => flagRow(f as any) === k);
   const toggle = (k: CategoryKey, on?: boolean) => { const n = new Set(open); (on ?? !n.has(k)) ? n.add(k) : n.delete(k); setOpen(n); };
-  const ro = priced.rollup;
+  const ro = priced.rollup, qm = quoteMoney(priced);
   const totalLb = stats.reduce((a, s) => a + s.lb, 0);
   const sumSell = stats.reduce((a, s) => a + s.sell, 0);
   const sumCost = stats.reduce((a, s) => a + s.cost, 0);
@@ -84,7 +84,7 @@ export function SummarySheet({ doc, priced, settings, locked, hideCost, openFlag
               {!hideCost && <span className="num">{s.lines.length ? (s.costPending ? <i title="Standard-part cost arrives with the engine update (std_parts gm_pct)">pending</i> : s.costUnknown ? <span className="muted" title="Sold at a list sell price; no cost is kept on these lines">—</span> : fmtMoney(s.cost)) : ''}</span>}
               <span className="num b">{s.sell || s.lines.length ? fmtMoney(s.sell) : ''}</span>
               {!hideCost && <span className="num">{s.gmPct == null ? '' : fmtMoney(s.gm)}</span>}
-              {!hideCost && <span className={`num ${s.gmPct != null && s.gmPct < 0.15 ? 'bad' : ''}`} title={s.estCost ? 'Labor cost is the SMT standard labor cost, not payroll' : undefined}>{s.gmPct == null ? (s.costUnknown && s.sell ? '—' : '') : fmtPct(s.gmPct)}{s.estCost && s.gmPct != null ? <sup>std</sup> : null}</span>}
+              {!hideCost && <span className={`num ${s.gmPct != null && s.gmPct < 0.15 ? 'bad' : ''}`} title={s.estCost ? 'Labor cost is the SMT standard labor cost, not payroll' : undefined}>{s.gmPct == null ? (s.costUnknown && s.sell ? '—' : '') : fmtPct(s.gmPct)}{s.estCost && s.gmPct != null && laborCostAssumed(priced) ? <sup>std</sup> : null}</span>}
             </div>
             {!isOpen && pk.length > 0 && <div className="qe-peek" onClick={() => toggle(k, true)}>{pk.join(' · ')}</div>}
             {fl.map(f => <FlagLine key={f.rule} f={f} onAsk={() => act.askManager(f)} locked={locked} />)}
@@ -103,17 +103,17 @@ export function SummarySheet({ doc, priced, settings, locked, hideCost, openFlag
       <div className="qe-rollup">
         <div className="qe-rl"><span>Total Project Tons / Price</span><span className="num">{fmtNum(totalLb / 2000, 2)} t</span>{!hideCost && <span className="num">{anyUnknown ? '' : fmtMoney(sumCost)}</span>}<span className="num b">{fmtMoney(sumSell)}</span></div>
         {onePctOn && <div className="qe-rl sub"><span>Hidden 1% (rows 4–22, 25)</span><span /><span className="num">{fmtMoney(ro.onePct)}</span></div>}
-        <div className="qe-rl"><span><b>Base Price</b>{doc.dealerDiscount > 0 && <small className="muted"> (dealer/GC base; SMT drops the 1%)</small>}</span><span /><span className="num b">{fmtMoney(ro.quote.base)}</span></div>
-        <div className="qe-rl"><span>Installation Charges <small className="muted">(travel + equipment + on-site × 1.01)</small></span><span /><span className="num">{fmtMoney(ro.quote.installation)}</span></div>
+        <div className="qe-rl"><span><b>Base Price</b>{doc.dealerDiscount > 0 && <small className="muted"> (dealer/GC base; SMT drops the 1%)</small>}</span><span /><span className="num b">{fmtMoney(qm.base)}</span></div>
+        <div className="qe-rl"><span>Installation Charges <small className="muted">(travel + equipment + on-site × 1.01)</small></span><span /><span className="num">{fmtMoney(qm.installation)}</span></div>
         <div className="qe-rl"><span>Outbound Freight Charges</span><span />
           <span className="num"><NumIn disabled={locked} value={doc.outboundFreight} onCommit={v => act.patchDoc({ outboundFreight: v }, 'Outbound freight')} /></span></div>
         <div className="qe-rl"><span>Pre-Use Inspections and Load Tests <label className="inline"><input type="checkbox" disabled={locked} checked={doc.showPreUse} onChange={e => act.patchDoc({ showPreUse: e.target.checked }, 'Show pre-use')} /> show on quote</label></span><span />
           <span className="num"><NumIn disabled={locked} value={doc.preUse} onCommit={v => act.patchDoc({ preUse: v }, 'Pre-use')} /></span></div>
         <div className="qe-rl"><span>Sales Tax <select disabled={locked} value={doc.taxOn ? 'y' : 'n'} onChange={e => act.patchDoc({ taxOn: e.target.value === 'y' }, 'Sales tax')}>
-          <option value="n">exempt / not charged</option><option value="y">charge {(settings.sales_tax_rate * 100).toFixed(1)}%</option></select></span><span /><span className="num">{fmtMoney(ro.quote.tax)}</span></div>
+          <option value="n">exempt / not charged</option><option value="y">charge {(settings.sales_tax_rate * 100).toFixed(1)}%</option></select></span><span /><span className="num">{fmtMoney(qm.tax)}</span></div>
         <div className="qe-rl"><span>Dealer / GC discount <small className="muted">(dealers only — skips vendor items, inbound freight and the 1%)</small></span><span />
           <span className="num"><NumIn disabled={locked} value={Math.round(doc.dealerDiscount * 1000) / 10} suffix="%" onCommit={v => act.patchDoc({ dealerDiscount: v / 100 }, 'Dealer/GC discount')} /></span></div>
-        <div className="qe-rl total"><span>Total Project Price</span><span /><span className="num">${fmtMoney(ro.quote.total)}</span></div>
+        <div className="qe-rl total"><span>Total Project Price</span><span /><span className="num">${fmtMoney(qm.total)}</span></div>
       </div>
     </div>
   );
@@ -154,7 +154,7 @@ function RowDetail({ s, doc, priced, locked, hideCost, act, shapes, hl, setHl, s
   const cols = all.filter(c => !c.extra || extra.includes(c.id) || (c.id === 'costEa' && noDetail && !hideCost));
   useEffect(() => { try { localStorage.setItem(storeKey, JSON.stringify(extra)); } catch { /* ignore */ } }, [extra]);
   const rows = s.lines.map(p => ({ line: docLines.find(l => l.key === p.key)!, priced: p })).filter(r => r.line);
-  const edited = rows.filter(r => r.line.edited).length;
+  const edited = rows.filter(r => Object.keys(changedPaths(r.line)).length).length;
   const removed = ((doc as any).removed ?? []) as string[];
   const removedHere = removed.filter(r => removedCache.get(r)?.category === k);
   const pv = k === 'costBased' && (doc.family === 'freestanding' || priced.totals.productionValue > 0);

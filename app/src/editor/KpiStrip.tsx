@@ -1,6 +1,7 @@
 // Always-visible smell-test numbers (U4), with the change since the last save.
 import type { Priced, QuoteDoc } from '../../../src/engine/manual';
 import { lbOf, fmtMoney, fmtNum } from './smt';
+import { quoteMoney } from './engineApi';
 
 export interface Kpis {
   total: number; base: number; gmPct: number; tons: number; noWeight: number; sellPerLb: number | null; shopH: number; hPerTon: number | null;
@@ -20,12 +21,12 @@ export function kpis(doc: QuoteDoc, p: Priced): Kpis {
   const steelSell = steel.filter(l => l.detail).reduce((a, l) => a + l.sell, 0);
   const matCost = p.lines.filter(l => l.kind === 'material').reduce((a, l) => a + l.cost, 0);
   const t = lb / 2000, shopH = p.totals.shopHours;
-  const c = crewOf(doc);
+  const c = crewOf(doc), q = quoteMoney(p);
   return {
-    total: p.rollup.quote.total, base: p.rollup.quote.base, gmPct: p.totals.grossMarginPct, tons: t,
+    total: q.total, base: q.base, gmPct: p.totals.grossMarginPct, tons: t,
     noWeight: steel.filter(l => !l.detail).length,
     sellPerLb: lb ? steelSell / lb : null, shopH, hPerTon: t ? shopH / t : null,
-    pvPerShopH: shopH ? (p.rollup.quote.base - matCost) / shopH : null,
+    pvPerShopH: shopH ? (q.base - matCost) / shopH : null,
     installH: p.totals.installHours, suggested: doc.suggestedInstallHours ?? null, men: c.men, days: c.days,
   };
 }

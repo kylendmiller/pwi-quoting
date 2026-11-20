@@ -2,7 +2,7 @@
 // plus the per-row numbers (tons / hours, cost, sell, GM) and the one-line "peek" under a collapsed row.
 import type { CategoryKey } from '../../../src/engine/rollup';
 import type { Priced, PricedLine, QuoteDoc } from '../../../src/engine/manual';
-import { stdCostKnown, type EditorLine } from './engineApi';
+import { stdCostKnown, changedPaths, type EditorLine } from './engineApi';
 
 export type TabKind = 'structural' | 'plate' | 'std' | 'vendor' | 'cost' | 'paint' | 'shop' | 'site' | 'pmcad' | 'travel' | 'equipment';
 export interface RowDef { key: CategoryKey; row: number; label: string; tab: TabKind; tabName: string; install?: boolean; measure: 'tons' | 'hours' | 'runs' | 'none' }
@@ -59,7 +59,7 @@ export function rowStats(doc: QuoteDoc, priced: Priced): RowStats[] {
       noWeight: def.measure === 'tons' ? lines.filter(l => !isWeight(l)).length : 0,
       hours: lines.reduce((a, l) => a + l.hours, 0),
       runs: def.key === 'painting' ? lines.reduce((a, l) => a + l.qty, 0) : 0,
-      edited: docLines.filter(l => l.category === def.key && l.edited).reduce((a, l) => a + Object.keys(l.edited!).length, 0),
+      edited: docLines.filter(l => l.category === def.key).reduce((a, l) => a + Object.keys(changedPaths(l)).length, 0),
       hand: docLines.filter(l => l.category === def.key && !l.auto).length,
       costUnknown, estCost,
     };

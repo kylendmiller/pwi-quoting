@@ -1,7 +1,7 @@
 // Engineering Basis box at the top of Structural (U3): the geometry, and each member pick with the chart / calc
 // it came from, the chart row, the unity check (PWI max 0.98) and a plain tag.
 import type { QuoteDoc } from '../../../src/engine/manual';
-import type { EditorLine } from './engineApi';
+import { changedPaths, isChanged, type EditorLine } from './engineApi';
 import { compactShape, fmtNum } from './smt';
 
 const MEMBER_ROLES = ['girder', 'runway', 'column', 'beam', 'header', 'crossmember', 'mast', 'boom', 'arm', 'brace', 'track', 'truss', 'tower'];
@@ -10,7 +10,7 @@ const ROLE_NAME: Record<string, string> = { girder: 'Girder', runway: 'Runway', 
 export type Tag = { text: string; cls: 'ok' | 'calc' | 'review' | 'chart' | 'rule' | 'override' | 'hand' };
 export function tagFor(l: EditorLine): Tag {
   const b = l.basis;
-  if (l.edited && 'detail.shape' in l.edited) return { text: 'REP OVERRIDE', cls: 'override' };
+  if (isChanged(l, 'detail.shape')) return { text: 'REP OVERRIDE', cls: 'override' };
   if (!l.auto) return { text: 'ADDED BY HAND', cls: 'hand' };
   if (!b) return { text: 'NO BASIS', cls: 'review' };
   if (b.flag || (b.unity != null && b.unity > 0.98)) return { text: 'REVIEW', cls: 'review' };
@@ -58,7 +58,7 @@ export function BasisBox({ doc, lines, onPick, active }: { doc: QuoteDoc; lines:
                 const lens = [...new Set(g.map(x => (x.detail as any).lengthFt))];
                 const pick = d.type === 'steel' ? compactShape(d.shape) : `${d.plf} plf built-up`;
                 const tag = tagFor(l);
-                const was = l.edited?.['detail.shape'] as string | undefined;
+                const was = changedPaths(l)['detail.shape'] as string | undefined;
                 const keys = g.map(x => x.key);
                 const on = keys.some(x => active.has(x));
                 const unity = b?.unity;

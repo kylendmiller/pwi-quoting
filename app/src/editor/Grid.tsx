@@ -4,7 +4,7 @@
 // Number cells take simple arithmetic and feet-inches through parseNum (no eval).
 import { useEffect, useRef, useState } from 'react';
 import type { PricedLine } from '../../../src/engine/manual';
-import { parseNum, getPath, type EditorLine } from './engineApi';
+import { parseNum, getPath, isChanged, changedPaths, type EditorLine } from './engineApi';
 import type { Col } from './tabs';
 
 export interface GridRow { line: EditorLine; priced: PricedLine }
@@ -48,8 +48,8 @@ export function Grid({ rows, cols, locked, onEdit, onRevert, onDelete, highlight
     const { r, c, text } = edit; const col = cols[c]; const path = pathAt(r, c)!; const l = rows[r].line;
     let v: unknown = text;
     if (col.input === 'num') {
-      const n = parseNum(text);
-      if (n == null || (path !== 'markupPct' && path !== 'unitSell' && n < 0 && path !== 'qty')) { setEdit({ ...edit, err: true }); return false; }
+      const n = parseNum(text, { allowNegative: path === 'markupPct' || path === 'unitSell' });
+      if (n == null || (path === 'markupPct' && n < -100)) { setEdit({ ...edit, err: true }); return false; }
       v = n;
     } else if (col.input === 'shape') {
       const s = text.trim(); const hit = shapes?.find(x => x.toLowerCase().replace(/\s/g, '') === s.toLowerCase().replace(/\s/g, ''));
@@ -82,7 +82,7 @@ export function Grid({ rows, cols, locked, onEdit, onRevert, onDelete, highlight
       case 'Enter': case 'F2': e.preventDefault(); return start(r, c);
       case 'Escape': setAt(null); return;
       case 'Delete': if (!locked) { e.preventDefault(); onDelete(rows[r].line.key); } return;
-      case 'Backspace': if (e.ctrlKey || e.metaKey) { const p = pathAt(r, c); if (p && rows[r].line.edited && p in rows[r].line.edited) { e.preventDefault(); onRevert(rows[r].line.key, p); } } return;
+      case 'Backspace': if (e.ctrlKey || e.metaKey) { const p = pathAt(r, c); if (p && isChanged(rows[r].line, p)) { e.preventDefault(); onRevert(rows[r].line.key, p); } } return;
     }
     if (e.key.length === 1 && /[0-9.=\-(a-zA-Z]/.test(e.key) && !e.ctrlKey && !e.metaKey && !e.altKey && editable(r, c)) { e.preventDefault(); start(r, c, e.key); }
   };
@@ -100,7 +100,8 @@ export function Grid({ rows, cols, locked, onEdit, onRevert, onDelete, highlight
               <tr key={l.key} className={`${highlight?.has(l.key) ? 'hl' : ''} ${!l.auto ? 'hand' : ''}`}>
                 {cols.map((c, ci) => {
                   const p = c.path?.(l) ?? null;
-                  const changed = !!(p && l.edited && p in l.edited);
+                  const changed = !!p && isChanged(l, p);
+                  const was = p ? changedPaths(l)[p] : undefined;
                   const active = at?.r === r && at?.c === ci;
                   const v = c.get(l, row.priced);
                   const txt = c.show ? c.show(v, l, row.priced) : v == null ? '' : String(v);
@@ -108,7 +109,7 @@ export function Grid({ rows, cols, locked, onEdit, onRevert, onDelete, highlight
                   const cls = [c.align === 'l' ? 'l' : 'num', p && !locked ? 'ed' : '', changed ? 'changed' : '', active ? 'active' : ''].join(' ');
                   return (
                     <td key={c.id} className={cls}
-                      title={changed ? `Builder had ${fmtBuilder(l.edited![p!])} · you changed it to ${fmtBuilder(getPath(l, p!))}` : ci === 0 ? [l.description, l.group, note].filter(Boolean).join('\n') : undefined}
+                      title={changed ? `Builder had ${fmtBuilder(was)} · you changed it to ${fmtBuilder(getPath(l, p!))}` : ci === 0 ? [l.description, l.group, note].filter(Boolean).join('\n') : undefined}
                       onMouseDown={() => { if (!isEdit) { if (edit) commit(); setAt({ r, c: ci }); } }}
                       onDoubleClick={() => start(r, ci)}>
                       {isEdit ? <input ref={inp} className={edit!.err ? 'err' : ''} value={edit!.text} list={c.input === 'shape' ? 'qe-shapes' : undefined}
@@ -117,7 +118,7 @@ export function Grid({ rows, cols, locked, onEdit, onRevert, onDelete, highlight
                           {ci === 0 && !l.auto && <span className="tag hand" title="Added by you">+</span>}
                           {ci === 0 && note && <span className="tag warn" title={note}>!</span>}
                           <span className="v">{txt}</span>
-                          {changed && !locked && <button tabIndex={-1} className="rv" title={`Back to builder's ${fmtBuilder(l.edited![p!])}`} onMouseDown={e => { e.stopPropagation(); onRevert(l.key, p!); }}>↺</button>}
+                          {changed && !locked && <button tabIndex={-1} className="rv" title={`Back to builder's ${fmtBuilder(was)}`} onMouseDown={e => { e.stopPropagation(); onRevert(l.key, p!); }}>↺</button>}
                         </>}
                     </td>
                   );

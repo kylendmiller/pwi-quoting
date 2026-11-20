@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import type { Priced, QuoteDoc, Settings, Flag } from '../../../src/engine/manual';
 import type { CategoryKey } from '../../../src/engine/rollup';
 import type { Catalog } from '../../../src/engine/kit';
-import { linesOf, editLine, revertField, revertLine, deriveLine, withRefs, buildFresh, planRebuild, applyPlan, setCrewDaysFallback,
+import { linesOf, isChanged, changedPaths, editLine, revertField, revertLine, deriveLine, withRefs, planRebuild, applyPlan, setCrewDaysFallback,
   S_READY, type EditorLine, type EditorDoc, type RebuildPlan } from './engineApi';
 import { SummarySheet, type RefData } from './SummarySheet';
 import { KpiStrip, kpis } from './KpiStrip';
@@ -21,7 +21,7 @@ export interface NumbersProps {
   openFlags: Flag[]; approvedRules: string[]; isManager: boolean;
   askManager: (f: Flag) => void;
   vendorSearch?: (q: string) => Promise<any[]>;
-  importBox?: (onBuilt: (fresh: QuoteDoc, label: string, notes: string[]) => void) => React.ReactNode;
+  importBox?: (onSpec: (spec: any, label: string) => void) => React.ReactNode;
 }
 
 const OPEN_KEY = 'pwi.editor.open';
@@ -31,7 +31,7 @@ export function NumbersView(p: NumbersProps) {
   const { doc, priced, settings, locked, refData } = p;
   const [open, setOpenS] = useState<Set<CategoryKey>>(readOpen);
   const setOpen = (s: Set<CategoryKey>) => { setOpenS(s); try { localStorage.setItem(OPEN_KEY, JSON.stringify([...s])); } catch { /* ignore */ } };
-  const [pending, setPending] = useState<{ plan: RebuildPlan; fresh: QuoteDoc; label: string; notes: string[] } | null>(null);
+  const [pending, setPending] = useState<{ plan: RebuildPlan; label: string } | null>(null);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState('');
   const [notes, setNotes] = useState<string[]>([]);
@@ -50,7 +50,7 @@ export function NumbersView(p: NumbersProps) {
   const withShape = (l: EditorLine): EditorLine => {
     const d: any = l.detail; if (d?.type !== 'steel') return l;
     const sp = shapeProps(d.shape); if (!sp) return l;
-    const keepPrice = l.edited && 'detail.costPerLb' in l.edited;
+    const keepPrice = isChanged(l, 'detail.costPerLb');
     return deriveLine({ ...l, detail: { ...d, lbPerFt: sp.lbPerFt, priceGroup: sp.priceGroup, ...(keepPrice ? {} : { costPerLb: sp.costPerLb, costSource: sp.costSource }) } });
   };
   const describeField = (path: string) => path.replace('detail.', '').replace('lengthFt', 'length').replace('costPerLb', '$/lb').replace('markupPct', 'markup');
@@ -67,7 +67,7 @@ export function NumbersView(p: NumbersProps) {
       let n = revertField(l, path); if (path === 'detail.shape') n = withShape(n);
       setLines(L.map(x => (x.key === key ? n : x)), `Revert ${describeField(path)}`);
     },
-    revertRow: (cat: CategoryKey) => setLines(L.map(x => (x.category === cat && x.edited ? withShape(revertLine(x)) : x)), 'Undo my changes in row'),
+    revertRow: (cat: CategoryKey) => setLines(L.map(x => (x.category === cat && Object.keys(changedPaths(x)).length ? withShape(revertLine(x)) : x)), 'Undo my changes in row'),
     remove: (key: string) => {
       const l = L.find(x => x.key === key); if (!l) return;
       let removed = (doc as EditorDoc).removed ?? [];
@@ -112,21 +112,17 @@ export function NumbersView(p: NumbersProps) {
   const startRebuild = async (spec: any, label: string) => {
     setBusy(true); setErr('');
     try {
-      const b = buildFresh(doc, spec, await p.getCatalog(), settings);
-      setPending({ plan: planRebuild(doc as EditorDoc, b.doc, settings), fresh: b.doc, label, notes: [...b.blockers, ...b.notes] });
+      setPending({ plan: planRebuild(doc as EditorDoc, spec, await p.getCatalog(), settings as any), label });
     } catch (e: any) { setErr(e.message ?? String(e)); } finally { setBusy(false); }
   };
-  const fromImport = (fresh: QuoteDoc, label: string, n: string[]) => {
-    const f = { ...fresh, lines: fresh.lines.filter(l => l.auto) };
-    setPending({ plan: planRebuild(doc as EditorDoc, f, settings), fresh: f, label, notes: n });
-  };
+  const fromImport = (spec: any, label: string) => startRebuild(spec, label);
   const onCrewDays = (men: number, days: number) => {
     if (!(days >= 1 && days <= 365)) return;
     if (S_READY.crewDays) startRebuild({ ...(doc.spec as any), items: (doc.spec as any).items.map((it: any) => (it.install ? { ...it, crewDays: days } : it)) }, `Crew days → ${days}`);
     else p.setDoc(setCrewDaysFallback(doc as EditorDoc, men, days, doc.family), `Crew ${men} men × ${days} days`);
   };
 
-  const topFlags = p.openFlags.filter(f => flagRow(f.rule) == null);
+  const topFlags = p.openFlags.filter(f => flagRow(f as any) == null);
   useEffect(() => { if (!p.saved) setNotes([]); }, [p.saved]);
   return (
     <div className="qe-root">
@@ -140,9 +136,9 @@ export function NumbersView(p: NumbersProps) {
       {!locked && p.importBox?.(fromImport)}
       {pending && <RebuildDialog title={pending.label} plan={pending.plan} approvedRules={p.approvedRules} onCancel={() => setPending(null)}
         onApply={choices => {
-          const next = applyPlan(doc as EditorDoc, pending.fresh, pending.plan, choices);
+          const next = applyPlan(pending.plan, choices);
           p.setDoc(next, `Rebuild: ${pending.label}`);
-          setNotes(pending.notes); setOpen(new Set([...open, 'structural'])); setPending(null);
+          setNotes([...pending.plan.blockers, ...pending.plan.notes]); setOpen(new Set([...open, 'structural'])); setPending(null);
         }} />}
     </div>
   );
