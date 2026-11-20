@@ -37,7 +37,7 @@
       `mezzanine.ts` + `kit.ts`. Wire into `BUILDERS` (`buildSpec.ts`), `describe()` (`app/src/model.ts`), tests, and calibrate if fixtures exist.
       (Standalone stairs: NOT tonight.) — Done: `src/engine/workPlatform.ts` + `rules/work_platform_rules.json` (truss/hoist/tower selection, components at list −15%, specialty +25%, plate/structural through Kit, every option row, Labor rows 60-68 + accessory hours, $600 CAD/PM, $1,600 paint, $125 freight per set). No sold work-platform set in fixtures (28738 is a grating pit platform), so not calibrated; install hours are an estimate.
 - [x] 11. Edge-case tests for every builder: min/max sizes, ship-only vs installed, missing field → blocker (never a crash), shared trip with 3+ items.
-- [ ] 12. Update `skill/pwi-quote/SKILL.md` with `work_platform` fields.
+- [x] 12. Update `skill/pwi-quote/SKILL.md` with `work_platform` fields.
 
 ## Morning deliverables
 1. Draft PR "Overnight: quote builders" → main (do not merge).
