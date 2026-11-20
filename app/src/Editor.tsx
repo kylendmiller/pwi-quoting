@@ -1,49 +1,62 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { supabase, api, money } from './supabase';
-import { priceManual, type QuoteDoc, type QuoteLine, type Settings } from '../../src/engine/manual';
+import { type QuoteDoc, type QuoteLine, type Settings } from '../../src/engine/manual';
 import type { CategoryKey } from '../../src/engine/rollup';
 import { CATEGORIES, FAMILIES, isHours, newLine, kindOf, describe } from './model';
 import { downloadPdf } from './QuotePdf';
 import type { Profile } from './main';
 import library from './wording-library.txt?raw';
 import { ImportSpec } from './ImportSpec';
+import { loadCatalog } from './catalog';
+import { NumbersView } from './editor/NumbersView';
+import { PriceRail } from './editor/PriceRail';
+import { useDocHistory, useEditorKeys, saveDraft, readDraft, clearDraft, type Draft } from './editor/useDocHistory';
+import { diffDocs } from './editor/changes';
+import { price, effectiveDoc } from './editor/engineApi';
+import { FLAG_TEXT as flagText } from './editor/flags';
+import './editor/editor.css';
 
 const LIBRARY = library.split(/^=== /m).filter(Boolean).map(b => {
   const [head, ...rest] = b.split('\n'); return { title: rest.find(l => l.trim()) ?? head, text: rest.join('\n').trim() };
 });
-const FLAG_TEXT: Record<string, string> = {
-  INSTALL_BELOW_SUGGESTED: 'Install hours are below the suggested amount',
-  INSTALL_MANUAL_NO_SUGGESTION: 'Install was entered by hand with no suggested amount',
-  PV_BELOW_FLOOR: 'Freestanding Production Value was lowered',
-  CLASS_D: 'Class D crane',
-};
+const FLAG_TEXT = (rule: string) => flagText({ rule });
+const CLASSIC_KEY = 'pwi.editor.classic';
 
 export function Editor({ quoteId, me, mode = 'edit' }: { quoteId: string; me: Profile; mode?: 'review' | 'edit' }) {
   const [quote, setQuote] = useState<any>(null);
   const [revs, setRevs] = useState<any[]>([]);
   const [rev, setRev] = useState<any>(null);
-  const [doc, setDoc] = useState<QuoteDoc | null>(null);
+  const H = useDocHistory();
+  const doc = H.doc;
+  const [saved, setSaved] = useState<QuoteDoc | null>(null);           // the doc as last loaded / saved (for deltas and "unsaved changes")
   const [header, setHeader] = useState<any>({});
+  const [headerDirty, setHeaderDirty] = useState(false);
   const [settings, setSettings] = useState<Settings | null>(null);
   const [ref, setRef] = useState<any>({ ops: [], parts: [], shapes: [], groups: {}, discounts: {} });
   const [approvals, setApprovals] = useState<any[]>([]);
   const [hideInternal, setHideInternal] = useState(false);
   const [msg, setMsg] = useState<{ t: 'ok' | 'err'; m: string } | null>(null);
-  const [dirty, setDirty] = useState(false);
   const [busy, setBusy] = useState(false);
   const [vendorQ, setVendorQ] = useState('');
   const [vendorHits, setVendorHits] = useState<any[]>([]);
   const [buildNotes, setBuildNotes] = useState<string[]>([]);
+  const [draft, setDraft] = useState<Draft | null>(null);
+  const [classic, setClassicS] = useState(() => { try { return localStorage.getItem(CLASSIC_KEY) === '1'; } catch { return false; } });
+  const setClassic = (b: boolean) => { setClassicS(b); try { localStorage.setItem(CLASSIC_KEY, b ? '1' : '0'); } catch { /* ignore */ } };
+  const dirty = (!!doc && !!saved && doc !== saved) || headerDirty;
 
   const load = async (revId?: string) => {
     const { data: q } = await supabase.from('quotes').select('*, customers(*), contacts(*)').eq('id', quoteId).single();
     const { data: rs } = await supabase.from('quote_revisions').select('*').eq('quote_id', quoteId).order('rev');
     setQuote(q); setRevs(rs ?? []);
     const cur = (rs ?? []).find(r => r.id === revId) ?? (rs ?? []).at(-1);
-    setRev(cur); setDoc(cur?.doc?.lines ? cur.doc : { ...(cur?.doc ?? {}), lines: [], wording: '', options: [] });
+    const d: QuoteDoc = cur?.doc?.lines ? cur.doc : { ...(cur?.doc ?? {}), lines: [], wording: '', options: [] };
+    setRev(cur); H.reset(d); setSaved(d); setHeaderDirty(false);
     setHeader({ project_name: q?.project_name, job_location: q?.job_location });
+    const dr = cur && !cur.locked ? readDraft(cur.id) : null;
+    setDraft(dr && dr.docVersion === cur.doc_version && JSON.stringify(dr.doc) !== JSON.stringify(d) ? dr : null);
     const { data: ap } = await supabase.from('approvals').select('*').eq('revision_id', cur?.id);
-    setApprovals(ap ?? []); setDirty(false);
+    setApprovals(ap ?? []);
   };
   useEffect(() => {
     load();
@@ -60,29 +73,36 @@ export function Editor({ quoteId, me, mode = 'edit' }: { quoteId: string; me: Pr
   }, [quoteId]);
   useEffect(() => {
     if (vendorQ.length < 3) { setVendorHits([]); return; }
-    const t = setTimeout(() => supabase.from('vendor_parts').select('*').or(`part.ilike.%${vendorQ}%,description.ilike.%${vendorQ}%`).limit(12).then(({ data }) => setVendorHits(data ?? [])), 250);
+    const t = setTimeout(() => vendorSearch(vendorQ).then(setVendorHits), 250);
     return () => clearTimeout(t);
   }, [vendorQ]);
+  // Local draft: every unsaved change is kept in this browser until it is saved or discarded (U8).
+  useEffect(() => { if (rev?.id && doc && dirty && !rev.locked) saveDraft(rev.id, { docVersion: rev.doc_version, at: new Date().toISOString(), doc, header }); }, [doc, header, dirty]);
 
-  const priced = useMemo(() => (doc && settings ? priceManual(doc, settings) : null), [doc, settings]);
-  if (!quote || !doc || !settings) return <p>Loading…</p>;
-
+  const priced = useMemo(() => (doc && settings ? price(doc, settings) : null), [doc, settings]);
+  const savedPriced = useMemo(() => (saved && settings ? price(saved, settings) : null), [saved, settings]);
   const locked = rev?.locked;
-  const upd = (patch: Partial<QuoteDoc>) => { setDoc({ ...doc, ...patch }); setDirty(true); };
-  const updLine = (key: string, patch: Partial<QuoteLine>) => upd({ lines: doc.lines.map(l => (l.key === key ? { ...l, ...patch } : l)) });
-  const addLine = (l: QuoteLine) => upd({ lines: [...doc.lines, l] });
-  const fam = doc.family;
-  const shopHours = doc.lines.filter(l => l.kind === 'shop_labor').reduce((s, l) => s + (l.qty || 0), 0);
-
-  const save = async () => {
+  const save = useCallback(async () => {
+    if (!doc || !rev || !settings || rev.locked || !dirty || busy) return;
+    const voidList = voidsOf();
+    if (voidList.length && !confirm(`Saving changes numbers a manager approved:\n\n${voidList.join('\n')}\n\nThe approval will be voided. Save anyway?`)) return;
     setBusy(true); setMsg(null);
     try {
-      const d = fam === 'freestanding' ? { ...doc, freestandingShopHours: shopHours } : { ...doc, freestandingShopHours: 0 };
-      const res = await api('save', { revision_id: rev.id, doc: d, doc_version: rev.doc_version, header });
-      setRev(res.revision); setDoc(res.revision.doc); setDirty(false); setMsg({ t: 'ok', m: 'Saved' });
+      const res = await api('save', { revision_id: rev.id, doc: effectiveDoc(doc), doc_version: rev.doc_version, header });
+      setRev(res.revision); H.reset(res.revision.doc); setSaved(res.revision.doc); setHeaderDirty(false); clearDraft(rev.id); setDraft(null); setMsg({ t: 'ok', m: 'Saved' });
       const { data: ap } = await supabase.from('approvals').select('*').eq('revision_id', rev.id); setApprovals(ap ?? []);
-    } catch (e: any) { setMsg({ t: 'err', m: e.message }); } finally { setBusy(false); }
-  };
+    } catch (e: any) { setMsg({ t: 'err', m: `${e.message}${/version|conflict|409/i.test(e.message) ? ' — your edits are kept in this browser; reload and choose "Restore".' : ''}` }); } finally { setBusy(false); }
+  }, [doc, rev, dirty, busy, header, settings, approvals]);
+  useEditorKeys({ undo: H.undo, redo: H.redo, save: mode === 'edit' && !locked ? save : undefined });
+
+  if (!quote || !doc || !settings) return <p>Loading…</p>;
+
+  const upd = (patch: Partial<QuoteDoc>, label = 'edit', tag?: string) => H.set({ ...doc, ...patch }, label, tag);
+  const updLine = (key: string, patch: Partial<QuoteLine>) => upd({ lines: doc.lines.map(l => (l.key === key ? { ...l, ...patch } : l)) }, 'edit line', `line:${key}:${Object.keys(patch).join()}`);
+  const addLine = (l: QuoteLine) => upd({ lines: [...doc.lines, l] }, 'add line');
+  const setHead = (h: any) => { setHeader(h); setHeaderDirty(true); };
+  const fam = doc.family;
+
   const act = async (action: string, payload: any, ok: string) => {
     setBusy(true); setMsg(null);
     try { const r = await api(action, payload); setMsg({ t: 'ok', m: ok }); await load(r?.revision?.id); return r; }
@@ -93,8 +113,36 @@ export function Editor({ quoteId, me, mode = 'edit' }: { quoteId: string; me: Pr
   const openFlags = (priced?.flags ?? []).filter(f => !approvedRules.includes(f.rule));
   const lintErrors = (priced?.lint ?? []).filter(l => l.level === 'error');
   const number = quote.job_id ?? quote.quote_number;
+  const isMgr = me.role === 'manager' || me.role === 'admin';
+  // An approved flag whose numbers changed since the last save → saving voids that approval (U9).
+  function voidsOf(): string[] {
+    if (!priced || !savedPriced) return [];
+    return approvedRules.filter(r => {
+      const now = priced.flags.find(f => f.rule === r), was = savedPriced.flags.find(f => f.rule === r);
+      return now && was && JSON.stringify(now.detail) !== JSON.stringify(was.detail);
+    }).map(r => FLAG_TEXT(r));
+  }
+  const send = async () => {
+    const ok = await act('send', { revision_id: rev.id }, `Sent — R${rev.rev} locked`);
+    // TODO(S9): the PDF should render from the server's priced result; use it when the send response carries one.
+    if (ok) downloadPdf({ quote, rev: { ...rev, locked: true, sent_at: new Date().toISOString() }, doc, priced: (ok as any)?.revision?.priced ?? priced!, me, number });
+  };
+  const revise = () => act('revise', { quote_id: quote.id, from_revision_id: rev.id }, 'New revision started');
+  const win = async () => {
+    const job = prompt('Job ID (5 digits) for this won job:'); if (!job) return;
+    if (await act('win', { quote_id: quote.id, job_id: job.trim() }, 'Marked won')) await act('revise', { quote_id: quote.id, doc_type: 'CONFIRMATION' }, 'Confirmation started');
+  };
+  const askManager = async (f: { rule: string; detail?: any }) => {
+    const note = `${number} R${rev.rev}: ${flagText(f)}. Please review and approve in the quote app: ${location.origin}/#/q/${quoteId}/edit`;
+    try { await api('request_approval', { revision_id: rev.id, rule: f.rule, note }); setMsg({ t: 'ok', m: 'Approval requested from your sales manager.' }); }
+    catch {
+      try { await navigator.clipboard.writeText(note); setMsg({ t: 'ok', m: 'Request copied — paste it to your sales manager (Teams or email). Save first so they approve the saved numbers.' }); }
+      catch { prompt('Send this to your sales manager:', note); }
+    }
+  };
+  const vendorSearch = async (q: string) => (await supabase.from('vendor_parts').select('*').or(`part.ilike.%${q}%,description.ilike.%${q}%`).limit(12)).data ?? [];
 
-  // ---- quick-add helpers ----
+  // ---- quick-add helpers (classic view) ----
   const addSteel = (shape: string, qty: number, lengthFt: number, use: string) => {
     const s = ref.shapes.find((x: any) => x.shape === shape); if (!s) return;
     const unitCost = Number(s.lb_per_ft) * lengthFt * (ref.groups[s.price_group] ?? 0);
@@ -106,35 +154,55 @@ export function Editor({ quoteId, me, mode = 'edit' }: { quoteId: string; me: Pr
     addLine(newLine('vendor', fam, { description: `${p.vendor} ${p.part} — ${p.description}`, qty: 1, unitCost: Math.round(cost * 100) / 100, markupPct: Math.round(((sell / cost) - 1) * 10000) / 100 }));
     setVendorQ('');
   };
+  const importBox = (onBuilt: (fresh: QuoteDoc, label: string, notes: string[]) => void) => <ImportSpec doc={doc} settings={settings} onApply={(d, h, notes) => {
+    setHead({ ...header, project_name: header.project_name || h.project_name, job_location: header.job_location || h.job_location });
+    onBuilt(d, 'pasted spec from Claude', notes);
+  }} />;
+  const rail = priced && <PriceRail priced={priced} doc={doc} settings={settings} locked={!!locked} dirty={dirty} busy={busy} hideCost={hideInternal} setHideCost={setHideInternal}
+    openFlags={openFlags} approvedRules={approvedRules} isManager={isMgr} lint={priced.lint} msg={msg} changes={diffDocs(saved, doc)} voids={voidsOf()}
+    undo={{ can: H.canUndo, label: H.undoLabel, run: H.undo }} redo={{ can: H.canRedo, label: H.redoLabel, run: H.redo }}
+    onSave={save} onSend={send} onPdf={() => downloadPdf({ quote, rev, doc, priced: priced!, me, number })} onApprove={rule => act('approve', { revision_id: rev.id, rule }, 'Approved')}
+    onRevise={revise} onWin={!quote.job_id ? win : undefined} rev={rev.rev} onTarget={(d, l) => H.set(d, l)} />;
+  const newView = mode === 'edit' && !classic;
 
   return (
-    <>
+    <div className={newView ? 'qe-page' : ''}>
       <div className="row" style={{ justifyContent: 'space-between' }}>
         <h2>{number} · {quote.customers?.name} · {header.project_name}</h2>
         <div className="row">
-          <select value={rev.id} onChange={e => load(e.target.value)}>{revs.map(r => <option key={r.id} value={r.id}>R{r.rev} {r.doc_type}{r.locked ? ' (sent)' : ''}</option>)}</select>
+          {mode === 'edit' && <label className="inline muted" title="The old one-table editor, kept for safety"><input type="checkbox" checked={classic} onChange={e => setClassic(e.target.checked)} /> classic view</label>}
+          <select value={rev.id} onChange={e => { if (!dirty || confirm('You have unsaved changes on this revision. Switch anyway? (They stay saved in this browser as a draft.)')) load(e.target.value); }}>{revs.map(r => <option key={r.id} value={r.id}>R{r.rev} {r.doc_type}{r.locked ? ' (sent)' : ''}</option>)}</select>
           <span className={`pill ${quote.status}`}>{quote.status.replace('_', ' ')}</span>
         </div>
       </div>
-      {locked && <div className="banner ok">This revision was sent {new Date(rev.sent_at).toLocaleString()} and is locked. Start a new revision to make changes.</div>}
+      {locked && <div className="banner ok qe-locked">R{rev.rev} was sent {new Date(rev.sent_at).toLocaleString()} and is locked. <button className="sm" disabled={busy} onClick={revise}>Start revision R{Math.max(...revs.map(r => r.rev)) + 1}</button></div>}
+      {draft && <div className="banner flag">You have unsaved edits from {new Date(draft.at).toLocaleString()} in this browser.
+        <button className="sm" onClick={() => { H.set(draft.doc, 'Restore draft'); if (draft.header) setHead(draft.header); setDraft(null); }}>Restore</button>
+        <button className="secondary sm" onClick={() => { clearDraft(rev.id); setDraft(null); }}>Discard</button></div>}
 
-      <div className="editor">
-        <div>
+      <div className={`editor ${newView ? 'qe-editor' : ''}`}>
+        <div className="qe-main">
           {mode === 'review' ? <><Review quote={quote} doc={doc} header={header} priced={priced} quoteId={quoteId} locked={locked} />{!locked && <ImportSpec doc={doc} settings={settings} onApply={(d, h, notes) => {
-            setDoc(d); setDirty(true); setBuildNotes(notes);
-            setHeader({ ...header, project_name: header.project_name || h.project_name, job_location: header.job_location || h.job_location });
+            H.set(d, 'Build from spec'); setBuildNotes(notes);
+            setHead({ ...header, project_name: header.project_name || h.project_name, job_location: header.job_location || h.job_location });
             setMsg({ t: 'ok', m: `Built ${d.lines.length} lines — review, then Save.` });
           }} />}</> : <>
-          <div className="card grid g4">
-            <div><label>Project</label><input disabled={locked} value={header.project_name ?? ''} onChange={e => { setHeader({ ...header, project_name: e.target.value }); setDirty(true); }} /></div>
-            <div><label>Job location</label><input disabled={locked} value={header.job_location ?? ''} onChange={e => { setHeader({ ...header, job_location: e.target.value }); setDirty(true); }} /></div>
-            <div><label>Main product</label><select disabled={locked} value={fam} onChange={e => upd({ family: e.target.value })}>{FAMILIES.map(f => <option key={f.key} value={f.key}>{f.label}</option>)}</select></div>
+          <div className={`card grid g4 ${newView ? 'qe-head' : ''}`}>
+            <div><label>Project</label><input disabled={locked} value={header.project_name ?? ''} onChange={e => setHead({ ...header, project_name: e.target.value })} /></div>
+            <div><label>Job location</label><input disabled={locked} value={header.job_location ?? ''} onChange={e => setHead({ ...header, job_location: e.target.value })} /></div>
+            <div><label>Main product</label><select disabled={locked} value={fam} onChange={e => upd({ family: e.target.value }, 'Main product')}>{FAMILIES.map(f => <option key={f.key} value={f.key}>{f.label}</option>)}</select></div>
             <div><label>Document</label><input disabled value={rev.doc_type} /></div>
           </div>
 
+          {newView && priced && <NumbersView doc={doc} priced={priced} saved={saved && savedPriced ? { doc: saved, priced: savedPriced } : null}
+            setDoc={(d, l, t) => H.set(d, l, t)} settings={settings} locked={!!locked} hideCost={hideInternal} refData={ref}
+            getCatalog={() => loadCatalog(settings)} openFlags={openFlags} approvedRules={approvedRules} isManager={isMgr}
+            askManager={askManager} vendorSearch={vendorSearch} importBox={importBox} />}
+
+          {!newView && <>
           {!locked && <ImportSpec doc={doc} settings={settings} onApply={(d, h, notes) => {
-            setDoc(d); setDirty(true); setBuildNotes(notes);
-            setHeader({ ...header, project_name: header.project_name || h.project_name, job_location: header.job_location || h.job_location });
+            H.set(d, 'Build from spec'); setBuildNotes(notes);
+            setHead({ ...header, project_name: header.project_name || h.project_name, job_location: header.job_location || h.job_location });
             setMsg({ t: 'ok', m: `Built ${d.lines.length} lines — review, then Save.` });
           }} />}
           {buildNotes.length > 0 && <div className="card"><h3>Check these</h3><ul>{buildNotes.map((n, i) => <li key={i}>{n}</li>)}</ul>
@@ -158,7 +226,7 @@ export function Editor({ quoteId, me, mode = 'edit' }: { quoteId: string; me: Pr
                       <td style={{ width: 80 }}>{!hrs && <input disabled={locked} className="num" type="number" value={l.markupPct ?? ''} onChange={e => updLine(l.key, { markupPct: e.target.value === '' ? undefined : Number(e.target.value) })} />}</td>
                       <td style={{ width: 100 }}>{!hrs && l.unitCost == null && <input disabled={locked} className="num" type="number" value={l.unitSell ?? ''} onChange={e => updLine(l.key, { unitSell: e.target.value === '' ? undefined : Number(e.target.value) })} />}{hrs && <span className="muted">rate</span>}</td>
                       <td className="num">{money(pl?.sell)}</td>
-                      <td>{!locked && <button className="secondary" onClick={() => upd({ lines: doc.lines.filter(x => x.key !== l.key) })}>×</button>}</td>
+                      <td>{!locked && <button className="secondary" onClick={() => upd({ lines: doc.lines.filter(x => x.key !== l.key) }, 'remove line')}>×</button>}</td>
                     </tr>
                   );
                 })}
@@ -168,78 +236,37 @@ export function Editor({ quoteId, me, mode = 'edit' }: { quoteId: string; me: Pr
           </div>
 
           <div className="card grid g4">
-            <div><label>Outbound freight $</label><input disabled={locked} type="number" value={doc.outboundFreight} onChange={e => upd({ outboundFreight: Number(e.target.value) })} /></div>
-            <div><label>Pre-use inspection / load test $</label><input disabled={locked} type="number" value={doc.preUse} onChange={e => upd({ preUse: Number(e.target.value) })} />
+            <div><label>Outbound freight $</label><input disabled={locked} type="number" value={doc.outboundFreight} onChange={e => upd({ outboundFreight: Number(e.target.value) }, 'freight', 'freight')} /></div>
+            <div><label>Pre-use inspection / load test $</label><input disabled={locked} type="number" value={doc.preUse} onChange={e => upd({ preUse: Number(e.target.value) }, 'pre-use', 'preuse')} />
               <label><input type="checkbox" disabled={locked} checked={doc.showPreUse} onChange={e => upd({ showPreUse: e.target.checked })} style={{ width: 'auto' }} /> show on quote</label></div>
-            <div><label>Dealer / GC discount %</label><input disabled={locked} type="number" value={Math.round(doc.dealerDiscount * 1000) / 10} onChange={e => upd({ dealerDiscount: Number(e.target.value) / 100 })} /></div>
+            <div><label>Dealer / GC discount %</label><input disabled={locked} type="number" value={Math.round(doc.dealerDiscount * 1000) / 10} onChange={e => upd({ dealerDiscount: Number(e.target.value) / 100 }, 'discount', 'disc')} /></div>
             <div><label>Sales tax</label><select disabled={locked} value={doc.taxOn ? 'y' : 'n'} onChange={e => upd({ taxOn: e.target.value === 'y' })}><option value="n">Exempt / not charged</option><option value="y">Charge {Math.round(settings.sales_tax_rate * 1000) / 10}%</option></select></div>
-            {fam === 'freestanding' && <div><label>Production Value $/shop hr (default {settings.freestanding_pv_per_shop_hour})</label><input disabled={locked} type="number" placeholder={String(settings.freestanding_pv_per_shop_hour)} value={doc.pvPerHourOverride ?? ''} onChange={e => upd({ pvPerHourOverride: e.target.value === '' ? null : Number(e.target.value) })} /></div>}
+            {fam === 'freestanding' && <div><label>Production Value $/shop hr (default {settings.freestanding_pv_per_shop_hour})</label><input disabled={locked} type="number" placeholder={String(settings.freestanding_pv_per_shop_hour)} value={doc.pvPerHourOverride ?? ''} onChange={e => upd({ pvPerHourOverride: e.target.value === '' ? null : Number(e.target.value) }, 'PV', 'pv')} /></div>}
           </div>
+          </>}
 
           <div className="card">
             <div className="row" style={{ justifyContent: 'space-between' }}><h3>Quote wording</h3>
-              {!locked && <select value="" onChange={e => { const b = LIBRARY[Number(e.target.value)]; if (b) upd({ wording: (doc.wording ? doc.wording + '\n\n' : '') + b.text }); }} style={{ width: 300 }}>
+              {!locked && <select value="" onChange={e => { const b = LIBRARY[Number(e.target.value)]; if (b) upd({ wording: (doc.wording ? doc.wording + '\n\n' : '') + b.text }, 'Insert wording'); }} style={{ width: 300 }}>
                 <option value="">Insert from wording library…</option>{LIBRARY.map((b, i) => <option key={i} value={i}>{b.title.slice(0, 60)}</option>)}</select>}</div>
-            <textarea disabled={locked} rows={22} value={doc.wording} onChange={e => upd({ wording: e.target.value })} />
+            <textarea disabled={locked} rows={22} value={doc.wording} onChange={e => upd({ wording: e.target.value }, 'Wording', 'wording')} />
             <p className="muted">Layout codes: <b>#</b> title · <b>##</b> heading · <b>-</b> bullet · <b>--</b> sub-bullet · <b>&gt;</b> paragraph · "Label:<i>Tab</i>Value" for spec rows · [image:fstr]. Use "Preview PDF" to check. Fix every "xx", "(x)", "?" and "OR" before sending — the system blocks them.</p>
           </div>
 
           <div className="card">
             <h3>Options (shown below the total)</h3>
             {doc.options.map((o, i) => (
-              <div className="row" key={i}><input disabled={locked} value={o.description} onChange={e => upd({ options: doc.options.map((x, j) => j === i ? { ...x, description: e.target.value } : x) })} style={{ flex: 3 }} />
-                <input disabled={locked} type="number" value={o.price} onChange={e => upd({ options: doc.options.map((x, j) => j === i ? { ...x, price: Number(e.target.value) } : x) })} style={{ flex: 1 }} />
-                {!locked && <button className="secondary" onClick={() => upd({ options: doc.options.filter((_, j) => j !== i) })}>×</button>}</div>))}
-            {!locked && doc.options.length < 3 && <button className="secondary" onClick={() => upd({ options: [...doc.options, { description: '', price: 0 }] })}>+ Option</button>}
+              <div className="row" key={i}><input disabled={locked} value={o.description} onChange={e => upd({ options: doc.options.map((x, j) => j === i ? { ...x, description: e.target.value } : x) }, 'Option', `opt${i}d`)} style={{ flex: 3 }} />
+                <input disabled={locked} type="number" value={o.price} onChange={e => upd({ options: doc.options.map((x, j) => j === i ? { ...x, price: Number(e.target.value) } : x) }, 'Option price', `opt${i}p`)} style={{ flex: 1 }} />
+                {!locked && <button className="secondary" onClick={() => upd({ options: doc.options.filter((_, j) => j !== i) }, 'Remove option')}>×</button>}</div>))}
+            {!locked && doc.options.length < 3 && <button className="secondary" onClick={() => upd({ options: [...doc.options, { description: '', price: 0 }] }, 'Add option')}>+ Option</button>}
           </div>
           </>}
         </div>
 
-        <div className="panel">
-          <div className="card">
-            <h3>Price</h3>
-            {priced && <>
-              <div className="price-row"><span>Base price</span><b>{money(priced.rollup.quote.base)}</b></div>
-              <div className="price-row"><span>Installation</span><span>{money(priced.rollup.quote.installation)}</span></div>
-              <div className="price-row"><span>Outbound freight</span><span>{money(priced.rollup.quote.freight)}</span></div>
-              {priced.rollup.quote.preUse != null && <div className="price-row"><span>Pre-use inspections</span><span>{money(priced.rollup.quote.preUse)}</span></div>}
-              <div className="price-row"><span>Sales tax</span><span>{money(priced.rollup.quote.tax)}</span></div>
-              <div className="price-row total"><span>TOTAL</span><span>{money(priced.rollup.quote.total)}</span></div>
-              <label style={{ marginTop: 8 }}><input type="checkbox" checked={hideInternal} onChange={e => setHideInternal(e.target.checked)} style={{ width: 'auto' }} /> hide internals (screen-sharing)</label>
-              {!hideInternal && <div className="internal">
-                <div className="price-row"><span>Gross margin</span><b>{(priced.totals.grossMarginPct * 100).toFixed(1)}%</b></div>
-                <div className="price-row"><span>GM $</span><span>{money(priced.totals.grossMargin)}</span></div>
-                <div className="price-row"><span>Shop hours</span><span>{priced.totals.shopHours}</span></div>
-                <div className="price-row"><span>Install hours</span><span>{priced.totals.installHours}</span></div>
-                {fam === 'freestanding' && <div className="price-row"><span>Production Value</span><span>{money(priced.totals.productionValue)}</span></div>}
-              </div>}
-            </>}
-          </div>
-
-          <div className="card">
-            {openFlags.map(f => <div key={f.rule} className="banner flag">⚑ {FLAG_TEXT[f.rule]} — needs sales manager approval.
-              {(me.role === 'manager' || me.role === 'admin') && !locked && !dirty && <div><button onClick={() => act('approve', { revision_id: rev.id, rule: f.rule }, 'Approved')}>Approve</button></div>}</div>)}
-            {approvedRules.map(r => <div key={r} className="banner ok">✓ {FLAG_TEXT[r]} — approved</div>)}
-            {lintErrors.map((l, i) => <div key={i} className="banner block">{l.message}</div>)}
-            {(priced?.lint ?? []).filter(l => l.level === 'warning').map((l, i) => <div key={i} className="msg-warn muted">⚠ {l.message}</div>)}
-            {msg && <p className={msg.t === 'err' ? 'msg-error' : ''}>{msg.m}</p>}
-            <div className="grid">
-              {!locked && <button onClick={save} disabled={busy || !dirty}>{dirty ? 'Save' : 'Saved'}</button>}
-              {!locked && <button onClick={async () => {
-                const ok = await act('send', { revision_id: rev.id }, `Sent — R${rev.rev} locked`);
-                if (ok) downloadPdf({ quote, rev: { ...rev, locked: true, sent_at: new Date().toISOString() }, doc, priced: priced!, me, number });
-              }} disabled={busy || dirty || openFlags.length > 0 || lintErrors.length > 0}>Send: lock R{rev.rev} + download PDF</button>}
-              <button className="secondary" onClick={() => downloadPdf({ quote, rev, doc, priced: priced!, me, number })} disabled={!priced}>{locked ? 'Download PDF' : 'Preview PDF (DRAFT)'}</button>
-              {locked && <button className="secondary" onClick={() => act('revise', { quote_id: quote.id }, 'New revision started')}>Start new revision</button>}
-              {locked && !quote.job_id && <button className="secondary" onClick={async () => {
-                const job = prompt('Job ID (5 digits) for this won job:'); if (!job) return;
-                if (await act('win', { quote_id: quote.id, job_id: job.trim() }, 'Marked won')) await act('revise', { quote_id: quote.id, doc_type: 'CONFIRMATION' }, 'Confirmation started');
-              }}>Mark won → Confirmation</button>}
-            </div>
-          </div>
-        </div>
+        {rail}
       </div>
-    </>
+    </div>
   );
 }
 
