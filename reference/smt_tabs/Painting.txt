@@ -1,0 +1,156 @@
+A1	V	"PWI Powder Coat & Paint Booth Charges - 30' x 70' Booth"
+E1	F	='Main Summary'!A1	=> '  #  '
+I1	V	'Updated 8-20-23 Kyle M'
+A2	V	'Description'
+B2	V	'QTY'
+C2	V	'Sell Price'
+D2	V	'Total Price'
+A3	V	'Crane Coatings'
+A4	V	'Primer Full Booth Run'
+B4	V	0
+C4	V	1587
+D4	F	=B4*C4	=> 0
+F4	V	'A full booth run is considered (16) beams that are less than 18" tall and 30\' long. Doing a partial booth run is completely fine for standard colors but not for custom colors. Custom Colors must be at least (1) full booth. Powerwashing is included in this price. The cost of powdercoating is the same as painting. Imagine that you are painting everything and price it that way. This might change in the future but it is the way we are doing it now. It is very important that when we do PAINT OR POWDERCOAT ONLY jobs that we charge a $200 management fee on top of the costs above. You do not need to call Ken and ask him for prices since Ken has agreed to all of these numbers.'
+A5	V	'Standard Paint Full Booth Run'
+B5	V	0
+C5	V	1983.75
+D5	F	=B5*C5	=> 0
+A6	V	'Custom Color Paint Full Booth Run'
+B6	V	0
+C6	V	2530
+D6	F	=B6*C6	=> 0
+A7	V	'Polyurethane Full Booth Run'
+B7	V	0
+C7	V	2875
+D7	F	=B7*C7	=> 0
+A8	V	'AutoCalc Gantry Paint Runs'
+B8	F	=IF(Gantry!M7<20,Gantry!M4*0.75,Gantry!M4*1)	=> 0
+C8	V	1983.75
+D8	F	=B8*C8	=> 0
+A9	V	'Mezzanine Coatings'
+A10	V	'Primer Full Booth Run'
+B10	V	0
+C10	V	1587
+D10	F	=B10*C10	=> 0
+A11	V	'Standard Paint Full Booth Run'
+B11	V	0
+C11	V	1983.75
+D11	F	=B11*C11	=> 0
+A12	V	'Custom Color Paint Full Booth Run'
+B12	V	0
+C12	V	2530
+D12	F	=B12*C12	=> 0
+A13	V	'Polyurethane Full Booth Run'
+B13	V	0
+C13	V	2875
+D13	F	=B13*C13	=> 0
+A14	V	'Misc Coatings'
+A15	V	'Primer Full Booth Run'
+B15	V	0
+C15	V	1587
+D15	F	=B15*C15	=> 0
+A16	V	'Standard Paint Full Booth Run'
+B16	V	0
+C16	V	1983.75
+D16	F	=B16*C16	=> 0
+A17	V	'Custom Color Paint Full Booth Run'
+B17	V	0
+C17	V	2530
+D17	F	=B17*C17	=> 0
+A18	V	'Polyurethane Full Booth Run'
+B18	V	0
+C18	V	2875
+D18	F	=B18*C18	=> 0
+L18	V	'Gross Margin'
+A19	V	'Total Booth Runs / Price'
+B19	F	=SUM(B4:B18)	=> 0
+D19	F	=SUM(D3:D18)	=> 0
+L19	F	=D19*0.22	=> 0
+A21	V	'Galvanizing - AZZ Plymouth'
+A22	V	'Description'
+B22	V	'Raw Steel Weight'
+C22	V	'Sell Price'
+D22	V	'Total Price'
+A24	V	'Structural Single Dip Process - per lb'
+B24	V	0
+C24	V	0.8625
+D24	F	=IF(B24>0,SUM(B24*C24*1.07)+(B24/20000*500)+(300),0)	=> 0
+A26	V	'Structural Double Dip Process - per lb'
+B26	V	0
+C26	V	1.4375
+D26	F	=IF(B26>0,SUM(B26*C26*1.07)+(B26/20000*500)+(300),0)	=> 0
+A28	V	'Tubular Dip Process - per lb'
+B28	V	0
+C28	V	1.15
+D28	F	=IF(B28>0,SUM(B28*C28*1.07)+(B28/20000*500)+(300),0)	=> 0
+A30	V	'Total Price  - ADD FREIGHT ON MAIN SUMMARY PAGE'
+D30	F	=SUM(D24:D28)	=> 0
+AT30	V	'Prices based on current AZZ pricing of'
+AX30	V	'$.38/lb Structural Steel'
+BA30	V	datetime.datetime(2021, 11, 16, 0, 0)
+AX31	V	'$.60/lb Handrail'
+A32	V	'On-Site Mezzanine Paint - (Materials ONLY) - Add Painting Labor / Equipment as required'
+AX32	V	'1.5¢/lb surcharge'
+D33	V	'Width/ft'
+E33	V	'Length/ft'
+C34	V	'Enter Mezz Size: '
+D34	V	0
+E34	V	0
+H34	V	'Markup %'
+AX34	V	'(.38+.60= .98÷ 2 = .49)  (.49÷ .70 multiplier = 70¢/lb at 30%margin)'
+H35	V	50
+A37	V	'Product Part Number'
+B37	V	'Vendor'
+C37	V	'Item Description'
+D37	V	'Square Feet'
+E37	V	'Gallons'
+F37	V	'Pails'
+G37	V	'cost /gallon'
+H37	V	'Price'
+A38	V	'B48W00061'
+B38	V	'Sherwin'
+C38	V	'Dryfall Flat White'
+D38	F	=D34*E34	=> 0
+E38	F	=D38*0.019	=> 0
+F38	F	=E38/5	=> 0
+G38	V	15.525
+H38	F	=E38*G38*($H$35/100+1)	=> 0
+A39	V	'B48W00061'
+B39	V	'Sherwin'
+C39	V	'Additional Gal Needed'
+E39	V	0
+F39	F	=E39/5	=> 0
+G39	V	15.525
+H39	F	=E39*G39*($H$35/100+1)	=> 0
+B40	V	'UCT / PPG'
+C40	V	'Safety Yellow Handrail'
+E40	V	0
+F40	F	=E40/5	=> 0
+G40	V	46
+H40	F	=E40*G40*($H$35/100+1)	=> 0
+F41	F	=E41/5	=> 0
+G41	V	46
+H41	F	=E41*G41*($H$35/100+1)	=> 0
+A44	V	'Total Gallons / Pails / Sell Price of Paint Materials '
+E44	F	=SUM(E38:E43)	=> 0
+F44	F	=SUM(F38:F39)	=> 0
+H44	F	=SUM(H38:H43)	=> 0
+A47	V	'Total Project Coating Charges (less any on-site painting or galvanizing freight required)'
+H47	F	=D19+D30+H44	=> 0
+I116	V	'Standard'
+J116	V	'Optional'
+K116	V	'Custom'
+I117	V	'PWI Prime Gray'
+J117	V	'PWI Blue'
+K117	V	'Non-Custom'
+I118	V	'PWI Paint Gray'
+J118	V	'PWI Red'
+K118	V	'Custom'
+I119	V	'PWI Safety Yellow'
+J119	V	'PWI Orange'
+I120	V	'PWI White'
+I121	V	'PWI Black'
+I123	V	'Codes'
+J123	V	'Codes'
+I129	V	'Colors'
+J129	V	'Colors'

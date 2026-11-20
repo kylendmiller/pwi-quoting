@@ -1,0 +1,572 @@
+A1	V	'All Labor Charges'
+B1	F	='Main Summary'!A1	=> '  #  '
+J1	V	'Adders'
+K1	V	'Notes:'
+L1	V	'👇'
+A2	V	'Total Manually Entered Shop Labor'
+B2	V	' RATE'
+C2	V	100
+F2	V	'Total Manually Entered On-site Labor'
+G2	V	'RATE'
+H2	F	=SUM(113,IF(J2,30,0),IF(J3,15,0),IF(J4,30,0))+J6	=> 113
+J2	V	False
+A3	F	=SUM(D22+D36+D45+D58+D47)	=> 0
+B3	V	'Number of Men'
+D3	V	2
+F3	F	=SUM(I45,I58,I71,I80)	=> 0
+G3	V	'Number of Men'
+I3	V	3
+J3	V	False
+A4	V	'Total Shop Hours'
+B4	V	'Days on Project'
+D4	F	=A5/(D3*10)	=> 0
+F4	V	'On Site Labor Hours'
+G4	V	'Days on Project'
+I4	F	=F5/(I3*10.5)	=> 0
+J4	V	False
+A5	F	=SUM(B22+B36+B47+B48+B49+B45+B58+B71+B80+B82)	=> 0
+B5	V	'Weeks on Project '
+D5	F	=D4/5	=> 0
+F5	F	=SUM(G45,G47:H48,G58,G71,G80)	=> 0
+G5	V	'Weeks on Project '
+I5	F	=I4/5	=> 0
+J5	V	'On-site Wage Adder:'
+B6	V	'Hours'
+C6	V	'Rate'
+D6	V	'Total $'
+G6	V	'Hours'
+H6	V	'Rate'
+I6	V	'Total $'
+A7	V	'Shop Labor'
+F7	V	'On Site Labor'
+A8	V	'Crane Labor'
+J8	V	'Minimum Suggested Handling Hours'
+B9	V	0
+C9	F	=$C$2	=> 100
+D9	F	=C9*B9	=> 0
+G9	V	0
+H9	F	=$H$2	=> 113
+I9	F	=H9*G9	=> 0
+J9	F	=('Main Summary'!D31 - SUM('Main Summary'!C25:D26)) * 0.015 / 85	=> 0
+B10	V	0
+C10	F	=$C$2	=> 100
+D10	F	=C10*B10	=> 0
+G10	V	0
+H10	F	=$H$2	=> 113
+I10	F	=H10*G10	=> 0
+B11	V	0
+C11	F	=$C$2	=> 100
+D11	F	=C11*B11	=> 0
+G11	V	0
+H11	F	=$H$2	=> 113
+I11	F	=H11*G11	=> 0
+B12	V	0
+C12	F	=$C$2	=> 100
+D12	F	=C12*B12	=> 0
+G12	V	0
+H12	F	=$H$2	=> 113
+I12	F	=H12*G12	=> 0
+B13	V	0
+C13	F	=$C$2	=> 100
+D13	F	=C13*B13	=> 0
+G13	V	0
+H13	F	=$H$2	=> 113
+I13	F	=H13*G13	=> 0
+B14	V	0
+C14	F	=$C$2	=> 100
+D14	F	=C14*B14	=> 0
+G14	V	0
+H14	F	=$H$2	=> 113
+I14	F	=H14*G14	=> 0
+B15	V	0
+C15	F	=$C$2	=> 100
+D15	F	=C15*B15	=> 0
+G15	V	0
+H15	F	=$H$2	=> 113
+I15	F	=H15*G15	=> 0
+B16	V	0
+C16	F	=$C$2	=> 100
+D16	F	=C16*B16	=> 0
+G16	V	0
+H16	F	=$H$2	=> 113
+I16	F	=H16*G16	=> 0
+B17	V	0
+C17	F	=$C$2	=> 100
+D17	F	=C17*B17	=> 0
+G17	V	0
+H17	F	=$H$2	=> 113
+I17	F	=H17*G17	=> 0
+A18	V	'Suggested Handling Hours'
+B18	V	0
+C18	F	=$C$2	=> 100
+D18	F	=C18*B18	=> 0
+G18	V	0
+H18	F	=$H$2	=> 113
+I18	F	=H18*G18	=> 0
+B19	V	0
+C19	V	90
+D19	F	=C19*B19	=> 0
+G19	V	0
+H19	F	=$H$2	=> 113
+I19	F	=H19*G19	=> 0
+B20	V	0
+C20	V	90
+D20	F	=C20*B20	=> 0
+G20	V	0
+H20	F	=$H$2	=> 113
+I20	F	=H20*G20	=> 0
+A21	V	'AutoCalc Total Gantry Hours'
+B21	F	=Gantry!$J$80	=> 0
+C21	F	=C2	=> 100
+D21	F	=C21*B21	=> 0
+G21	V	0
+H21	F	=$H$2	=> 113
+I21	F	=H21*G21	=> 0
+A22	V	'Total Crane Labor:'
+B22	F	=SUM(B9:B21)	=> 0
+D22	F	=SUM(D9:D21)	=> 0
+G22	V	0
+H22	F	=$H$2	=> 113
+I22	F	=H22*G22	=> 0
+A23	V	'Mezzanine Labor'
+G23	V	0
+H23	F	=$H$2	=> 113
+I23	F	=H23*G23	=> 0
+B24	V	0
+C24	F	=$C$2	=> 100
+D24	F	=C24*B24	=> 0
+G24	V	0
+H24	F	=$H$2	=> 113
+I24	F	=H24*G24	=> 0
+B25	V	0
+C25	F	=$C$2	=> 100
+D25	F	=C25*B25	=> 0
+G25	V	0
+H25	F	=$H$2	=> 113
+I25	F	=H25*G25	=> 0
+B26	V	0
+C26	F	=$C$2	=> 100
+D26	F	=C26*B26	=> 0
+G26	V	0
+H26	F	=$H$2	=> 113
+I26	F	=H26*G26	=> 0
+B27	V	0
+C27	F	=$C$2	=> 100
+D27	F	=C27*B27	=> 0
+G27	V	0
+H27	F	=$H$2	=> 113
+I27	F	=H27*G27	=> 0
+B28	V	0
+C28	F	=$C$2	=> 100
+D28	F	=C28*B28	=> 0
+G28	V	0
+H28	F	=$H$2	=> 113
+I28	F	=H28*G28	=> 0
+B29	V	0
+C29	F	=$C$2	=> 100
+D29	F	=C29*B29	=> 0
+G29	V	0
+H29	F	=$H$2	=> 113
+I29	F	=H29*G29	=> 0
+B30	V	0
+C30	F	=$C$2	=> 100
+D30	F	=C30*B30	=> 0
+G30	V	0
+H30	F	=$H$2	=> 113
+I30	F	=H30*G30	=> 0
+B31	V	0
+C31	F	=$C$2	=> 100
+D31	F	=C31*B31	=> 0
+G31	V	0
+H31	F	=$H$2	=> 113
+I31	F	=H31*G31	=> 0
+B32	V	0
+C32	F	=$C$2	=> 100
+D32	F	=C32*B32	=> 0
+G32	V	0
+H32	F	=$H$2	=> 113
+I32	F	=H32*G32	=> 0
+A33	V	'Suggested Handling Hours'
+B33	V	0
+C33	F	=$C$2	=> 100
+D33	F	=C33*B33	=> 0
+G33	V	0
+H33	F	=$H$2	=> 113
+I33	F	=H33*G33	=> 0
+B34	V	0
+C34	F	=$C$2	=> 100
+D34	F	=C34*B34	=> 0
+G34	V	0
+H34	F	=$H$2	=> 113
+I34	F	=H34*G34	=> 0
+B35	V	0
+C35	F	=$C$2	=> 100
+D35	F	=C35*B35	=> 0
+G35	V	0
+H35	F	=$H$2	=> 113
+I35	F	=H35*G35	=> 0
+A36	V	'Total Mezzanine Labor:'
+B36	F	=SUM(B24:B35)	=> 0
+D36	F	=SUM(D24:D35)	=> 0
+G36	V	0
+H36	F	=$H$2	=> 113
+I36	F	=H36*G36	=> 0
+A37	V	'Misc. Labor'
+G37	V	0
+H37	F	=$H$2	=> 113
+I37	F	=H37*G37	=> 0
+B38	V	0
+C38	F	=$C$2	=> 100
+D38	F	=C38*B38	=> 0
+G38	V	0
+H38	F	=$H$2	=> 113
+I38	F	=H38*G38	=> 0
+B39	V	0
+C39	F	=$C$2	=> 100
+D39	F	=C39*B39	=> 0
+H39	F	=$H$2	=> 113
+I39	F	=H39*G39	=> 0
+B40	V	0
+C40	F	=$C$2	=> 100
+D40	F	=C40*B40	=> 0
+H40	F	=$H$2	=> 113
+I40	F	=H40*G40	=> 0
+B41	V	0
+C41	F	=$C$2	=> 100
+D41	F	=C41*B41	=> 0
+H41	F	=$H$2	=> 113
+I41	F	=H41*G41	=> 0
+A42	V	'Suggested Handling Hours'
+B42	V	0
+C42	F	=$C$2	=> 100
+D42	F	=C42*B42	=> 0
+H42	F	=$H$2	=> 113
+I42	F	=H42*G42	=> 0
+B43	V	0
+C43	F	=$C$2	=> 100
+D43	F	=C43*B43	=> 0
+H43	F	=$H$2	=> 113
+I43	F	=H43*G43	=> 0
+B44	V	0
+C44	F	=$C$2	=> 100
+D44	F	=C44*B44	=> 0
+H44	F	=$H$2	=> 113
+I44	F	=H44*G44	=> 0
+A45	V	'Total Misc. Labor:'
+B45	F	=SUM(B38:B44)	=> 0
+D45	F	=SUM(D38:D44)	=> 0
+F45	V	'TOTAL'
+G45	F	=SUM(G8:G44)	=> 0
+I45	F	=SUM(I8:I44,I47:I48)	=> 0
+A46	V	'Auto Calc Labor Standard Components'
+B46	V	'Qty.'
+F46	V	'Auto Calc Labor Standard Components'
+G46	V	'Qty.'
+A47	V	'Bar Grate Fab'
+B47	F	=IF(SUM('Standard Parts & Products'!G97:G98)>0,SUM('Standard Parts & Products'!C97:C98),0)	=> 0
+D47	F	=B47*C2*3.5	=> 0
+F47	V	'Wood Decking Install (Hours)'
+G47	F	=ROUND(IF(AND('Standard Parts & Products'!C94>0,'Standard Parts & Products'!B94=TRUE),'Standard Parts & Products'!C94,0)/6,0)	=> 0
+I47	F	=IF(AND(G47>0,SUM(G8:G44)>0),'Standard Parts & Products'!G281,0)	=> 0
+A48	V	'WP Accessories'
+B48	F	=IF('Work Platforms'!E48="",0,'Work Platforms'!E48)	=> 0
+F48	V	'Mezz Gate Install'
+G48	F	='Standard Parts & Products'!P356	=> 0
+I48	F	=IF(AND(G48>0,SUM(G8:G44)>0),SUM(G48*H2),0)	=> 0
+A49	V	'PWI Built Items'
+B49	F	='Standard Parts & Products'!L3	=> 0
+A51	V	'Concrete'
+F51	V	'Concrete'
+J51	V	'Notes:'
+A52	V	'Prep Rebar Grids'
+B52	V	0
+C52	F	=$C$2	=> 100
+D52	F	=C52*B52	=> 0
+F52	V	'Drive time '
+G52	V	0
+H52	F	=$H$2	=> 113
+I52	F	=H52*G52	=> 0
+J52	V	'↪'
+A53	V	'Loading and Handling'
+B53	V	0
+C53	F	=$C$2	=> 100
+D53	F	=C53*B53	=> 0
+F53	V	'Cut concrete / dig footer'
+G53	V	0
+H53	F	=$H$2	=> 113
+I53	F	=H53*G53	=> 0
+B54	V	0
+C54	F	=$C$2	=> 100
+D54	F	=C54*B54	=> 0
+F54	V	'Pour Concrete'
+G54	V	0
+H54	F	=$H$2	=> 113
+I54	F	=H54*G54	=> 0
+B55	V	0
+C55	F	=$C$2	=> 100
+D55	F	=C55*B55	=> 0
+F55	V	'Finish Concrete'
+G55	V	0
+H55	F	=$H$2	=> 113
+I55	F	=H55*G55	=> 0
+B56	V	0
+C56	F	=$C$2	=> 100
+D56	F	=C56*B56	=> 0
+F56	V	'Clean tools and Load up equipment'
+G56	V	0
+H56	F	=$H$2	=> 113
+I56	F	=H56*G56	=> 0
+B57	V	0
+C57	V	75
+D57	F	=C57*B57	=> 0
+F57	V	'Drive time back to shop'
+G57	V	0
+H57	V	95
+I57	F	=H57*G57	=> 0
+A58	V	'TOTAL'
+B58	F	=SUM(B52:B57)	=> 0
+D58	F	=IF(Concrete!G16>0,SUM(D52:D57),0)	=> 0
+F58	V	'TOTAL'
+G58	F	=IF(Concrete!E30>0,SUM(G52:G57),0)	=> 0
+I58	F	=IF(G58>0,SUM(I52:I57),0)	=> 0
+A59	V	'Work Platforms Per Set'
+F59	V	'Work Platforms'
+A60	V	'Fabricate 4 Towers'
+B60	F	=IF('Work Platforms'!B15="Box Truss Style",SUM(15*'Work Platforms'!C2)*1,SUM(15*'Work Platforms'!C2))	=> 0
+C60	F	=$C$2	=> 100
+D60	V	'Labor is Calculated on Work Platforms Tab'
+H60	F	=$H$2	=> 113
+I60	F	=H60*G60	=> 0
+A61	V	'Fabricate 4 End Units'
+B61	F	=IF('Work Platforms'!B15="Box Truss Style",SUM(15*'Work Platforms'!C2)*1,SUM(15*'Work Platforms'!C2))	=> 0
+C61	F	=$C$2	=> 100
+H61	F	=$H$2	=> 113
+I61	F	=H61*G61	=> 0
+A62	V	'Fab (2) Handrails'
+B62	F	=IF('Work Platforms'!B15="Box Truss Style",SUM(18*'Work Platforms'!B5/50)*'Work Platforms'!C2*1,SUM(18*'Work Platforms'!B5/50)*'Work Platforms'!C2)	=> 0
+C62	F	=$C$2	=> 100
+H62	F	=$H$2	=> 113
+I62	F	=H62*G62	=> 0
+A63	V	'Form End Channels / Prep Parts'
+B63	F	=IF('Work Platforms'!B15="Box Truss Style",SUM(3*'Work Platforms'!C2)*1,SUM(3*'Work Platforms'!C2))	=> 0
+C63	F	=$C$2	=> 100
+H63	F	=$H$2	=> 113
+I63	F	=H63*G63	=> 0
+A64	V	'Assemble Bench Components / Hook Points'
+B64	F	=IF('Work Platforms'!B15="Box Truss Style",SUM(5*'Work Platforms'!C2)*1,SUM(5*'Work Platforms'!C2))	=> 0
+C64	F	=$C$2	=> 100
+H64	F	=$H$2	=> 113
+I64	F	=H64*G64	=> 0
+A65	V	'Assemble (2) Work Platforms'
+B65	F	=IF('Work Platforms'!B15="Box Truss Style",(SUM(38*'Work Platforms'!B5/50)*'Work Platforms'!C2)*2,(SUM(38*'Work Platforms'!B5/50)*'Work Platforms'!C2))	=> 0
+C65	F	=$C$2	=> 100
+H65	F	=$H$2	=> 113
+I65	F	=H65*G65	=> 0
+A66	V	'Assembly after paint'
+B66	F	=IF('Work Platforms'!B15="Box Truss Style",SUM(5*'Work Platforms'!C2)*1,SUM(5*'Work Platforms'!C2))	=> 0
+C66	F	=$C$2	=> 100
+H66	F	=$H$2	=> 113
+I66	F	=H66*G66	=> 0
+A67	V	'loading and handling'
+B67	F	=IF('Work Platforms'!B15="Box Truss Style",SUM(2*'Work Platforms'!C2)*1,SUM(2*'Work Platforms'!C2))	=> 0
+C67	F	=$C$2	=> 100
+H67	F	=$H$2	=> 113
+I67	F	=H67*G67	=> 0
+A68	V	'All Cutting Charges'
+B68	F	=IF('Work Platforms'!B15="Box Truss Style",SUM(6*'Work Platforms'!C2)*1,SUM(6*'Work Platforms'!C2))	=> 0
+C68	F	=$C$2	=> 100
+H68	F	=$H$2	=> 113
+I68	F	=H68*G68	=> 0
+B69	V	0
+C69	F	=$C$2	=> 100
+D69	F	=C69*B69	=> 0
+H69	F	=$H$2	=> 113
+I69	F	=H69*G69	=> 0
+B70	V	0
+C70	F	=$C$2	=> 100
+D70	F	=C70*B70	=> 0
+H70	F	=$H$2	=> 113
+I70	F	=H70*G70	=> 0
+A71	V	'Total labor for all WP Sets'
+B71	F	=SUM(B60:B70)	=> 0
+D71	F	=SUM(D69:D70)	=> 0
+F71	V	'TOTAL'
+G71	F	=SUM(G60:G70)	=> 0
+I71	F	=SUM(I60:I70)	=> 0
+A72	V	'VRCs'
+F72	V	'VRCs'
+A73	V	'Shop Labor'
+B73	F	=ROUND(VRC!B15*0.3/C73,0)	=> 0
+C73	F	=$C$2	=> 100
+D73	V	'Labor is Calculated on VRC Tab'
+F73	V	'On-site Install'
+G73	F	=I73/H73	=> 0
+H73	F	=$H$2	=> 113
+I73	F	=VRC!B15*0.2	=> 0
+B74	V	0
+C74	F	=$C$2	=> 100
+H74	F	=$H$2	=> 113
+I74	F	=G74*H74	=> 0
+J74	V	'Notes:'
+B75	V	0
+C75	F	=$C$2	=> 100
+H75	F	=$H$2	=> 113
+I75	F	=G75*H75	=> 0
+J75	V	'↪'
+B76	V	0
+C76	F	=$C$2	=> 100
+H76	F	=$H$2	=> 113
+I76	F	=G76*H76	=> 0
+B77	V	0
+C77	F	=$C$2	=> 100
+H77	F	=$H$2	=> 113
+I77	F	=G77*H77	=> 0
+B78	V	0
+C78	F	=$C$2	=> 100
+H78	F	=$H$2	=> 113
+I78	F	=G78*H78	=> 0
+B79	V	0
+C79	F	=$C$2	=> 100
+H79	F	=$H$2	=> 113
+I79	F	=G79*H79	=> 0
+A80	V	'TOTAL'
+B80	F	=IF(VRC!B3>0,SUM(Labor!B73:B79),0)	=> 0
+F80	V	'TOTAL'
+G80	F	=IF(VRC!B3>0,SUM(G73:G79),0)	=> 0
+I80	F	=IF(VRC!B3>0,SUM(I73:I79),0)	=> 0
+A81	V	'Stairways'
+A82	V	'All Stairway Labor'
+B82	F	=Stairways!H24*0.4/75	=> 0
+C82	F	=$C$2	=> 100
+D82	V	'Calcuated on Stair Tab'
+A88	V	'Shop - Charges Guide'
+F88	V	'Onsite - Charges Guide'
+A89	V	'1. Use the standard labor charges below for an average project. Some projects may require additional charges based on complexity.'
+F89	V	'1. Does not include unload, setup, or layout time. These should be figured per project.'
+F90	V	'2. Does not include clean up or packup time. These should be figured per project. '
+A91	V	'2. Does not include steel receiving time, required for large projects.'
+F91	V	'3. Does not include any standard component install time, these are covered in their base cost.'
+A92	V	'3. Does not include shipping and handling charges. '
+A93	V	'Cranes'
+F93	V	'Cranes'
+A94	V	'Columns'
+F94	V	'Setup and Layout'
+G94	V	3
+A95	V	'Tube/Beam Column Fab - W/O Support Gussets'
+B95	V	1
+F95	V	'Install Crane Column'
+G95	V	3
+A96	V	'Tube/Beam Column Fab - With Support Gussets'
+B96	V	2.5
+F96	V	'Install Runway Beam / Splice'
+G96	V	3
+A97	V	'Tube/Beam Column Fab - Moment Connection'
+B97	V	6
+A98	V	'Tapered 3-Plate Column Fab Per Foot'
+B98	V	0.5
+F98	V	'Crash Avoidance Per Bridge Crane or Trolley'
+G98	V	5
+A99	V	'Tapered Box Column Fab Per Foot'
+B99	V	1
+F99	V	'Install Bracing - (1) Location'
+G99	V	1
+A100	V	'Runways'
+F100	V	"Install ASCE Rail - (100')"
+G100	V	8
+A101	V	"To PCR Runway <20'"
+B101	V	2
+F101	V	'Install Runway End Stops - (4)'
+G101	V	2
+A102	V	"To PCR Runway >20'"
+B102	V	3
+F102	V	"Install Electrification - (per 13' Section)"
+G102	V	0.5
+A103	V	'Add Web Stiffners to (1) Runway Beam'
+B103	V	1
+F103	V	'Install Manual Bridge '
+G103	V	4
+A104	V	"Add ASCE Rail in Shop (per 5')"
+B104	V	0.25
+F104	V	'Install Motorized Bridge - <8K'
+G104	V	8
+A105	V	'Manual Bridge Crane'
+F105	V	'Install Motorized Bridge - >8K'
+G105	V	12
+A106	V	'Manual Bridge B1 Fab'
+B106	V	10
+F106	V	'Paint Touchup'
+G106	V	8
+A107	V	'Manual Bridge B4 After Paint Assembly'
+B107	V	4
+F107	V	'Cleanup'
+G107	V	12
+A108	V	'Motorized Bridge Crane'
+F108	V	'Travel Hours Each Way Per Person'
+G108	V	10
+A109	V	'Box Girder Fab (per foot)'
+B109	V	'1.8hr/ft'
+A110	V	'Single Girder Bridge B1 Fab'
+B110	V	25
+C110	V	"Bridge Cranes Under 70'"
+A111	V	'Single Girder Bridge B4 After Paint Assembly'
+B111	V	35
+A112	V	'Double Girder Bridge B1 Fab'
+B112	V	55
+A113	V	'Double Girder Bridge B4 After Paint Assembly'
+B113	V	50
+A114	V	'Triple Girder Bridge B1 Fab'
+B114	V	75
+A115	V	'Triple Girder Bridge B4 After Paint Assembly'
+B115	V	50
+A116	V	"Additional Total Hours to All Cranes over 70'"
+B116	V	20
+A117	V	'Crash Avoidance Per Bridge Crane or Trolley'
+B117	V	5
+A124	V	'Mezzanines'
+F124	V	'Mezzanines'
+A125	V	'Mezzanine Column Fab'
+B125	V	1
+F125	V	'Install Columns'
+G125	V	1
+A126	V	'Tube/Beam Column Fab - Moment Connection'
+B126	V	6
+F126	V	'Install Headers'
+G126	V	1.5
+A127	V	'PCR Header'
+B127	V	3
+F127	V	'Install Crossmembers'
+G127	V	1
+A128	V	'PCR Crossmember'
+B128	V	1.5
+F128	V	'Install Knee or X Bracing'
+G128	V	0.5
+F129	V	'Install Guardrail Kit (Osha) '
+G129	V	0.25
+F130	V	'Install B-Deck / Form Deck'
+G130	V	0.5
+F131	V	'Install Final Flooring'
+G131	V	0.5
+F132	V	'Install Rolling Gate'
+G132	V	4
+F133	V	'Install Motorized Gate'
+G133	V	12
+F134	V	'Install Straight Stairway'
+G134	V	6
+F135	V	'Install Switchback Stairway'
+G135	V	10
+F136	V	'Pourstop Border (Concrete Deck) .15hrs/ft '
+G136	V	0.15
+A138	V	'Fall Protection'
+F138	V	'Fall Protection'
+F139	V	'Install Fall Protection Drop/ Brace'
+G139	V	3
+F140	V	'Install Field Splice of (2) Fall Protection Lines'
+G140	V	3
+AB202	V	105
+AA205	V	False
+AC205	F	=IF(AA205,100*H48,0)	=> 0
+AA206	V	False
+AB206	F	=IF(AA206,20,0)	=> 0
+AB208	F	=SUM(AB202:AB207)	=> 105
+A224	V	'Box Style'
+A225	F	=SUM(38*#REF!/50)*#REF!	=> '#REF!'

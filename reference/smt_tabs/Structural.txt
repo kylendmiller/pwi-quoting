@@ -1,0 +1,296 @@
+A1	V	'Structural Beams '
+A2	V	'Total Tons'
+A3	F	=SUM(G:G)	=> 0
+C3	F	=CONCATENATE(Quote!B5,"  ","#"," ",Quote!B8)	=> '  #  '
+I3	V	'Markup %'
+A4	V	'Dollars'
+I4	V	26
+A5	F	=SUM(I8:I149)	=> 0
+A7	V	'MATERIAL USED FOR:'
+B7	V	'QTY'
+C7	V	'Material '
+D7	V	'Length Feet'
+E7	V	'#/ft'
+F7	V	'$/lb'
+G7	V	'Tons'
+H7	V	'Cost'
+I7	V	'Total Price'
+A8	V	'Crane Structural'
+L8	V	'Gross:'
+M8	F	=A5-(SUM(H9:H27,H29:H50,H52:H94))	=> 0
+A9	V	'Columns'
+E9	F	=IF(B9="","",_xlfn.XLOOKUP($C9,List!$A:$A,List!C:C))	=> None
+F9	F	=IF(C9="","",_xlfn.XLOOKUP($C9,List!$A:$A,List!D:D))	=> None
+G9	F	=IF(B9="",0,(B9*D9*E9/2000))	=> 0
+H9	F	=IF(B9="","",F9*G9*2000)	=> None
+I9	F	=IF(B9="","",((H9*$I$4)/100)+H9)	=> None
+A10	V	'Runways #1'
+E10	F	=IF(B10="","",_xlfn.XLOOKUP($C10,List!$A:$A,List!C:C))	=> None
+F10	F	=IF(C10="","",_xlfn.XLOOKUP($C10,List!$A:$A,List!D:D))	=> None
+G10	F	=IF(B10="",0,(B10*D10*E10/2000))	=> 0
+H10	F	=IF(B10="","",F10*G10*2000)	=> None
+I10	F	=IF(B10="","",((H10*$I$4)/100)+H10)	=> None
+A11	V	'Runways #2'
+E11	F	=IF(B11="","",_xlfn.XLOOKUP($C11,List!$A:$A,List!C:C))	=> None
+F11	F	=IF(C11="","",_xlfn.XLOOKUP($C11,List!$A:$A,List!D:D))	=> None
+G11	F	=IF(B11="",0,(B11*D11*E11/2000))	=> 0
+H11	F	=IF(B11="","",F11*G11*2000)	=> None
+I11	F	=IF(B11="","",((H11*$I$4)/100)+H11)	=> None
+J11	V	'Incoming Beams from SDI - Please use these beam sizes if you want guaranteed availability. Let Kyle know when you have a verbal on the project.'
+A12	V	'Girder #1'
+E12	F	=IF(B12="","",_xlfn.XLOOKUP($C12,List!$A:$A,List!C:C))	=> None
+F12	F	=IF(C12="","",_xlfn.XLOOKUP($C12,List!$A:$A,List!D:D))	=> None
+G12	F	=IF(B12="",0,(B12*D12*E12/2000))	=> 0
+H12	F	=IF(B12="","",F12*G12*2000)	=> None
+I12	F	=IF(B12="","",((H12*$I$4)/100)+H12)	=> None
+A13	V	'Girder #2'
+E13	F	=IF(B13="","",_xlfn.XLOOKUP($C13,List!$A:$A,List!C:C))	=> None
+F13	F	=IF(C13="","",_xlfn.XLOOKUP($C13,List!$A:$A,List!D:D))	=> None
+G13	F	=IF(B13="",0,(B13*D13*E13/2000))	=> 0
+H13	F	=IF(B13="","",F13*G13*2000)	=> None
+I13	F	=IF(B13="","",((H13*$I$4)/100)+H13)	=> None
+A14	V	'Bracing'
+E14	F	=IF(B14="","",_xlfn.XLOOKUP($C14,List!$A:$A,List!C:C))	=> None
+F14	F	=IF(C14="","",_xlfn.XLOOKUP($C14,List!$A:$A,List!D:D))	=> None
+G14	F	=IF(B14="",0,(B14*D14*E14/2000))	=> 0
+H14	F	=IF(B14="","",F14*G14*2000)	=> None
+I14	F	=IF(B14="","",((H14*$I$4)/100)+H14)	=> None
+E15	F	=IF(B15="","",_xlfn.XLOOKUP($C15,List!$A:$A,List!C:C))	=> None
+F15	F	=IF(C15="","",_xlfn.XLOOKUP($C15,List!$A:$A,List!D:D))	=> None
+G15	F	=IF(B15="",0,(B15*D15*E15/2000))	=> 0
+H15	F	=IF(B15="","",F15*G15*2000)	=> None
+I15	F	=IF(B15="","",((H15*$I$4)/100)+H15)	=> None
+E16	F	=IF(B16="","",_xlfn.XLOOKUP($C16,List!$A:$A,List!C:C))	=> None
+F16	F	=IF(C16="","",_xlfn.XLOOKUP($C16,List!$A:$A,List!D:D))	=> None
+G16	F	=IF(B16="",0,(B16*D16*E16/2000))	=> 0
+H16	F	=IF(B16="","",F16*G16*2000)	=> None
+I16	F	=IF(B16="","",((H16*$I$4)/100)+H16)	=> None
+E17	F	=IF(B17="","",_xlfn.XLOOKUP($C17,List!$A:$A,List!C:C))	=> None
+F17	F	=IF(C17="","",_xlfn.XLOOKUP($C17,List!$A:$A,List!D:D))	=> None
+G17	F	=IF(B17="",0,(B17*D17*E17/2000))	=> 0
+H17	F	=IF(B17="","",F17*G17*2000)	=> None
+I17	F	=IF(B17="","",((H17*$I$4)/100)+H17)	=> None
+E18	F	=IF(B18="","",_xlfn.XLOOKUP($C18,List!$A:$A,List!C:C))	=> None
+F18	F	=IF(C18="","",_xlfn.XLOOKUP($C18,List!$A:$A,List!D:D))	=> None
+G18	F	=IF(B18="",0,(B18*D18*E18/2000))	=> 0
+H18	F	=IF(B18="","",F18*G18*2000)	=> None
+I18	F	=IF(B18="","",((H18*$I$4)/100)+H18)	=> None
+E19	F	=IF(B19="","",_xlfn.XLOOKUP($C19,List!$A:$A,List!C:C))	=> None
+F19	F	=IF(C19="","",_xlfn.XLOOKUP($C19,List!$A:$A,List!D:D))	=> None
+G19	F	=IF(B19="",0,(B19*D19*E19/2000))	=> 0
+H19	F	=IF(B19="","",F19*G19*2000)	=> None
+I19	F	=IF(B19="","",((H19*$I$4)/100)+H19)	=> None
+E20	F	=IF(B20="","",_xlfn.XLOOKUP($C20,List!$A:$A,List!C:C))	=> None
+F20	F	=IF(C20="","",_xlfn.XLOOKUP($C20,List!$A:$A,List!D:D))	=> None
+G20	F	=IF(B20="",0,(B20*D20*E20/2000))	=> 0
+H20	F	=IF(B20="","",F20*G20*2000)	=> None
+I20	F	=IF(B20="","",((H20*$I$4)/100)+H20)	=> None
+E21	F	=IF(B21="","",_xlfn.XLOOKUP($C21,List!$A:$A,List!C:C))	=> None
+F21	F	=IF(C21="","",_xlfn.XLOOKUP($C21,List!$A:$A,List!D:D))	=> None
+G21	F	=IF(B21="",0,(B21*D21*E21/2000))	=> 0
+H21	F	=IF(B21="","",F21*G21*2000)	=> None
+I21	F	=IF(B21="","",((H21*$I$4)/100)+H21)	=> None
+E22	F	=IF(B22="","",_xlfn.XLOOKUP($C22,List!$A:$A,List!C:C))	=> None
+F22	F	=IF(C22="","",_xlfn.XLOOKUP($C22,List!$A:$A,List!D:D))	=> None
+G22	F	=IF(B22="",0,(B22*D22*E22/2000))	=> 0
+H22	F	=IF(B22="","",F22*G22*2000)	=> None
+I22	F	=IF(B22="","",((H22*$I$4)/100)+H22)	=> None
+E23	F	=IF(B23="","",_xlfn.XLOOKUP($C23,List!$A:$A,List!C:C))	=> None
+F23	F	=IF(C23="","",_xlfn.XLOOKUP($C23,List!$A:$A,List!D:D))	=> None
+G23	F	=IF(B23="",0,(B23*D23*E23/2000))	=> 0
+H23	F	=IF(B23="","",F23*G23*2000)	=> None
+I23	F	=IF(B23="","",((H23*$I$4)/100)+H23)	=> None
+E24	F	=IF(B24="","",_xlfn.XLOOKUP($C24,List!$A:$A,List!C:C))	=> None
+F24	F	=IF(C24="","",_xlfn.XLOOKUP($C24,List!$A:$A,List!D:D))	=> None
+G24	F	=IF(B24="",0,(B24*D24*E24/2000))	=> 0
+H24	F	=IF(B24="","",F24*G24*2000)	=> None
+I24	F	=IF(B24="","",((H24*$I$4)/100)+H24)	=> None
+E25	F	=IF(B25="","",_xlfn.XLOOKUP($C25,List!$A:$A,List!C:C))	=> None
+F25	F	=IF(C25="","",_xlfn.XLOOKUP($C25,List!$A:$A,List!D:D))	=> None
+G25	F	=IF(B25="",0,(B25*D25*E25/2000))	=> 0
+H25	F	=IF(B25="","",F25*G25*2000)	=> None
+I25	F	=IF(B25="","",((H25*$I$4)/100)+H25)	=> None
+E26	F	=IF(B26="","",_xlfn.XLOOKUP($C26,List!$A:$A,List!C:C))	=> None
+F26	F	=IF(C26="","",_xlfn.XLOOKUP($C26,List!$A:$A,List!D:D))	=> None
+G26	F	=IF(B26="",0,(B26*D26*E26/2000))	=> 0
+H26	F	=IF(B26="","",F26*G26*2000)	=> None
+I26	F	=IF(B26="","",((H26*$I$4)/100)+H26)	=> None
+A27	V	'AutoCalc from Gantry Tab'
+B27	V	1
+E27	F	=IF(B27="","",_xlfn.XLOOKUP($C27,List!$A:$A,List!C:C))	=> 0
+F27	F	=IF(C27="","",_xlfn.XLOOKUP($C27,List!$A:$A,List!D:D))	=> None
+G27	F	=IF('Standard Parts & Products'!B62=0,0,SUM(Gantry!G49:G51))	=> 0
+H27	F	=Gantry!J53	=> 0
+I27	F	=IF(B27="","",((H27*$I$4)/100)+H27)	=> 0
+A28	V	'Mezzanine Structural'
+A29	V	'Columns #1'
+E29	F	=IF(B29="","",_xlfn.XLOOKUP($C29,List!$A:$A,List!C:C))	=> None
+F29	F	=IF(C29="","",_xlfn.XLOOKUP($C29,List!$A:$A,List!D:D))	=> None
+G29	F	=IF(B29="",0,(B29*D29*E29/2000))	=> 0
+H29	F	=IF(B29="","",F29*G29*2000)	=> None
+I29	F	=IF(B29="","",((H29*$I$4)/100)+H29)	=> None
+A30	V	'Columns #2'
+E30	F	=IF(B30="","",_xlfn.XLOOKUP($C30,List!$A:$A,List!C:C))	=> None
+F30	F	=IF(C30="","",_xlfn.XLOOKUP($C30,List!$A:$A,List!D:D))	=> None
+G30	F	=IF(B30="",0,(B30*D30*E30/2000))	=> 0
+H30	F	=IF(B30="","",F30*G30*2000)	=> None
+I30	F	=IF(B30="","",((H30*$I$4)/100)+H30)	=> None
+A31	V	'Columns #3'
+E31	F	=IF(B31="","",_xlfn.XLOOKUP($C31,List!$A:$A,List!C:C))	=> None
+F31	F	=IF(C31="","",_xlfn.XLOOKUP($C31,List!$A:$A,List!D:D))	=> None
+G31	F	=IF(B31="",0,(B31*D31*E31/2000))	=> 0
+H31	F	=IF(B31="","",F31*G31*2000)	=> None
+I31	F	=IF(B31="","",((H31*$I$4)/100)+H31)	=> None
+A32	V	'Headers #1'
+E32	F	=IF(B32="","",_xlfn.XLOOKUP($C32,List!$A:$A,List!C:C))	=> None
+F32	F	=IF(C32="","",_xlfn.XLOOKUP($C32,List!$A:$A,List!D:D))	=> None
+G32	F	=IF(B32="",0,(B32*D32*E32/2000))	=> 0
+H32	F	=IF(B32="","",F32*G32*2000)	=> None
+I32	F	=IF(B32="","",((H32*$I$4)/100)+H32)	=> None
+A33	V	'Headers #2'
+E33	F	=IF(B33="","",_xlfn.XLOOKUP($C33,List!$A:$A,List!C:C))	=> None
+F33	F	=IF(C33="","",_xlfn.XLOOKUP($C33,List!$A:$A,List!D:D))	=> None
+G33	F	=IF(B33="",0,(B33*D33*E33/2000))	=> 0
+H33	F	=IF(B33="","",F33*G33*2000)	=> None
+I33	F	=IF(B33="","",((H33*$I$4)/100)+H33)	=> None
+A34	V	'Headers #3'
+E34	F	=IF(B34="","",_xlfn.XLOOKUP($C34,List!$A:$A,List!C:C))	=> None
+F34	F	=IF(C34="","",_xlfn.XLOOKUP($C34,List!$A:$A,List!D:D))	=> None
+G34	F	=IF(B34="",0,(B34*D34*E34/2000))	=> 0
+H34	F	=IF(B34="","",F34*G34*2000)	=> None
+I34	F	=IF(B34="","",((H34*$I$4)/100)+H34)	=> None
+A35	V	'Crossmembers #1'
+E35	F	=IF(B35="","",_xlfn.XLOOKUP($C35,List!$A:$A,List!C:C))	=> None
+F35	F	=IF(C35="","",_xlfn.XLOOKUP($C35,List!$A:$A,List!D:D))	=> None
+G35	F	=IF(B35="",0,(B35*D35*E35/2000))	=> 0
+H35	F	=IF(B35="","",F35*G35*2000)	=> None
+I35	F	=IF(B35="","",((H35*$I$4)/100)+H35)	=> None
+A36	V	'Crossmembers #2'
+E36	F	=IF(B36="","",_xlfn.XLOOKUP($C36,List!$A:$A,List!C:C))	=> None
+F36	F	=IF(C36="","",_xlfn.XLOOKUP($C36,List!$A:$A,List!D:D))	=> None
+G36	F	=IF(B36="",0,(B36*D36*E36/2000))	=> 0
+H36	F	=IF(B36="","",F36*G36*2000)	=> None
+I36	F	=IF(B36="","",((H36*$I$4)/100)+H36)	=> None
+A37	V	'Crossmembers #3'
+E37	F	=IF(B37="","",_xlfn.XLOOKUP($C37,List!$A:$A,List!C:C))	=> None
+F37	F	=IF(C37="","",_xlfn.XLOOKUP($C37,List!$A:$A,List!D:D))	=> None
+G37	F	=IF(B37="",0,(B37*D37*E37/2000))	=> 0
+H37	F	=IF(B37="","",F37*G37*2000)	=> None
+I37	F	=IF(B37="","",((H37*$I$4)/100)+H37)	=> None
+A38	V	'Bracing'
+E38	F	=IF(B38="","",_xlfn.XLOOKUP($C38,List!$A:$A,List!C:C))	=> None
+F38	F	=IF(C38="","",_xlfn.XLOOKUP($C38,List!$A:$A,List!D:D))	=> None
+G38	F	=IF(B38="",0,(B38*D38*E38/2000))	=> 0
+H38	F	=IF(B38="","",F38*G38*2000)	=> None
+I38	F	=IF(B38="","",((H38*$I$4)/100)+H38)	=> None
+E39	F	=IF(B39="","",_xlfn.XLOOKUP($C39,List!$A:$A,List!C:C))	=> None
+F39	F	=IF(C39="","",_xlfn.XLOOKUP($C39,List!$A:$A,List!D:D))	=> None
+G39	F	=IF(B39="",0,(B39*D39*E39/2000))	=> 0
+H39	F	=IF(B39="","",F39*G39*2000)	=> None
+I39	F	=IF(B39="","",((H39*$I$4)/100)+H39)	=> None
+E40	F	=IF(B40="","",_xlfn.XLOOKUP($C40,List!$A:$A,List!C:C))	=> None
+F40	F	=IF(C40="","",_xlfn.XLOOKUP($C40,List!$A:$A,List!D:D))	=> None
+G40	F	=IF(B40="",0,(B40*D40*E40/2000))	=> 0
+H40	F	=IF(B40="","",F40*G40*2000)	=> None
+I40	F	=IF(B40="","",((H40*$I$4)/100)+H40)	=> None
+E41	F	=IF(B41="","",_xlfn.XLOOKUP($C41,List!$A:$A,List!C:C))	=> None
+F41	F	=IF(C41="","",_xlfn.XLOOKUP($C41,List!$A:$A,List!D:D))	=> None
+G41	F	=IF(B41="",0,(B41*D41*E41/2000))	=> 0
+H41	F	=IF(B41="","",F41*G41*2000)	=> None
+I41	F	=IF(B41="","",((H41*$I$4)/100)+H41)	=> None
+E42	F	=IF(B42="","",_xlfn.XLOOKUP($C42,List!$A:$A,List!C:C))	=> None
+F42	F	=IF(C42="","",_xlfn.XLOOKUP($C42,List!$A:$A,List!D:D))	=> None
+G42	F	=IF(B42="",0,(B42*D42*E42/2000))	=> 0
+H42	F	=IF(B42="","",F42*G42*2000)	=> None
+I42	F	=IF(B42="","",((H42*$I$4)/100)+H42)	=> None
+E43	F	=IF(B43="","",_xlfn.XLOOKUP($C43,List!$A:$A,List!C:C))	=> None
+F43	F	=IF(C43="","",_xlfn.XLOOKUP($C43,List!$A:$A,List!D:D))	=> None
+G43	F	=IF(B43="",0,(B43*D43*E43/2000))	=> 0
+H43	F	=IF(B43="","",F43*G43*2000)	=> None
+I43	F	=IF(B43="","",((H43*$I$4)/100)+H43)	=> None
+E44	F	=IF(B44="","",_xlfn.XLOOKUP($C44,List!$A:$A,List!C:C))	=> None
+F44	F	=IF(C44="","",_xlfn.XLOOKUP($C44,List!$A:$A,List!D:D))	=> None
+G44	F	=IF(B44="",0,(B44*D44*E44/2000))	=> 0
+H44	F	=IF(B44="","",F44*G44*2000)	=> None
+I44	F	=IF(B44="","",((H44*$I$4)/100)+H44)	=> None
+E45	F	=IF(B45="","",_xlfn.XLOOKUP($C45,List!$A:$A,List!C:C))	=> None
+F45	F	=IF(C45="","",_xlfn.XLOOKUP($C45,List!$A:$A,List!D:D))	=> None
+G45	F	=IF(B45="",0,(B45*D45*E45/2000))	=> 0
+H45	F	=IF(B45="","",F45*G45*2000)	=> None
+I45	F	=IF(B45="","",((H45*$I$4)/100)+H45)	=> None
+E46	F	=IF(B46="","",_xlfn.XLOOKUP($C46,List!$A:$A,List!C:C))	=> None
+F46	F	=IF(C46="","",_xlfn.XLOOKUP($C46,List!$A:$A,List!D:D))	=> None
+G46	F	=IF(B46="",0,(B46*D46*E46/2000))	=> 0
+H46	F	=IF(B46="","",F46*G46*2000)	=> None
+I46	F	=IF(B46="","",((H46*$I$4)/100)+H46)	=> None
+E47	F	=IF(B47="","",_xlfn.XLOOKUP($C47,List!$A:$A,List!C:C))	=> None
+F47	F	=IF(C47="","",_xlfn.XLOOKUP($C47,List!$A:$A,List!D:D))	=> None
+G47	F	=IF(B47="",0,(B47*D47*E47/2000))	=> 0
+H47	F	=IF(B47="","",F47*G47*2000)	=> None
+I47	F	=IF(B47="","",((H47*$I$4)/100)+H47)	=> None
+E48	F	=IF(B48="","",_xlfn.XLOOKUP($C48,List!$A:$A,List!C:C))	=> None
+F48	F	=IF(C48="","",_xlfn.XLOOKUP($C48,List!$A:$A,List!D:D))	=> None
+G48	F	=IF(B48="",0,(B48*D48*E48/2000))	=> 0
+H48	F	=IF(B48="","",F48*G48*2000)	=> None
+I48	F	=IF(B48="","",((H48*$I$4)/100)+H48)	=> None
+E49	F	=IF(B49="","",_xlfn.XLOOKUP($C49,List!$A:$A,List!C:C))	=> None
+F49	F	=IF(C49="","",_xlfn.XLOOKUP($C49,List!$A:$A,List!D:D))	=> None
+G49	F	=IF(B49="",0,(B49*D49*E49/2000))	=> 0
+H49	F	=IF(B49="","",F49*G49*2000)	=> None
+I49	F	=IF(B49="","",((H49*$I$4)/100)+H49)	=> None
+E50	F	=IF(B50="","",_xlfn.XLOOKUP($C50,List!$A:$A,List!C:C))	=> None
+F50	F	=IF(C50="","",_xlfn.XLOOKUP($C50,List!$A:$A,List!D:D))	=> None
+G50	F	=IF(B50="",0,(B50*D50*E50/2000))	=> 0
+H50	F	=IF(B50="","",F50*G50*2000)	=> None
+I50	F	=IF(B50="","",((H50*$I$4)/100)+H50)	=> None
+A51	V	'Misc Structural'
+E52	F	=IF(B52="","",_xlfn.XLOOKUP($C52,List!$A:$A,List!C:C))	=> None
+F52	F	=IF(C52="","",_xlfn.XLOOKUP($C52,List!$A:$A,List!D:D))	=> None
+G52	F	=IF(B52="",0,(B52*D52*E52/2000))	=> 0
+H52	F	=IF(B52="","",F52*G52*2000)	=> None
+I52	F	=IF(B52="","",((H52*$I$4)/100)+H52)	=> None
+E53	F	=IF(B53="","",_xlfn.XLOOKUP($C53,List!$A:$A,List!C:C))	=> None
+F53	F	=IF(C53="","",_xlfn.XLOOKUP($C53,List!$A:$A,List!D:D))	=> None
+G53	F	=IF(B53="",0,(B53*D53*E53/2000))	=> 0
+H53	F	=IF(B53="","",F53*G53*2000)	=> None
+I53	F	=IF(B53="","",((H53*$I$4)/100)+H53)	=> None
+E54	F	=IF(B54="","",_xlfn.XLOOKUP($C54,List!$A:$A,List!C:C))	=> None
+F54	F	=IF(C54="","",_xlfn.XLOOKUP($C54,List!$A:$A,List!D:D))	=> None
+G54	F	=IF(B54="",0,(B54*D54*E54/2000))	=> 0
+H54	F	=IF(B54="","",F54*G54*2000)	=> None
+I54	F	=IF(B54="","",((H54*$I$4)/100)+H54)	=> None
+E55	F	=IF(B55="","",_xlfn.XLOOKUP($C55,List!$A:$A,List!C:C))	=> None
+F55	F	=IF(C55="","",_xlfn.XLOOKUP($C55,List!$A:$A,List!D:D))	=> None
+G55	F	=IF(B55="",0,(B55*D55*E55/2000))	=> 0
+H55	F	=IF(B55="","",F55*G55*2000)	=> None
+I55	F	=IF(B55="","",((H55*$I$4)/100)+H55)	=> None
+E56	F	=IF(B56="","",_xlfn.XLOOKUP($C56,List!$A:$A,List!C:C))	=> None
+F56	F	=IF(C56="","",_xlfn.XLOOKUP($C56,List!$A:$A,List!D:D))	=> None
+G56	F	=IF(B56="",0,(B56*D56*E56/2000))	=> 0
+H56	F	=IF(B56="","",F56*G56*2000)	=> None
+I56	F	=IF(B56="","",((H56*$I$4)/100)+H56)	=> None
+E57	F	=IF(B57="","",_xlfn.XLOOKUP($C57,List!$A:$A,List!C:C))	=> None
+F57	F	=IF(C57="","",_xlfn.XLOOKUP($C57,List!$A:$A,List!D:D))	=> None
+G57	F	=IF(B57="",0,(B57*D57*E57/2000))	=> 0
+H57	F	=IF(B57="","",F57*G57*2000)	=> None
+I57	F	=IF(B57="","",((H57*$I$4)/100)+H57)	=> None
+E58	F	=IF(B58="","",_xlfn.XLOOKUP($C58,List!$A:$A,List!C:C))	=> None
+F58	F	=IF(C58="","",_xlfn.XLOOKUP($C58,List!$A:$A,List!D:D))	=> None
+G58	F	=IF(B58="",0,(B58*D58*E58/2000))	=> 0
+H58	F	=IF(B58="","",F58*G58*2000)	=> None
+I58	F	=IF(B58="","",((H58*$I$4)/100)+H58)	=> None
+E59	F	=IF(B59="","",_xlfn.XLOOKUP($C59,List!$A:$A,List!C:C))	=> None
+F59	F	=IF(C59="","",_xlfn.XLOOKUP($C59,List!$A:$A,List!D:D))	=> None
+G59	F	=IF(B59="",0,(B59*D59*E59/2000))	=> 0
+H59	F	=IF(B59="","",F59*G59*2000)	=> None
+I59	F	=IF(B59="","",((H59*$I$4)/100)+H59)	=> None
+E60	F	=IF(B60="","",_xlfn.XLOOKUP($C60,List!$A:$A,List!C:C))	=> None
+F60	F	=IF(C60="","",_xlfn.XLOOKUP($C60,List!$A:$A,List!D:D))	=> None
+G60	F	=IF(B60="",0,(B60*D60*E60/2000))	=> 0
+H60	F	=IF(B60="","",F60*G60*2000)	=> None
+I60	F	=IF(B60="","",((H60*$I$4)/100)+H60)	=> None
+E61	F	=IF(B61="","",_xlfn.XLOOKUP($C61,List!$A:$A,List!C:C))	=> None
+F61	F	=IF(C61="","",_xlfn.XLOOKUP($C61,List!$A:$A,List!D:D))	=> None
+G61	F	=IF(B61="",0,(B61*D61*E61/2000))	=> 0
+H61	F	=IF(B61="","",F61*G61*2000)	=> None
+I61	F	=IF(B61="","",((H61*$I$4)/100)+H61)	=> None

@@ -1,0 +1,297 @@
+A1	V	'PWI EQUIPMENT RENTAL CHARGES'
+N1	V	'Markup'
+O1	V	'Notes:'
+A2	V	'RENTAL ITEM'
+B2	V	'Daily'
+E2	V	'Weekly'
+H2	V	'Monthly'
+K2	V	'PWI Cost'
+L2	V	'Total Cost'
+M2	V	'Total Charge'
+N2	V	0.15
+O2	V	'↪'
+A3	V	'Toyota 6K Pneumatic Forklift'
+B3	V	0
+C3	V	411
+D3	F	=C3*B3	=> 0
+E3	V	0
+F3	V	1007
+G3	F	=F3*E3	=> 0
+H3	V	0
+I3	V	2652.5
+J3	F	=I3*H3	=> 0
+K3	F	=(D3+G3+J3)/2	=> 0
+L3	F	=D3+G3+J3	=> 0
+M3	F	=L3*($N$2+1)	=> 0
+A4	V	'PWI Scissor Lift'
+B4	V	0
+C4	V	267.5
+D4	F	=C4*B4	=> 0
+E4	V	0
+F4	V	541.3636363636364
+G4	F	=F4*E4	=> 0
+H4	V	0
+I4	V	1173.409090909091
+J4	F	=I4*H4	=> 0
+K4	F	=(D4+G4+J4)/2	=> 0
+L4	F	=D4+G4+J4	=> 0
+M4	F	=L4*($N$2+1)	=> 0
+A5	V	'JCB 508C (Shrek)'
+B5	V	0
+C5	V	713.3333333333334
+D5	F	=C5*B5	=> 0
+E5	V	0
+F5	V	1786.6666666666667
+G5	F	=F5*E5	=> 0
+H5	V	0
+I5	V	4115
+J5	F	=I5*H5	=> 0
+K5	F	=(D5+G5+J5)/2	=> 0
+L5	F	=D5+G5+J5	=> 0
+M5	F	=L5*($N$2+1)	=> 0
+A6	V	'JLG G12-55A'
+B6	V	0
+C6	V	1001.6666666666666
+D6	F	=C6*B6	=> 0
+E6	V	0
+F6	V	2738.3333333333335
+G6	F	=F6*E6	=> 0
+H6	V	0
+I6	V	6536.666666666667
+J6	F	=I6*H6	=> 0
+K6	F	=(D6+G6+J6)/2	=> 0
+L6	F	=D6+G6+J6	=> 0
+M6	F	=L6*($N$2+1)	=> 0
+A7	V	'Genie GTH-1545 (Smurf)'
+B7	V	0
+C7	V	1432.5
+D7	F	=C7*B7	=> 0
+E7	V	0
+F7	V	3720
+G7	F	=F7*E7	=> 0
+H7	V	0
+I7	V	8940
+J7	F	=I7*H7	=> 0
+K7	F	=(D7+G7+J7)/2	=> 0
+L7	F	=D7+G7+J7	=> 0
+M7	F	=L7*($N$2+1)	=> 0
+A8	V	'Broderson IC-400 Carry Deck Crane '
+B8	V	0
+C8	V	3000
+D8	F	=C8*B8	=> 0
+E8	V	0
+F8	V	9000
+G8	F	=F8*E8	=> 0
+H8	V	0
+I8	V	27000
+J8	F	=I8*H8	=> 0
+K8	F	=(D8+G8+J8)/2	=> 0
+L8	F	=D8+G8+J8	=> 0
+M8	F	=L8*($N$2+1)	=> 0
+A9	V	'Rental Fork Lift'
+B9	V	0
+C9	V	405
+D9	F	=C9*B9	=> 0
+E9	V	0
+F9	V	960.5555555555555
+G9	F	=F9*E9	=> 0
+H9	V	0
+I9	V	2614.4444444444443
+J9	F	=I9*H9	=> 0
+K9	F	=(D9+G9+J9)	=> 0
+L9	F	=D9+G9+J9	=> 0
+M9	F	=L9*($N$2+1)	=> 0
+A10	V	'Rental Boom Lift'
+B10	V	0
+C10	V	616.25
+D10	F	=C10*B10	=> 0
+E10	V	0
+F10	V	1332.5
+G10	F	=F10*E10	=> 0
+H10	V	0
+I10	V	2953.75
+J10	F	=I10*H10	=> 0
+K10	F	=(D10+G10+J10)	=> 0
+L10	F	=D10+G10+J10	=> 0
+M10	F	=L10*($N$2+1)	=> 0
+A11	V	'Rental Scissor Lift'
+B11	V	0
+C11	V	331
+D11	F	=C11*B11	=> 0
+E11	V	0
+F11	V	679.5
+G11	F	=F11*E11	=> 0
+H11	V	0
+I11	V	1649
+J11	F	=I11*H11	=> 0
+K11	F	=(D11+G11+J11)	=> 0
+L11	F	=D11+G11+J11	=> 0
+M11	F	=L11*($N$2+1)	=> 0
+A12	V	'Rental 6K Telehandler'
+B12	V	0
+C12	V	820
+D12	F	=C12*B12	=> 0
+E12	V	0
+F12	V	1785
+G12	F	=F12*E12	=> 0
+H12	V	0
+I12	V	4295
+J12	F	=I12*H12	=> 0
+K12	F	=(D12+G12+J12)	=> 0
+L12	F	=D12+G12+J12	=> 0
+M12	F	=L12*($N$2+1)	=> 0
+A13	V	'Rental 10K Telehandler'
+B13	V	0
+C13	V	910
+D13	F	=C13*B13	=> 0
+E13	V	0
+F13	V	2335
+G13	F	=F13*E13	=> 0
+H13	V	0
+I13	V	5040
+J13	F	=I13*H13	=> 0
+K13	F	=(D13+G13+J13)	=> 0
+L13	F	=D13+G13+J13	=> 0
+M13	F	=L13*($N$2+1)	=> 0
+A14	V	'Rental 15K Telehandler'
+B14	V	0
+C14	V	1432.5
+D14	F	=C14*B14	=> 0
+E14	V	0
+F14	V	3720
+G14	F	=F14*E14	=> 0
+H14	V	0
+I14	V	8940
+J14	F	=I14*H14	=> 0
+K14	F	=(D14+G14+J14)	=> 0
+L14	F	=D14+G14+J14	=> 0
+M14	F	=L14*($N$2+1)	=> 0
+A15	V	'Wacker Neuson Large Generator'
+B15	V	0
+C15	V	298.8333333333333
+D15	F	=C15*B15	=> 0
+E15	V	0
+F15	V	771.5
+G15	F	=F15*E15	=> 0
+H15	V	0
+I15	V	1840.8333333333333
+J15	F	=I15*H15	=> 0
+K15	F	=(D15+G15+J15)	=> 0
+L15	F	=D15+G15+J15	=> 0
+M15	F	=L15*($N$2+1)	=> 0
+B16	V	0
+C16	V	0
+D16	F	=C16*B16	=> 0
+E16	V	0
+F16	V	0
+G16	F	=F16*E16	=> 0
+H16	V	0
+I16	V	0
+J16	F	=I16*H16	=> 0
+K16	F	=(D16+G16+J16)	=> 0
+L16	F	=D16+G16+J16	=> 0
+M16	F	=L16*($N$2+1)	=> 0
+B17	V	0
+C17	V	0
+D17	F	=C17*B17	=> 0
+E17	V	0
+F17	V	0
+G17	F	=F17*E17	=> 0
+H17	V	0
+I17	V	0
+J17	F	=I17*H17	=> 0
+K17	F	=(D17+G17+J17)	=> 0
+L17	F	=D17+G17+J17	=> 0
+M17	F	=L17*($N$2+1)	=> 0
+B18	V	0
+C18	V	0
+D18	F	=C18*B18	=> 0
+E18	V	0
+F18	V	0
+G18	F	=F18*E18	=> 0
+H18	V	0
+I18	V	0
+J18	F	=I18*H18	=> 0
+K18	F	=(D18+G18+J18)	=> 0
+L18	F	=D18+G18+J18	=> 0
+M18	F	=L18*($N$2+1)	=> 0
+B19	V	0
+C19	V	0
+D19	F	=C19*B19	=> 0
+E19	V	0
+F19	V	0
+G19	F	=F19*E19	=> 0
+H19	V	0
+I19	V	0
+J19	F	=I19*H19	=> 0
+K19	F	=(D19+G19+J19)	=> 0
+L19	F	=D19+G19+J19	=> 0
+M19	F	=L19*($N$2+1)	=> 0
+H21	V	'             '
+K21	F	=SUM(K3:K19)	=> 0
+L21	F	=SUM(L3:L19)	=> 0
+M21	F	=SUM(M3:M19)	=> 0
+A23	V	'CONCRETE RENTAL CHARGES'
+E23	V	'Markup'
+F23	V	'Notes:'
+A24	V	'RENTAL ITEM'
+B24	V	'QTY'
+C24	V	'Cost Per Day'
+D24	V	'Price'
+E24	V	0.25
+F24	V	'↪'
+A25	V	'Walk behind saw w/ 18" blade'
+B25	V	0
+C25	V	500
+D25	F	=C25*B25*(E24+1)	=> 0
+A26	V	'Concrete buggy'
+B26	V	0
+C26	V	150
+D26	F	=C26*B26*(E24+1)	=> 0
+A27	V	'50 Series mini excavator'
+B27	V	0
+C27	V	200
+D27	F	=C27*B27*(E24+1)	=> 0
+A28	V	'Tilt trailer or dumpster'
+B28	V	0
+C28	V	350
+D28	F	=C28*B28*(E24+1)	=> 0
+A29	V	'Disposal of cut out concrete'
+B29	V	0
+C29	V	500
+D29	F	=C29*B29*(E24+1)	=> 0
+B30	V	0
+D30	F	=C30*B30*(E24+1)	=> 0
+D31	F	=SUM(D25:D30)	=> 0
+A33	V	'Other Charges'
+B33	V	'Qty. '
+C33	V	'Rate'
+D33	V	'Total'
+A34	V	'Transportaion/Fuel Surcharge'
+B34	V	0
+C34	V	0.123
+D34	F	=M21*C34	=> 0
+A35	V	'Rental Company Freight Surcharge'
+B35	V	0
+C35	V	0.05
+D35	F	=M21*C35	=> 0
+A36	V	'Taxes and Other Charges'
+B36	V	0
+C36	V	0.15
+D36	F	=C36*M21	=> 0
+A37	V	'Delivery/Pickup fee'
+B37	V	0
+C37	V	400
+D37	F	=B37*C37	=> 0
+A42	V	'Total Cost of Rentals & Freight'
+P42	V	'Link to Individual Load Charts'
+A43	F	=SUM(D34+D31+M21+D37+D35+D36)	=> 0
+A108	V	'Total Scissor lift'
+B108	F	=IF((B5+E5+H5+B11+E11+H11)>0,1,0)	=> 0
+A109	V	'Total Fork lift'
+B109	F	=IF((B3+E3+H3+B6+E6+H6+#REF!+#REF!+#REF!+B12+E12+H12+B13+E13+H13+B19+E19+H19)>0,2,0)	=> '#REF!'
+A111	V	'Selection'
+B111	F	=B108+B109	=> '#REF!'
+A113	V	'   PWI will bring scissor lift(s)'
+A114	V	'   PWI will bring fork lift(s)'
+A115	V	'   PWI will bring scissor lift(s) & fork lift(s)'

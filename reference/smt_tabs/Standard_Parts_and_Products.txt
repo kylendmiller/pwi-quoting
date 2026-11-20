@@ -1,0 +1,2761 @@
+A1	V	'Standard Parts & Products'
+L2	V	'Shop Hours'
+A3	V	'Hardware'
+L3	F	=SUM(L12+L74+L120+L151+L179+L201+L217)	=> 0
+A4	V	'Description'
+B4	V	'QTY'
+C4	V	'Vendor Name'
+D4	V	'Part #'
+E4	V	'Price Last Updated'
+F4	V	'Sell Price'
+G4	V	'Total Price'
+J4	V	'QTY'
+K4	V	'Hours'
+L4	V	'Total'
+M4	V	'Gross Percentage'
+N4	V	'Subtotal'
+A5	V	'5/8" Concrete Wedge Anchor'
+B5	V	0
+C5	V	'Epco'
+E5	V	datetime.datetime(2026, 4, 29, 0, 0)
+F5	V	4
+G5	F	=B5*F5	=> 0
+J5	F	=B5	=> 0
+K5	V	0
+L5	F	=J5*K5	=> 0
+M5	V	0.3
+N5	F	=G5*M5	=> 0
+A6	V	'3/4" Concrete Wedge Anchor'
+B6	V	0
+C6	V	'Epco'
+E6	V	datetime.datetime(2026, 4, 29, 0, 0)
+F6	V	5
+G6	F	=B6*F6	=> 0
+J6	F	=B6	=> 0
+K6	V	0
+L6	F	=J6*K6	=> 0
+M6	V	0.3
+N6	F	=G6*M6	=> 0
+A7	V	'5/8" Structural Bolt and Nut'
+B7	V	0
+C7	V	'Epco'
+E7	V	datetime.datetime(2026, 4, 29, 0, 0)
+F7	V	3
+G7	F	=B7*F7	=> 0
+J7	F	=B7	=> 0
+K7	V	0
+L7	F	=J7*K7	=> 0
+M7	V	0.3
+N7	F	=G7*M7	=> 0
+A8	V	'3/4" Structural Bolt and Nut'
+B8	V	0
+C8	V	'Epco'
+E8	V	datetime.datetime(2026, 4, 29, 0, 0)
+F8	V	3.5
+G8	F	=B8*F8	=> 0
+J8	F	=B8	=> 0
+K8	V	0
+L8	F	=J8*K8	=> 0
+M8	V	0.3
+N8	F	=G8*M8	=> 0
+A9	V	'3/4" Epoxy Anchors'
+B9	V	0
+C9	V	'Multiple'
+E9	V	datetime.datetime(2026, 4, 29, 0, 0)
+F9	V	23
+G9	F	=B9*F9	=> 0
+J9	F	=B9	=> 0
+K9	V	0
+L9	F	=J9*K9	=> 0
+M9	V	0.3
+N9	F	=G9*M9	=> 0
+A10	V	'Grouted Baseplates'
+B10	V	0
+C10	V	'Lowes'
+E10	V	datetime.datetime(2026, 4, 29, 0, 0)
+F10	V	26
+G10	F	=B10*F10	=> 0
+J10	F	=B10	=> 0
+K10	V	0
+L10	F	=J10*K10	=> 0
+M10	V	0.3
+N10	F	=G10*M10	=> 0
+B11	V	0
+G11	F	=B11*F11	=> 0
+J11	F	=B11	=> 0
+K11	V	0
+L11	F	=J11*K11	=> 0
+M11	V	0.3
+N11	F	=G11*M11	=> 0
+G12	F	=SUM($G$5:$G$11)	=> 0
+L12	F	=SUM(L5:L11)	=> 0
+A14	V	'Cranes'
+A15	V	'Description'
+B15	V	'QTY'
+C15	V	'Vendor Name'
+D15	V	'Part #'
+E15	V	'Price Last Updated'
+F15	V	'Sell Price'
+G15	V	'Total Price'
+J15	V	'QTY'
+K15	V	'Hours'
+L15	V	'Total'
+M15	V	'Gross Percentage'
+N15	V	'Subtotal'
+A16	V	'Runway Electrification Package (4-Conductor x 65 amp max)'
+B16	V	0
+C16	V	'Starke'
+E16	V	datetime.datetime(2023, 9, 28, 0, 0)
+F16	V	16.81
+G16	F	=B16*F16	=> 0
+J16	F	=B16	=> 0
+K16	V	0
+L16	F	=J16*K16	=> 0
+M16	V	0.35
+N16	F	=G16*M16	=> 0
+A17	V	'Runway Electrification Package (4-Conductor x 120 amp max)'
+B17	V	0
+C17	V	'Starke'
+E17	V	datetime.datetime(2023, 9, 28, 0, 0)
+F17	V	16.81
+G17	F	=B17*F17	=> 0
+J17	F	=B17	=> 0
+K17	V	0
+L17	F	=J17*K17	=> 0
+M17	V	0.35
+N17	F	=G17*M17	=> 0
+A18	V	'Runway Electrification Package (4-Conductor x 250 amp max)'
+B18	V	0
+C18	V	'Starke'
+E18	V	datetime.datetime(2025, 3, 27, 0, 0)
+F18	V	49.39
+G18	F	=B18*F18	=> 0
+J18	F	=B18	=> 0
+K18	V	0
+L18	F	=J18*K18	=> 0
+M18	V	0.35
+N18	F	=G18*M18	=> 0
+A19	V	'Manual Bridge Crane Electrification Package (per foot)'
+B19	V	0
+C19	V	'Starke'
+F19	V	12.61
+G19	F	=B19*F19	=> 0
+J19	F	=B19	=> 0
+K19	V	0
+L19	F	=J19*K19	=> 0
+M19	V	0.35
+N19	F	=G19*M19	=> 0
+A20	V	'Air Festoon Package (Per Foot)'
+B20	V	0
+F20	V	31.53
+G20	F	=B20*F20	=> 0
+J20	F	=B20	=> 0
+K20	V	0
+L20	F	=J20*K20	=> 0
+M20	V	0.25
+N20	F	=G20*M20	=> 0
+A21	V	'Motorized Bridge Crane Electrification Package (per foot)'
+B21	V	0
+C21	V	'Starke'
+F21	V	22.06
+G21	F	=B21*F21	=> 0
+J21	F	=B21	=> 0
+K21	V	0
+L21	F	=J21*K21	=> 0
+M21	V	0.35
+N21	F	=G21*M21	=> 0
+A22	V	'Traveling Crane Pendant Electrification (Per Ft.)'
+B22	V	0
+C22	V	'CM'
+F22	V	44.14
+G22	F	=B22*F22	=> 0
+J22	F	=B22	=> 0
+K22	V	0
+L22	F	=J22*K22	=> 0
+M22	V	0.3
+N22	F	=G22*M22	=> 0
+A23	V	'65 Amp Single Collector Set  (Non-VFD)'
+B23	V	0
+C23	V	'Starke'
+F23	V	105.09
+G23	F	=B23*F23	=> 0
+J23	F	=B23	=> 0
+K23	V	0
+L23	F	=J23*K23	=> 0
+M23	V	0.5
+N23	F	=G23*M23	=> 0
+A24	V	'120 Amp Tandem Collector Set (for VFD)'
+B24	V	0
+C24	V	'Starke'
+F24	V	225.94
+G24	F	=B24*F24	=> 0
+J24	F	=B24	=> 0
+K24	V	0
+L24	F	=J24*K24	=> 0
+M24	V	0.5
+N24	F	=G24*M24	=> 0
+A25	V	'250 Amp Tandem Collector Set (for VFD)'
+B25	V	0
+C25	V	'Duct-o-Wire'
+E25	V	datetime.datetime(2025, 3, 27, 0, 0)
+F25	V	399.35
+G25	F	=B25*F25	=> 0
+J25	F	=B25	=> 0
+K25	V	0
+L25	F	=J25*K25	=> 0
+M25	V	0.5
+N25	F	=G25*M25	=> 0
+A26	V	'30# ASCE Crane Rail (per linear foot including clips and splicers)'
+B26	V	0
+C26	V	'Atlantic Track'
+E26	V	datetime.datetime(2026, 6, 5, 0, 0)
+F26	V	25
+G26	F	=B26*F26	=> 0
+J26	F	=B26	=> 0
+K26	V	0
+L26	F	=J26*K26	=> 0
+M26	V	0.25
+N26	F	=G26*M26	=> 0
+A27	V	'40# ASCE Crane Rail (per linear foot including clips and splicers)'
+B27	V	0
+C27	V	'Atlantic Track'
+E27	V	datetime.datetime(2026, 6, 5, 0, 0)
+F27	V	31
+G27	F	=B27*F27	=> 0
+J27	F	=B27	=> 0
+K27	V	0
+L27	F	=J27*K27	=> 0
+M27	V	0.25
+N27	F	=G27*M27	=> 0
+A28	V	'60# ASCE Crane Rail (per linear foot including clips and splicers)'
+B28	V	0
+C28	V	'Atlantic Track'
+E28	V	datetime.datetime(2026, 6, 5, 0, 0)
+F28	V	41
+G28	F	=B28*F28	=> 0
+J28	F	=B28	=> 0
+K28	V	0
+L28	F	=J28*K28	=> 0
+M28	V	0.25
+N28	F	=G28*M28	=> 0
+A29	V	'1/2 Ton Manual Ultra-Lite End Truck Kit  39.5"'
+B29	V	0
+C29	V	'Starke'
+D29	V	'SBK-1048'
+E29	V	datetime.datetime(2023, 11, 10, 0, 0)
+F29	V	913.24
+G29	F	=B29*F29	=> 0
+J29	F	=B29	=> 0
+K29	V	4
+L29	F	=J29*K29	=> 0
+M29	V	0.4
+N29	F	=G29*M29	=> 0
+A30	V	'1 Ton Manual Ultra-Lite End Truck Kit 39.5"'
+B30	V	0
+C30	V	'Starke'
+D30	V	'SBK-2048'
+E30	V	datetime.datetime(2023, 11, 10, 0, 0)
+F30	V	965.78
+G30	F	=B30*F30	=> 0
+J30	F	=B30	=> 0
+K30	V	4
+L30	F	=J30*K30	=> 0
+M30	V	0.4
+N30	F	=G30*M30	=> 0
+A31	V	'2 Ton Manual Ultra-Lite End Truck Kit 39.5"'
+B31	V	0
+C31	V	'Starke'
+D31	V	'SBK-4048'
+E31	V	datetime.datetime(2023, 11, 10, 0, 0)
+F31	V	1215.9
+G31	F	=B31*F31	=> 0
+J31	F	=B31	=> 0
+K31	V	4
+L31	F	=J31*K31	=> 0
+M31	V	0.4
+N31	F	=G31*M31	=> 0
+A32	V	'3 Ton Manual Ultra-Lite End Truck Kit'
+B32	V	0
+C32	V	'Starke'
+D32	V	'SBK-6060'
+E32	V	datetime.datetime(2023, 11, 10, 0, 0)
+F32	V	1392.45
+G32	F	=B32*F32	=> 0
+J32	F	=B32	=> 0
+K32	V	4
+L32	F	=J32*K32	=> 0
+M32	V	0.4
+N32	F	=G32*M32	=> 0
+A33	V	'PWI Manual Underhung End Truck Kit 22.5"'
+B33	V	0
+C33	V	'PWI'
+D33	V	'PZU-4032'
+E33	V	datetime.datetime(2023, 11, 10, 0, 0)
+F33	V	1953.64
+G33	F	=B33*F33	=> 0
+J33	F	=B33	=> 0
+K33	V	3
+L33	F	=J33*K33	=> 0
+M33	V	0.4
+N33	F	=G33*M33	=> 0
+A34	V	'PWI Manual Underhung End Truck Kit 32.5"'
+B34	V	0
+C34	V	'PWI'
+D34	V	'PZU-4042'
+E34	V	datetime.datetime(2023, 11, 10, 0, 0)
+F34	V	1743.46
+G34	F	=B34*F34	=> 0
+J34	F	=B34	=> 0
+K34	V	3
+L34	F	=J34*K34	=> 0
+M34	V	0.4
+N34	F	=G34*M34	=> 0
+A35	V	'PWI Manual Underhung End Truck Kit 38.25"'
+B35	V	0
+C35	V	'PWI'
+D35	V	'PZU-6048'
+E35	V	datetime.datetime(2023, 11, 10, 0, 0)
+F35	V	2268.91
+G35	F	=B35*F35	=> 0
+J35	F	=B35	=> 0
+K35	V	3
+L35	F	=J35*K35	=> 0
+M35	V	0.4
+N35	F	=G35*M35	=> 0
+A36	V	'PWI Manual Underhung End Truck Kit 44.25"'
+B36	V	0
+C36	V	'PWI'
+D36	V	'PZU-6054'
+E36	V	datetime.datetime(2023, 11, 10, 0, 0)
+F36	V	2268.91
+G36	F	=B36*F36	=> 0
+J36	F	=B36	=> 0
+K36	V	3
+L36	F	=J36*K36	=> 0
+M36	V	0.4
+N36	F	=G36*M36	=> 0
+A37	V	'PWI Manual Underhung End Truck Kit 50.25"'
+B37	V	0
+C37	V	'PWI'
+D37	V	'PZU-6060'
+E37	V	datetime.datetime(2023, 11, 10, 0, 0)
+F37	V	2268.91
+G37	F	=B37*F37	=> 0
+J37	F	=B37	=> 0
+K37	V	3
+L37	F	=J37*K37	=> 0
+M37	V	0.4
+N37	F	=G37*M37	=> 0
+A38	V	'PWI Manual Top Runner End Truck Kit 22.5"'
+B38	V	0
+C38	V	'PWI'
+D38	V	'PZT-4032'
+E38	V	datetime.datetime(2023, 11, 10, 0, 0)
+F38	V	1953.64
+G38	F	=B38*F38	=> 0
+J38	F	=B38	=> 0
+K38	V	3
+L38	F	=J38*K38	=> 0
+M38	V	0.4
+N38	F	=G38*M38	=> 0
+A39	V	'PWI Manual Top Runner End Truck Kit 32.5"'
+B39	V	0
+C39	V	'PWI'
+D39	V	'PZT-4042'
+E39	V	datetime.datetime(2023, 11, 10, 0, 0)
+F39	V	1743.46
+G39	F	=B39*F39	=> 0
+J39	F	=B39	=> 0
+K39	V	3
+L39	F	=J39*K39	=> 0
+M39	V	0.4
+N39	F	=G39*M39	=> 0
+A40	V	'PWI Manual Top Runner End Truck Kit 38.25"'
+B40	V	0
+C40	V	'PWI'
+D40	V	'PZT-6048'
+E40	V	datetime.datetime(2023, 11, 10, 0, 0)
+F40	V	2268.91
+G40	F	=B40*F40	=> 0
+J40	F	=B40	=> 0
+K40	V	3
+L40	F	=J40*K40	=> 0
+M40	V	0.4
+N40	F	=G40*M40	=> 0
+A41	V	'PWI Manual Top Runner End Truck Kit 44.25"'
+B41	V	0
+C41	V	'PWI'
+D41	V	'PZT-6054'
+E41	V	datetime.datetime(2023, 11, 10, 0, 0)
+F41	V	2268.91
+G41	F	=B41*F41	=> 0
+J41	F	=B41	=> 0
+K41	V	3
+L41	F	=J41*K41	=> 0
+M41	V	0.4
+N41	F	=G41*M41	=> 0
+A42	V	'PWI Manual Top Runner End Truck Kit 50.25"'
+B42	V	0
+C42	V	'PWI'
+D42	V	'PZT-6060'
+E42	V	datetime.datetime(2023, 11, 10, 0, 0)
+F42	V	2268.91
+G42	F	=B42*F42	=> 0
+J42	F	=B42	=> 0
+K42	V	3
+L42	F	=J42*K42	=> 0
+M42	V	0.4
+N42	F	=G42*M42	=> 0
+A43	V	'Beam End Stop Kit for Runway System (4 total per kit)'
+B43	V	0
+C43	V	'PWI'
+E43	V	datetime.datetime(2025, 4, 15, 0, 0)
+F43	V	399.35
+G43	F	=B43*F43	=> 0
+H43	V	'This is top running cranes only'
+J43	F	=B43	=> 0
+K43	V	4
+L43	F	=J43*K43	=> 0
+A44	V	'Drop Rod Connection'
+B44	V	0
+C44	V	'PWI'
+F44	V	136.62
+G44	F	=B44*F44	=> 0
+J44	F	=B44	=> 0
+K44	V	1
+L44	F	=J44*K44	=> 0
+M44	V	0.25
+N44	F	=G44*M44	=> 0
+A45	V	'Drop Rod Connection'
+B45	V	0
+C45	V	'PWI'
+F45	V	105.09
+G45	F	=B45*F45	=> 0
+J45	F	=B45	=> 0
+K45	V	1
+L45	F	=J45*K45	=> 0
+M45	V	0.25
+N45	F	=G45*M45	=> 0
+A46	V	'Basic bolt on End Stop Kit'
+B46	V	0
+C46	V	'PWI'
+F46	V	18.91
+G46	F	=B46*F46	=> 0
+J46	F	=B46	=> 0
+K46	V	1
+L46	F	=J46*K46	=> 0
+M46	V	0.25
+N46	F	=G46*M46	=> 0
+A47	V	'PWI HD Adjustable End Stop Kit (slides on Flange)'
+B47	V	0
+C47	V	'PWI'
+F47	V	84.08
+G47	F	=B47*F47	=> 0
+J47	F	=B47	=> 0
+K47	V	2
+L47	F	=J47*K47	=> 0
+M47	V	0.25
+N47	F	=G47*M47	=> 0
+A48	V	'End Truck Plug & Play Upcharge (2 ton or smaller)'
+B48	V	0
+C48	V	'PWI'
+E48	V	datetime.datetime(2024, 6, 4, 0, 0)
+F48	V	832.4
+G48	F	=B48*F48	=> 0
+J48	F	=B48	=> 0
+K48	V	7
+L48	F	=J48*K48	=> 0
+M48	V	0.4
+N48	F	=G48*M48	=> 0
+A49	V	'End Truck Plug & Play Upcharge (3 ton or larger)'
+B49	V	0
+C49	V	'PWI'
+E49	V	datetime.datetime(2024, 6, 4, 0, 0)
+F49	V	1576.36
+G49	F	=B49*F49	=> 0
+J49	F	=B49	=> 0
+K49	V	15
+L49	F	=J49*K49	=> 0
+M49	V	0.4
+N49	F	=G49*M49	=> 0
+A50	V	'Radio Receiving Units Pairing Charge'
+B50	V	0
+C50	V	'PWI'
+E50	V	datetime.datetime(2024, 11, 8, 0, 0)
+F50	V	210.18
+G50	F	=B50*F50	=> 0
+J50	F	=B50	=> 0
+K50	V	3
+L50	F	=J50*K50	=> 0
+M50	V	0.4
+N50	F	=G50*M50	=> 0
+A51	V	'Bogie End Truck Extra Charge'
+B51	V	0
+F51	V	1576.36
+G51	F	=B51*F51	=> 0
+J51	F	=B51	=> 0
+K51	V	10
+L51	F	=J51*K51	=> 0
+A52	V	'72"- 144" Bridge Buffer Preventing Runway Overload (set of 2)'
+B52	V	0
+C52	V	'PWI'
+E52	V	datetime.datetime(2023, 10, 25, 0, 0)
+F52	V	767.16
+G52	F	=B52*F52	=> 0
+J52	F	=B52	=> 0
+K52	V	2
+L52	F	=J52*K52	=> 0
+M52	V	0.2
+N52	F	=G52*M52	=> 0
+A53	V	'HyperLite 300 Series Truss'
+B53	V	0
+C53	V	'Price Per Ft.'
+F53	V	89.33
+G53	F	=B53*F53	=> 0
+J53	F	=B53	=> 0
+K53	V	0.4
+L53	F	=J53*K53	=> 0
+M53	V	0.5
+N53	F	=G53*M53	=> 0
+A54	V	'HyperLite 400 Series Truss'
+B54	V	0
+C54	V	'Price Per Ft.'
+F54	V	99.84
+G54	F	=B54*F54	=> 0
+J54	F	=B54	=> 0
+K54	V	0.4
+L54	F	=J54*K54	=> 0
+M54	V	0.5
+N54	F	=G54*M54	=> 0
+A55	V	'PWST Hoist Cradle (GDRV Style)'
+B55	V	0
+F55	V	724.08
+G55	F	=B55*F55	=> 0
+J55	F	=B55	=> 0
+K55	V	2
+L55	F	=J55*K55	=> 0
+M55	V	0.1
+N55	F	=G55*M55	=> 0
+A56	V	'Jib Hinge Kit'
+B56	V	0
+C56	V	'1/2 & 1 Ton'
+F56	V	625.29
+G56	F	=B56*F56	=> 0
+J56	F	=B56	=> 0
+K56	V	20
+L56	F	=J56*K56	=> 0
+M56	V	0.2
+N56	F	=G56*M56	=> 0
+A57	V	'Jib 360° Slip Ring Electrical Assembly'
+B57	V	0
+F57	V	1261.09
+G57	F	=B57*F57	=> 0
+J57	F	=B57	=> 0
+K57	V	1
+L57	F	=J57*K57	=> 0
+M57	V	0.2
+N57	F	=G57*M57	=> 0
+A58	V	'Jib Rod Kit'
+B58	V	0
+F58	V	394.1
+G58	F	=B58*F58	=> 0
+J58	F	=B58	=> 0
+K58	V	2
+L58	F	=J58*K58	=> 0
+M58	V	0.2
+N58	F	=G58*M58	=> 0
+A59	V	'Jib Stop Kit '
+B59	V	0
+F59	V	315.27
+G59	F	=B59*F59	=> 0
+J59	F	=B59	=> 0
+K59	V	2
+L59	F	=J59*K59	=> 0
+M59	V	0.2
+N59	F	=G59*M59	=> 0
+A60	V	'Motorized Gantry Crane Builder (Single Girder)'
+A61	V	'All Gantry "Standard Parts and Products" are autocalculated when you enter info below. If you add items above this line FOR gantry cranes you are doubling up.'
+A62	V	'Total Quantity of Gantry Cranes'
+B62	V	0
+D62	V	"Quoting Gantry Cranes — What the Builder Includes\nThe gantry crane builder only calculates part of the quote. \nIncluded in the builder: all steel, all components, radios, control panels, paint, and standard parts and products.\nNot included — add separately: hoist, motorized trolley, installation, freight, management time, decals, and anything else on the main summary page.\nWhen in doubt, review the gantry page but don't edit anything on that page."
+A63	V	'Capacity'
+B63	V	5
+C63	V	'Tons'
+A64	V	'Height (HUB)'
+B64	V	15
+C64	V	'Feet'
+A65	V	'Span'
+B65	V	40
+C65	V	'Feet'
+A66	V	'Is The Gantry Travel Motorized?'
+B66	V	True
+A68	V	'Quantity of Hoists Per Gantry Crane'
+B68	V	1
+A69	V	'Radio Controlled?'
+B69	V	True
+A72	V	'Total Gantry Standard Parts & Products'
+B72	V	1
+G72	F	=IF($B$62=0,0,IFERROR(SUM(Gantry!J29,Gantry!J45),"Exceeded Constraints"))	=> 0
+G73	F	=B73*F73	=> 0
+J73	F	=B73	=> 0
+K73	V	0
+L73	F	=J73*K73	=> 0
+M73	V	0.3
+N73	F	=G73*M73	=> 0
+F74	V	'Total'
+G74	F	=SUM(G16:G73)	=> 0
+L74	F	=SUM(L16:L73)	=> 0
+A76	V	'Mezzanines'
+A77	V	'Mezz Info'
+I77	V	' '
+J77	V	'QTY'
+K77	V	'Hours'
+L77	V	'Total'
+M77	V	'Gross Percentage'
+N77	V	'Subtotal'
+A78	V	'Total Square Footage'
+C78	V	4700
+D78	V	'Bar Joist / Crossmember Spacing (by ft.)'
+F78	V	4
+J78	F	=C78	=> 4700
+K78	V	0
+L78	F	=K78*J78	=> 0
+A81	V	'Item'
+B81	V	'Incl?'
+C81	V	'Ft./Sheets/Square'
+D81	V	'Price Per Ft./Square/Sheet'
+E81	V	'Cost'
+F81	V	'Add Markup'
+G81	V	'Total'
+A82	V	'Guardrail by the foot'
+J82	V	'QTY'
+K82	V	'Hours'
+L82	V	'Total'
+M82	V	'Gross Percentage'
+N82	V	'Subtotal'
+A83	V	'42" OSHA - Bolt Together'
+B83	V	False
+C83	V	300
+D83	V	39.93
+E83	F	=D83*C83	=> 11979
+F83	V	0.2
+G83	F	=IF(AND(B83=TRUE,F83>0),SUM(E83*(F83+1)),IF(B83=TRUE,E83,0))	=> 0
+J83	F	=C83	=> 300
+K83	V	0
+L83	F	=K83*J83	=> 0
+M83	V	0.1666
+N83	F	=G83*M83	=> 0
+A84	V	'42" IBC - Bolt Together'
+B84	V	False
+D84	V	109.29
+E84	F	=D84*C83	=> 32787
+F84	V	0.2
+G84	F	=IF(AND(B84=TRUE,F84>0),SUM(E84*(F84+1)),IF(B84=TRUE,E84,0))	=> 0
+M84	V	0.1666
+N84	F	=G84*M84	=> 0
+A85	V	'OSHA pocket removable  GR'
+B85	V	False
+D85	V	63.06
+E85	F	=D85*C83	=> 18918
+F85	V	0.2
+G85	F	=IF(AND(B85=TRUE,F85>0),SUM(E85*(F85+1)),IF(B85=TRUE,E85,0))	=> 0
+M85	V	0.1666
+N85	F	=G85*M85	=> 0
+A86	V	'Temporary Cable Railing for Mezz Construction'
+C86	V	0
+D86	V	8.4
+E86	F	=D86*C86	=> 0
+F86	V	0.2
+G86	F	=E86*(F86+1)	=> 0
+J86	F	=C86	=> 0
+K86	V	0
+L86	F	=K86*J86	=> 0
+M86	V	0.1666
+N86	F	=G86*M86	=> 0
+A87	V	'Metal Decking'
+J87	V	'QTY'
+K87	V	'Hours'
+L87	V	'Total'
+M87	V	'Gross Percentage'
+N87	V	'Subtotal'
+A88	V	'White Bottom 20ga. Decking 1.5" B-Deck'
+B88	V	False
+C88	F	=SUM(C78*1.03/100)	=> 48.41
+D88	V	262.49
+E88	F	=SUM(D88*C88+H286)	=> 12707.1409
+F88	V	0
+G88	F	=IF(AND(B88=TRUE,F88>0),SUM(E88*(F88+1)),IF(B88=TRUE,E88,0))	=> 0
+J88	V	0
+K88	V	0
+L88	F	=K88*J88	=> 0
+M88	V	0.4
+N88	F	=G88*M88	=> 0
+A89	V	'White Bottom 20ga. Decking 1.5" F-Deck'
+B89	V	False
+D89	V	262.49
+E89	F	=SUM(D89*C88)	=> 12707.1409
+F89	V	0
+G89	F	=IF(AND(B89=TRUE,F89>0),SUM(E89*(F89+1)),IF(B89=TRUE,E89,0))	=> 0
+M89	V	0.4
+N89	F	=G89*M89	=> 0
+A90	V	'G60 Galvanized 20ga. Decking 1.5" B-Deck'
+B90	V	False
+D90	V	237.33
+E90	F	=SUM(D90*C88+H297)	=> 11489.1453
+F90	V	0
+G90	F	=IF(AND(B90=TRUE,F90>0),SUM(E90*(F90+1)),IF(B90=TRUE,E90,0))	=> 0
+M90	V	0.4
+N90	F	=G90*M90	=> 0
+A91	V	'G40 Galvanized 20ga. Decking 1.5" B-Deck'
+B91	V	False
+D91	V	214.42
+E91	F	=SUM(D91*C88+H308)	=> 10380.072199999999
+F91	V	0
+G91	F	=IF(AND(B91=TRUE,F91>0),SUM(E91*(F91+1)),IF(B91=TRUE,E91,0))	=> 0
+M91	V	0.4
+N91	F	=G91*M91	=> 0
+A92	V	'G40 Galvanized 22ga. Decking 1.5" B-Deck'
+B92	V	False
+D92	V	185.12
+E92	F	=SUM(D92*C88+H319)	=> 8961.6592
+F92	V	0
+G92	F	=IF(AND(B92=TRUE,F92>0),SUM(E92*(F92+1)),IF(B92=TRUE,E92,0))	=> 0
+M92	V	0.4
+N92	F	=G92*M92	=> 0
+A93	V	'Wood Decking'
+J93	V	'QTY'
+K93	V	'Hours'
+L93	V	'Total'
+M93	V	'Gross Percentage'
+N93	V	'Subtotal'
+A94	V	'3/4" Advantech Per 8\' x 4\' Sheet'
+B94	V	False
+C94	F	=ROUNDUP(SUM(C78/32),0)	=> 147
+D94	V	60
+E94	F	=C78*D94/32*1.04	=> 9165
+F94	V	0.2
+G94	F	=IF(AND(B94=TRUE,F94>0),SUM(E94*(F94+1)),IF(B94=TRUE,E94,0))	=> 0
+J94	F	=C94	=> 147
+K94	V	0
+L94	F	=K94*J94	=> 0
+M94	V	0.1666
+N94	F	=G94*M94	=> 0
+C95	V	0
+D95	V	0
+E95	F	=C95*D95	=> 0
+F95	V	0.2
+G95	F	=E95*(F95+1)	=> 0
+J95	F	=C95	=> 0
+K95	V	0
+L95	F	=K95*J95	=> 0
+M95	V	0.1666
+N95	F	=G95*M95	=> 0
+A96	V	'Bar Grating'
+J96	V	'QTY'
+K96	V	'Hours'
+L96	V	'Total'
+M96	V	'Gross Percentage'
+N96	V	'Subtotal'
+A97	V	'1" 19W4 Unpainted - Non Serrated'
+B97	V	False
+C97	F	=C88	=> 48.41
+D97	V	1010.97
+E97	F	=D97*C97	=> 48941.0577
+F97	V	0.3
+G97	F	=IF(AND(B97=TRUE,F97>0),SUM(E97*(F97+1)),IF(B97=TRUE,E97,0))	=> 0
+J97	V	0
+K97	V	0
+L97	F	=K97*J97	=> 0
+M97	V	0.1666
+N97	F	=G97*M97	=> 0
+A98	V	'1.25" 19W4 - Unpainted - Non Serrated'
+B98	V	False
+D98	V	1040.4
+E98	F	=D98*C97	=> 50365.764
+F98	V	0.3
+G98	F	=IF(AND(B98=TRUE,F98>0),SUM(E98*(F98+1)),IF(B98=TRUE,E98,0))	=> 0
+M98	V	0.1666
+N98	F	=G98*M98	=> 0
+A99	V	'1.25" 19W4 Unpainted - Serrated'
+B99	V	False
+D99	V	1086.64
+E99	F	=D99*C97	=> 52604.2424
+F99	V	0.3
+G99	F	=IF(AND(B99=TRUE,F99>0),SUM(E99*(F99+1)),IF(B99=TRUE,E99,0))	=> 0
+M99	V	0.1666
+N99	F	=G99*M99	=> 0
+A100	V	'Plate'
+J100	V	'QTY'
+K100	V	'Hours'
+L100	V	'Total'
+M100	V	'Gross Percentage'
+N100	V	'Subtotal'
+A101	V	'Tread Plate 1/8" Per 4\' x 8\' Sheet'
+B101	V	False
+C101	F	=C94	=> 147
+D101	V	144.65
+E101	F	=C101*D101	=> 21263.55
+F101	V	0.2
+G101	F	=IF(AND(B101=TRUE,F101>0),SUM(E101*(F101+1)),IF(B101=TRUE,E101,0))	=> 0
+J101	F	=C101	=> 147
+K101	V	0
+L101	F	=K101*J101	=> 0
+M101	V	0.166
+N101	F	=G101*M101	=> 0
+A102	V	'Tread Plate 3/16" Per 4\' x 8\' Sheet'
+B102	V	False
+D102	V	183.7
+E102	F	=C101*D102	=> 27003.899999999998
+F102	V	0.2
+G102	F	=IF(AND(B102=TRUE,F102>0),SUM(E102*(F102+1)),IF(B102=TRUE,E102,0))	=> 0
+M102	V	0.166
+N102	F	=G102*M102	=> 0
+A103	V	'Tread Plate 1/4" Per 4\' x 8\' Sheet'
+B103	V	False
+D103	V	237.48
+E103	F	=C101*D103	=> 34909.56
+F103	V	0.2
+G103	F	=IF(AND(B103=TRUE,F103>0),SUM(E103*(F103+1)),IF(B103=TRUE,E103,0))	=> 0
+M103	V	0.166
+N103	F	=G103*M103	=> 0
+A104	V	'Tread Plate 3/8" Per 4\' x 8\' Sheet'
+B104	V	False
+D104	V	327.59
+E104	F	=C101*D104	=> 48155.729999999996
+F104	V	0.2
+G104	F	=IF(AND(B104=TRUE,F104>0),SUM(E104*(F104+1)),IF(B104=TRUE,E104,0))	=> 0
+M104	V	0.166
+N104	F	=G104*M104	=> 0
+A105	V	'Fasteners'
+J105	V	'QTY'
+K105	V	'Hours'
+L105	V	'Total'
+M105	V	'Gross Percentage'
+N105	V	'Subtotal'
+A106	V	'Pins and Shots'
+B106	V	False
+C106	F	=IF(F78>0,C78/100*120/F78*1.1,0)	=> 1551.0000000000002
+D106	V	0.54
+E106	F	=C106*D106	=> 837.5400000000002
+F106	V	0.2
+G106	F	=IF(AND(B106=TRUE,F106>0),SUM(E106*(F106+1)),IF(B106=TRUE,E106,0))	=> 0
+J106	F	=C106	=> 1551.0000000000002
+K106	V	0
+L106	F	=K106*J106	=> 0
+M106	V	0.2
+N106	F	=G106*M106	=> 0
+A107	V	'Wood Screws'
+B107	V	False
+C107	F	=C78/32*20	=> 2937.5
+D107	V	0.12
+E107	F	=C107*D107	=> 352.5
+F107	V	0.2
+G107	F	=IF(AND(B107=TRUE,F107>0),SUM(E107*(F107+1)),IF(B107=TRUE,E107,0))	=> 0
+J107	F	=C107	=> 2937.5
+K107	V	0
+L107	F	=K107*J107	=> 0
+M107	V	0.2
+N107	F	=G107*M107	=> 0
+A108	V	'Valley Shims'
+B108	V	False
+C108	F	=ROUNDUP(SUM(C94*0.75),0)	=> 111
+D108	V	6.94
+E108	F	=C108*D108	=> 770.34
+F108	V	0.2
+G108	F	=IF(AND(B108=TRUE,F108>0),SUM(E108*(F108+1)),IF(B108=TRUE,E108,0))	=> 0
+J108	F	=C108	=> 111
+K108	V	0
+L108	F	=K108*J108	=> 0
+M108	V	0.2
+N108	F	=G108*M108	=> 0
+A109	V	'Saddle Clips and Self Tappers for Bar Grating'
+B109	V	False
+C109	F	=IF(F78>0,ROUNDUP(SUM(C78/100*150/F78*1.05),0),0)	=> 1851
+D109	V	0.7
+E109	F	=C109*D109	=> 1295.6999999999998
+F109	V	0.2
+G109	F	=IF(AND(B109=TRUE,F109>0),SUM(E109*(F109+1)),IF(B109=TRUE,E109,0))	=> 0
+J109	F	=C109	=> 1851
+K109	V	0
+L109	F	=K109*J109	=> 0
+M109	V	0.2
+N109	F	=G109*M109	=> 0
+F110	V	0.2
+G110	F	=IF(AND(B109=TRUE,F110>0),SUM(E110*(F110+1)),IF(B109=TRUE,E110,0))	=> 0
+J110	F	=C110	=> 0
+K110	V	0
+L110	F	=K110*J110	=> 0
+M110	V	0.2
+N110	F	=G110*M110	=> 0
+A111	V	'Gates'
+J111	V	'QTY'
+K111	V	'Hours'
+L111	V	'Total'
+M111	V	'Gross Percentage'
+N111	V	'Subtotal'
+A112	V	'Electric Gate Operator Unit Only (No install)'
+B112	V	0
+E112	V	2884.84
+F112	V	0.2
+G112	F	=SUM(E112*SUM(F112+1))*B112	=> 0
+I112	F	=IFERROR(IF('Standard Parts & Products'!$A16:$G73>0,'Standard Parts & Products'!$A16:$G73*#REF!,""),"")	=> None
+J112	F	=B112	=> 0
+K112	V	1
+L112	F	=K112*J112	=> 0
+M112	V	0.2
+N112	F	=G112*M112	=> 0
+A113	V	"8' - 12' Motorized Roll Up Gate w/ Operator"
+B113	V	0
+E113	V	6387.87
+F113	V	0.2
+G113	F	=SUM(E113*SUM(F113+1))*B113	=> 0
+J113	F	=B113	=> 0
+K113	V	20
+L113	F	=K113*J113	=> 0
+M113	V	0.2
+N113	F	=G113*M113	=> 0
+A114	V	"10' - 18' Motorized Rolling Gate (w/ Electric Operator)"
+B114	V	0
+E114	V	6387.87
+F114	V	0.2
+G114	F	=SUM(E114*SUM(F114+1))*B114	=> 0
+J114	F	=B114	=> 0
+K114	V	20
+L114	F	=K114*J114	=> 0
+M114	V	0.2
+N114	F	=G114*M114	=> 0
+A115	V	"6 - 12' Manual Rolling Gate (Includes Floor Track)"
+B115	V	0
+E115	V	1081.82
+F115	V	0.2
+G115	F	=SUM(E115*SUM(F115+1))*B115	=> 0
+J115	F	=B115	=> 0
+K115	V	15
+L115	F	=K115*J115	=> 0
+M115	V	0.2
+N115	F	=G115*M115	=> 0
+A116	V	" 6' - 12' Manual Pivot Gate "
+B116	V	0
+E116	V	1906.06
+F116	V	0.2
+G116	F	=SUM(E116*SUM(F116+1))*B116	=> 0
+J116	F	=B116	=> 0
+K116	V	20
+L116	F	=K116*J116	=> 0
+M116	V	0.2
+N116	F	=G116*M116	=> 0
+A117	V	" 6' - 12' Pneumatic Pivot Gate "
+B117	V	0
+E117	V	4327.26
+F117	V	0.2
+G117	F	=SUM(E117*SUM(F117+1))*B117	=> 0
+J117	F	=B117	=> 0
+K117	V	25
+L117	F	=K117*J117	=> 0
+M117	V	0.2
+N117	F	=G117*M117	=> 0
+A118	V	"2' - 3' Self Closing Safety Gate (Stairs/Mezz/Outriggers)"
+B118	V	0
+E118	V	360.61
+F118	V	0.2
+G118	F	=SUM(E118*SUM(F118+1))*B118	=> 0
+J118	F	=B118	=> 0
+K118	V	2
+L118	F	=K118*J118	=> 0
+M118	V	0.2
+N118	F	=G118*M118	=> 0
+F119	V	0.2
+G119	F	=SUM(E119*SUM(F119+1))*B119	=> 0
+J119	F	=B119	=> 0
+K119	V	0
+L119	F	=K119*J119	=> 0
+M119	V	0.2
+N119	F	=G119*M119	=> 0
+F120	V	'Total'
+G120	F	=SUM(G83:G119)	=> 0
+L120	F	=SUM(L78:L119)	=> 0
+A122	V	'Fall Protection'
+H122	V	'Markup'
+A123	V	'Description'
+B123	V	'QTY'
+C123	V	'Info'
+D123	V	'Part #'
+E123	V	'Price Last Updated'
+F123	V	'Sell Price'
+G123	V	'Total Price'
+H123	V	0
+J123	V	'QTY'
+K123	V	'Hours'
+L123	V	'Total'
+M123	V	'Gross Percentage'
+N123	V	'Subtotal'
+A124	V	"53' Fall Protection"
+B124	V	0
+C124	V	'10" Truss Height     40\' span capable'
+D124	V	'PWFP1053S'
+F124	V	4676.54
+G124	F	=SUM('Standard Parts & Products'!$F124*'Standard Parts & Products'!$B124)*SUM($H$123+1)	=> 0
+J124	F	=B124	=> 0
+K124	V	12
+L124	F	=K124*J124	=> 0
+M124	V	0.75
+N124	F	=G124*M124	=> 0
+A125	V	"53' Fall Protection"
+B125	V	0
+C125	V	'7" Truss Height     20\' span capable'
+D125	V	'PWFP0753S'
+F125	V	4118.51
+G125	F	=SUM('Standard Parts & Products'!$F125*'Standard Parts & Products'!$B125)*SUM($H$123+1)	=> 0
+J125	F	=B125	=> 0
+K125	V	12
+L125	F	=K125*J125	=> 0
+M125	V	0.75
+N125	F	=G125*0.4	=> 0
+A126	V	"43' Fall Protection"
+B126	V	0
+C126	V	'10" Truss Height     40\' span capable'
+D126	V	'PWFP1043S'
+F126	V	3940.9
+G126	F	=SUM('Standard Parts & Products'!$F126*'Standard Parts & Products'!$B126)*SUM($H$123+1)	=> 0
+J126	V	0
+K126	V	10
+L126	F	=K126*J126	=> 0
+M126	V	0.75
+N126	F	=G126*0.4	=> 0
+A127	V	"43' Fall Protection"
+B127	V	0
+C127	V	'7" Truss Height      20\' span capable'
+D127	V	'PWFP0743S'
+F127	V	3540.51
+G127	F	=SUM('Standard Parts & Products'!$F127*'Standard Parts & Products'!$B127)*SUM($H$123+1)	=> 0
+J127	F	=B127	=> 0
+K127	V	10
+L127	F	=K127*J127	=> 0
+M127	V	0.75
+N127	F	=G127*0.4	=> 0
+A128	V	"32' Fall Protection"
+B128	V	0
+C128	V	'10" Truss Height     30\' span capable'
+D128	V	'PWFP1032S'
+F128	V	3257.81
+G128	F	=SUM('Standard Parts & Products'!$F128*'Standard Parts & Products'!$B128)*SUM($H$123+1)	=> 0
+J128	F	=B128	=> 0
+K128	V	8
+L128	F	=K128*J128	=> 0
+M128	V	0.75
+N128	F	=G128*0.4	=> 0
+A129	V	"32' Fall Protection"
+B129	V	0
+C129	V	'7" Truss Height      20\' span capable'
+D129	V	'PWFP0732S'
+F129	V	2904.72
+G129	F	=SUM('Standard Parts & Products'!$F129*'Standard Parts & Products'!$B129)*SUM($H$123+1)	=> 0
+J129	F	=B129	=> 0
+K129	V	8
+L129	F	=K129*J129	=> 0
+M129	V	0.75
+N129	F	=G129*0.4	=> 0
+A130	V	"21' Fall Protection"
+B130	V	0
+C130	V	'7"  Truss Height     20\' span capable'
+D130	V	'PWFP0721S'
+F130	V	2268.91
+G130	F	=SUM('Standard Parts & Products'!$F130*'Standard Parts & Products'!$B130)*SUM($H$123+1)	=> 0
+J130	F	=B130	=> 0
+K130	V	8
+L130	F	=K130*J130	=> 0
+M130	V	0.75
+N130	F	=G130*0.4	=> 0
+A131	V	'Drop Rod Connection'
+B131	V	0
+C131	V	"HDWR & Clamp - longer than 6'"
+F131	V	136.62
+G131	F	=SUM('Standard Parts & Products'!$F131*'Standard Parts & Products'!$B131)*SUM($H$123+1)	=> 0
+J131	F	=B131	=> 0
+K131	V	1
+L131	F	=K131*J131	=> 0
+M131	V	0.3
+N131	F	=G131*0.4	=> 0
+A132	V	'Drop Rod Connection'
+B132	V	0
+C132	V	"HDWR & Clamp - Less than 6'"
+F132	V	105.09
+G132	F	=SUM('Standard Parts & Products'!$F132*'Standard Parts & Products'!$B132)*SUM($H$123+1)	=> 0
+J132	F	=B132	=> 0
+K132	V	1
+L132	F	=K132*J132	=> 0
+M132	V	0.3
+N132	F	=G132*0.4	=> 0
+A133	V	'Non-Fall Protection Splice Kit'
+B133	V	0
+C133	V	'Enclosed Track Only'
+D133	V	'S300-TSK'
+F133	V	59.9
+G133	F	=SUM('Standard Parts & Products'!$F133*'Standard Parts & Products'!$B133)*SUM($H$123+1)	=> 0
+J133	F	=B133	=> 0
+K133	V	1.5
+L133	F	=K133*J133	=> 0
+M133	V	0.3
+N133	F	=G133*0.4	=> 0
+A134	V	'Beam Hanger'
+B134	V	0
+C134	V	'Clamp Plates To W-beam Flange w/ Drop'
+F134	V	94.58
+G134	F	=SUM('Standard Parts & Products'!$F134*'Standard Parts & Products'!$B134)*SUM($H$123+1)	=> 0
+J134	F	=B134	=> 0
+K134	V	1
+L134	F	=K134*J134	=> 0
+M134	V	0.3
+N134	F	=G134*0.4	=> 0
+A135	V	'Fall Protection Splice Kit'
+B135	V	0
+F135	V	363.15
+G135	F	=SUM('Standard Parts & Products'!$F135*'Standard Parts & Products'!$B135)*SUM($H$123+1)	=> 0
+J135	F	=B135	=> 0
+K135	V	1.5
+L135	F	=K135*J135	=> 0
+M135	V	0.5
+N135	F	=G135*0.4	=> 0
+A136	V	'Basic Harness M-L'
+B136	V	0
+D136	V	'SBC100-ML'
+F136	V	68.31
+G136	F	=SUM('Standard Parts & Products'!$F136*'Standard Parts & Products'!$B136)*SUM($H$123+1)	=> 0
+J136	F	=B136	=> 0
+K136	V	1
+L136	F	=K136*J136	=> 0
+M136	V	0.5
+N136	F	=G136*0.4	=> 0
+A137	V	'Deluxe Harness S-XL'
+B137	V	0
+D137	V	'SDH200-SM/ML/XL'
+F137	V	102.99
+G137	F	=SUM('Standard Parts & Products'!$F137*'Standard Parts & Products'!$B137)*SUM($H$123+1)	=> 0
+J137	F	=B137	=> 0
+K137	V	1
+L137	F	=K137*J137	=> 0
+M137	V	0.5
+N137	F	=G137*0.4	=> 0
+A138	V	'Deluxe Harness 2XL'
+B138	V	0
+D138	V	'SDH200-2X'
+F138	V	118.75
+G138	F	=SUM('Standard Parts & Products'!$F138*'Standard Parts & Products'!$B138)*SUM($H$123+1)	=> 0
+J138	F	=B138	=> 0
+K138	V	1
+L138	F	=K138*J138	=> 0
+M138	V	0.5
+N138	F	=G138*0.4	=> 0
+A139	V	'Deluxe Harness 3XL'
+B139	V	0
+D139	V	'SDH200-3X'
+F139	V	132.41
+G139	F	=SUM('Standard Parts & Products'!$F139*'Standard Parts & Products'!$B139)*SUM($H$123+1)	=> 0
+J139	F	=B139	=> 0
+K139	V	1
+L139	F	=K139*J139	=> 0
+M139	V	0.5
+N139	F	=G139*0.4	=> 0
+A140	V	"SRL | Web | 6' | Rebar"
+B140	V	0
+D140	V	'SRLWB-6'
+F140	V	190.22
+G140	F	=SUM('Standard Parts & Products'!$F140*'Standard Parts & Products'!$B140)*SUM($H$123+1)	=> 0
+J140	F	=B140	=> 0
+K140	V	1
+L140	F	=K140*J140	=> 0
+M140	V	0.5
+N140	F	=G140*0.4	=> 0
+A141	V	"SRL | Web | 10' | Standard"
+B141	V	0
+D141	V	'SRLWB-10'
+F141	V	201.78
+G141	F	=SUM('Standard Parts & Products'!$F141*'Standard Parts & Products'!$B141)*SUM($H$123+1)	=> 0
+J141	F	=B141	=> 0
+K141	V	1
+L141	F	=K141*J141	=> 0
+M141	V	0.5
+N141	F	=G141*0.4	=> 0
+A142	V	"SRL 20'"
+B142	V	0
+D142	V	'SRLWR-20'
+F142	V	375.18
+G142	F	=SUM('Standard Parts & Products'!$F142*'Standard Parts & Products'!$B142)*SUM($H$123+1)	=> 0
+J142	F	=B142	=> 0
+K142	V	1
+L142	F	=K142*J142	=> 0
+M142	V	0.5
+N142	F	=G142*0.4	=> 0
+A143	V	"SRL 30'"
+B143	V	0
+D143	V	'SRLWR-30'
+F143	V	560.13
+G143	F	=SUM('Standard Parts & Products'!$F143*'Standard Parts & Products'!$B143)*SUM($H$123+1)	=> 0
+J143	F	=B143	=> 0
+K143	V	1
+L143	F	=K143*J143	=> 0
+M143	V	0.5
+N143	F	=G143*0.4	=> 0
+A144	V	"SRL 50'"
+B144	V	0
+D144	V	'SRLWR-50'
+F144	V	687.3
+G144	F	=SUM('Standard Parts & Products'!$F144*'Standard Parts & Products'!$B144)*SUM($H$123+1)	=> 0
+J144	F	=B144	=> 0
+K144	V	1
+L144	F	=K144*J144	=> 0
+M144	V	0.5
+N144	F	=G144*0.4	=> 0
+A145	V	'Shock Absorbing Lanyard |Internal'
+B145	V	0
+D145	V	'SALI-6'
+F145	V	84.08
+G145	F	=SUM('Standard Parts & Products'!$F145*'Standard Parts & Products'!$B145)*SUM($H$123+1)	=> 0
+J145	F	=B145	=> 0
+K145	V	1
+L145	F	=K145*J145	=> 0
+M145	V	0.5
+N145	F	=G145*0.4	=> 0
+A146	V	'Shock Absorbing Lanyard |External'
+B146	V	0
+D146	V	'SALE-6'
+F146	V	79.88
+G146	F	=SUM('Standard Parts & Products'!$F146*'Standard Parts & Products'!$B146)*SUM($H$123+1)	=> 0
+J146	F	=B146	=> 0
+K146	V	1
+L146	F	=K146*J146	=> 0
+M146	V	0.5
+N146	F	=G146*0.4	=> 0
+A147	V	'Enclosed Track Trolley'
+B147	V	0
+D147	V	'SFT-400'
+F147	V	503.39
+G147	F	=SUM('Standard Parts & Products'!$F147*'Standard Parts & Products'!$B147)*SUM($H$123+1)	=> 0
+J147	F	=B147	=> 0
+K147	V	1
+L147	F	=K147*J147	=> 0
+M147	V	0.5
+N147	F	=G147*0.4	=> 0
+A148	V	'Fall Protection Beam Trolly (Powder Coated)'
+B148	V	0
+D148	V	'SFT100'
+F148	V	456.09
+G148	F	=SUM('Standard Parts & Products'!$F148*'Standard Parts & Products'!$B148)*SUM($H$123+1)	=> 0
+J148	F	=B148	=> 0
+K148	V	1
+L148	F	=K148*J148	=> 0
+M148	V	0.5
+N148	F	=G148*0.4	=> 0
+A149	V	'Fall Protection Beam Trolly (Zinc Coated)'
+B149	V	0
+D149	V	'SFT200'
+F149	V	340.5
+G149	F	=SUM('Standard Parts & Products'!$F149*'Standard Parts & Products'!$B149)*SUM($H$123+1)	=> 0
+J149	F	=B149	=> 0
+K149	V	1
+L149	F	=K149*J149	=> 0
+M149	V	0.5
+N149	F	=G149*0.4	=> 0
+G150	F	=SUM('Standard Parts & Products'!$F150*'Standard Parts & Products'!$B150)*SUM($H$123+1)	=> 0
+J150	F	=B150	=> 0
+K150	V	1
+L150	F	=K150*J150	=> 0
+M150	V	0.3
+N150	F	=G150*0.4	=> 0
+F151	V	'Total'
+G151	F	=SUM($G$124:$G$150)	=> 0
+L151	F	=SUM(L124:L150)	=> 0
+A153	V	'RV Standard Production'
+H153	V	'Reference Images'
+A154	V	'Frame Rotators'
+H154	V	'Markup'
+A155	V	'Description'
+B155	V	'QTY'
+C155	V	'Info'
+D155	V	'Part #'
+E155	V	'Price Last Updated'
+F155	V	'Sell Price'
+G155	V	'Total Price'
+H155	V	0
+J155	V	'QTY'
+K155	V	'Hours'
+L155	V	'Total'
+M155	V	'Gross Percentage'
+N155	V	'Subtotal'
+A156	V	'Travel Trailer Rotation Unit'
+B156	V	0
+C156	V	'1500 lbs'
+D156	V	'PWTT1500'
+F156	V	2250
+G156	F	=SUM('Standard Parts & Products'!$F156*'Standard Parts & Products'!$B156)*SUM($H$155+1)	=> 0
+H156	V	'Built Items Total'
+J156	F	=B156	=> 0
+K156	V	7
+L156	F	=K156*J156	=> 0
+M156	V	0.2
+N156	F	=G156*0.4	=> 0
+A157	V	'BTH Cordless Electric Frame Rotator'
+B157	V	0
+C157	V	'2000 lbs'
+D157	V	'FRC2110'
+F157	V	12505.79
+G157	F	=SUM('Standard Parts & Products'!$F157*'Standard Parts & Products'!$B157)*SUM($H$155+1)	=> 0
+H157	F	=SUM(G156:G178,G183:G200,'Standard Parts & Products'!$G$205:$G$216)	=> 0
+J157	F	=B157	=> 0
+K157	V	35
+L157	F	=K157*J157	=> 0
+M157	V	0.2
+N157	F	=G157*0.4	=> 0
+A158	V	'4K Frame Rotator system'
+B158	V	0
+C158	V	'4,000 lbs'
+D158	V	'4K72R'
+F158	V	19967.23
+G158	F	=SUM('Standard Parts & Products'!$F158*'Standard Parts & Products'!$B158)*SUM($H$155+1)	=> 0
+H158	V	False
+J158	F	=B158	=> 0
+K158	V	50
+L158	F	=K158*J158	=> 0
+M158	V	0.2
+N158	F	=G158*0.4	=> 0
+A159	V	'6K Frame Rotator system'
+B159	V	0
+C159	V	'6,000 lbs'
+D159	V	'PWFR60297'
+F159	V	37307.2
+G159	F	=SUM('Standard Parts & Products'!$F159*'Standard Parts & Products'!$B159)*SUM($H$155+1)	=> 0
+J159	F	=B159	=> 0
+K159	V	149
+L159	F	=K159*J159	=> 0
+M159	V	0.2
+N159	F	=G159*0.4	=> 0
+A160	V	'Double Darco rack'
+B160	V	0
+C160	V	'FR Attachment Option '
+D160	V	'PWFR60297'
+F160	V	1676.2
+G160	F	=SUM('Standard Parts & Products'!$F160*'Standard Parts & Products'!$B160)*SUM($H$155+1)	=> 0
+J160	F	=B160	=> 0
+K160	V	18
+L160	F	=K160*J160	=> 0
+A161	V	' 2022 Upgraded 5th Wheel Front Rotation Coupler'
+B161	V	0
+C161	V	'Lippert'
+D161	V	'PWFW3000'
+F161	V	1676.2
+G161	F	=SUM('Standard Parts & Products'!$F161*'Standard Parts & Products'!$B161)*SUM($H$155+1)	=> 0
+H161	V	False
+J161	F	=B161	=> 0
+K161	V	10
+L161	F	=K161*J161	=> 0
+M161	V	0.2
+N161	F	=G161*0.4	=> 0
+A162	V	'2022 Upgraded 5th Wheel Front Rotation Coupler'
+B162	V	0
+C162	V	'Rhino'
+D162	V	'PWFW3007'
+F162	V	1676.2
+G162	F	=SUM('Standard Parts & Products'!$F162*'Standard Parts & Products'!$B162)*SUM($H$155+1)	=> 0
+H162	V	False
+J162	F	=B162	=> 0
+K162	V	10
+L162	F	=K162*J162	=> 0
+M162	V	0.2
+N162	F	=G162*0.4	=> 0
+A163	V	'2022 Upgraded 5th Wheel Front Rotation Coupler'
+B163	V	0
+C163	V	'RotoFlex'
+D163	V	'PWFW3006'
+F163	V	1676.2
+G163	F	=SUM('Standard Parts & Products'!$F163*'Standard Parts & Products'!$B163)*SUM($H$155+1)	=> 0
+H163	V	False
+J163	F	=B163	=> 0
+K163	V	10
+L163	F	=K163*J163	=> 0
+M163	V	0.2
+N163	F	=G163*0.4	=> 0
+A164	V	'2022 Upgraded 5th Wheel Front Rotation Coupler'
+B164	V	0
+C164	V	'MorRyde'
+D164	V	'PWFW3008'
+F164	V	1676.2
+G164	F	=SUM('Standard Parts & Products'!$F164*'Standard Parts & Products'!$B164)*SUM($H$155+1)	=> 0
+J164	F	=B164	=> 0
+K164	V	10
+L164	F	=K164*J164	=> 0
+M164	V	0.2
+N164	F	=G164*0.4	=> 0
+A165	V	'2022 Double 5th wheel front rotation   '
+B165	V	0
+C165	V	'Rhino/Lippert'
+D165	V	'PWFW3002'
+F165	V	3147.47
+G165	F	=SUM('Standard Parts & Products'!$F165*'Standard Parts & Products'!$B165)*SUM($H$155+1)	=> 0
+J165	F	=B165	=> 0
+K165	V	18
+L165	F	=K165*J165	=> 0
+M165	V	0.2
+N165	F	=G165*0.4	=> 0
+A166	V	'2022 Double 5th wheel front rotation   '
+B166	V	0
+C166	V	'Rhino/MorRyde'
+D166	V	'PWFW3003'
+F166	V	3147.47
+G166	F	=SUM('Standard Parts & Products'!$F166*'Standard Parts & Products'!$B166)*SUM($H$155+1)	=> 0
+J166	F	=B166	=> 0
+K166	V	18
+L166	F	=K166*J166	=> 0
+M166	V	0.2
+N166	F	=G166*0.4	=> 0
+A167	V	'2022 Double 5th wheel front rotation  '
+B167	V	0
+C167	V	'MorRyde/Lippert'
+D167	V	'PWFW3004'
+F167	V	3147.47
+G167	F	=SUM('Standard Parts & Products'!$F167*'Standard Parts & Products'!$B167)*SUM($H$155+1)	=> 0
+J167	F	=B167	=> 0
+K167	V	18
+L167	F	=K167*J167	=> 0
+M167	V	0.2
+N167	F	=G167*0.4	=> 0
+A168	V	'2022 Double 5th wheel front rotation'
+B168	V	0
+C168	V	'MorRyde/Lippert'
+D168	V	'PWFW3005'
+F168	V	3147.47
+G168	F	=SUM('Standard Parts & Products'!$F168*'Standard Parts & Products'!$B168)*SUM($H$155+1)	=> 0
+J168	F	=B168	=> 0
+K168	V	18
+L168	F	=K168*J168	=> 0
+M168	V	0.2
+N168	F	=G168*0.4	=> 0
+A169	V	'5th Wheel Front Rotation Coupler'
+B169	V	0
+C169	V	'Gen-Y'
+D169	V	'PWFW3009'
+F169	V	1676.2
+G169	F	=SUM('Standard Parts & Products'!$F169*'Standard Parts & Products'!$B169)*SUM($H$155+1)	=> 0
+J169	F	=B169	=> 0
+K169	V	10
+L169	F	=K169*J169	=> 0
+M169	V	0.2
+N169	F	=G169*0.4	=> 0
+A170	V	'5th Wheel Coupler'
+B170	V	0
+C170	V	'Blank New Head unit'
+D170	V	'PWFW3100'
+F170	V	1156
+G170	F	=SUM('Standard Parts & Products'!$F170*'Standard Parts & Products'!$B170)*SUM($H$155+1)	=> 0
+J170	F	=B170	=> 0
+K170	V	7
+L170	F	=K170*J170	=> 0
+M170	V	0.2
+N170	F	=G170*0.4	=> 0
+A171	V	'5th Wheel Coupler'
+B171	V	0
+C171	V	'Handle only (Repair Part)'
+D171	V	'PWFW3101'
+F171	V	336.28
+G171	F	=SUM('Standard Parts & Products'!$F171*'Standard Parts & Products'!$B171)*SUM($H$155+1)	=> 0
+I171	V	True
+J171	F	=B171	=> 0
+K171	V	3
+L171	F	=K171*J171	=> 0
+M171	V	0.2
+N171	F	=G171*0.4	=> 0
+A172	V	'Floor Track For FR '
+B172	V	0
+C172	V	"20' section with end stops"
+F172	V	262.73
+G172	F	=SUM('Standard Parts & Products'!$F172*'Standard Parts & Products'!$B172)*SUM($H$155+1)	=> 0
+J172	F	=B172	=> 0
+K172	V	8
+L172	F	=K172*J172	=> 0
+M172	V	0.2
+N172	F	=G172*0.4	=> 0
+A173	V	'Drive Wheel Grip Track'
+B173	V	0
+C173	V	"20' section for drive wheel propulsion"
+F173	V	105.09
+G173	F	=SUM('Standard Parts & Products'!$F173*'Standard Parts & Products'!$B173)*SUM($H$155+1)	=> 0
+J173	F	=B173	=> 0
+K173	V	4
+L173	F	=K173*J173	=> 0
+M173	V	0.3
+N173	F	=G173*0.4	=> 0
+A174	V	'Bumper coupler tube with standard clamps'
+B174	V	0
+C174	V	'Adjustable (2) tube bumper clamps'
+F174	V	1628.91
+G174	F	=SUM('Standard Parts & Products'!$F174*'Standard Parts & Products'!$B174)*SUM($H$155+1)	=> 0
+J174	F	=B174	=> 0
+K174	V	10
+L174	F	=K174*J174	=> 0
+M174	V	0.3
+N174	F	=G174*0.4	=> 0
+A175	V	'Bumper coupler tube with I-Beam clamps'
+B175	V	0
+C175	V	'Adjustable (4) I-beam clamps'
+F175	V	1839.09
+G175	F	=SUM('Standard Parts & Products'!$F175*'Standard Parts & Products'!$B175)*SUM($H$155+1)	=> 0
+J175	F	=B175	=> 0
+K175	V	10
+L175	F	=K175*J175	=> 0
+M175	V	0.3
+N175	F	=G175*0.4	=> 0
+A176	V	'Adjustable sliding tube bumper clamps only'
+B176	V	0
+C176	V	'standard w/pins | 2 pcs'
+F176	V	604.28
+G176	F	=SUM('Standard Parts & Products'!$F176*'Standard Parts & Products'!$B176)*SUM($H$155+1)	=> 0
+J176	F	=B176	=> 0
+K176	V	3
+L176	F	=K176*J176	=> 0
+M176	V	0.3
+N176	F	=G176*0.4	=> 0
+A177	V	'Adjustable sliding clamps only'
+B177	V	0
+C177	V	'I-beam style | 4 pcs'
+F177	V	919.55
+G177	F	=SUM('Standard Parts & Products'!$F177*'Standard Parts & Products'!$B177)*SUM($H$155+1)	=> 0
+J177	F	=B177	=> 0
+K177	V	3
+L177	F	=K177*J177	=> 0
+M177	V	0.3
+N177	F	=G177*0.4	=> 0
+G178	F	=SUM('Standard Parts & Products'!$F178*'Standard Parts & Products'!$B178)*SUM($H$155+1)	=> 0
+J178	F	=B178	=> 0
+K178	V	0
+L178	F	=K178*J178	=> 0
+M178	V	0.3
+N178	F	=G178*0.4	=> 0
+F179	V	'Total'
+G179	F	=SUM(G156:G178)	=> 0
+L179	F	=SUM(L156:L178)	=> 0
+A181	V	'Below The Hook Devices'
+H181	V	'Markup'
+A182	V	'Description'
+B182	V	'QTY'
+C182	V	'Info'
+D182	V	'Part #'
+E182	V	'Price Last Updated'
+F182	V	'Sell Price'
+G182	V	'Total Price'
+H182	V	0
+J182	V	'QTY'
+K182	V	'Hours'
+L182	V	'Total'
+M182	V	'Gross Percentage'
+N182	V	'Subtotal'
+A183	V	'Axle lifter'
+B183	V	0
+C183	V	'250   lb Cap.'
+D183	V	'PWAXL0250'
+E183	V	datetime.datetime(2025, 3, 27, 0, 0)
+F183	V	1575
+G183	F	=SUM('Standard Parts & Products'!$F183*'Standard Parts & Products'!$B183)*SUM($H$182+1)	=> 0
+J183	F	=B183	=> 0
+K183	V	6
+L183	F	=K183*J183	=> 0
+M183	V	0.4
+N183	F	=G183*0.4	=> 0
+A184	V	'Axle lifter HD (Double Axle)'
+B184	V	0
+C184	V	'1000 lb Cap.'
+D184	V	'PWAXL1000'
+E184	V	datetime.datetime(2025, 3, 27, 0, 0)
+F184	V	2195
+G184	F	=SUM('Standard Parts & Products'!$F184*'Standard Parts & Products'!$B184)*SUM($H$182+1)	=> 0
+J184	F	=B184	=> 0
+K184	V	6
+L184	F	=K184*J184	=> 0
+M184	V	0.4
+N184	F	=G184*0.4	=> 0
+A185	V	'Torque MP Set'
+B185	V	0
+C185	V	'Little Giant'
+E185	V	datetime.datetime(2025, 3, 27, 0, 0)
+F185	V	37831.61
+G185	F	=SUM('Standard Parts & Products'!$F185*'Standard Parts & Products'!$B185)*SUM($H$182+1)	=> 0
+J185	F	=B185	=> 0
+K185	V	75
+L185	F	=K185*J185	=> 0
+M185	V	0.4
+N185	F	=G185*0.4	=> 0
+A186	V	'Little Giant 60 Wall Lifter'
+B186	V	0
+C186	V	'Little Giant'
+E186	V	datetime.datetime(2025, 3, 27, 0, 0)
+F186	V	1156
+G186	F	=SUM('Standard Parts & Products'!$F186*'Standard Parts & Products'!$B186)*SUM($H$182+1)	=> 0
+J186	F	=B186	=> 0
+K186	V	2
+L186	F	=K186*J186	=> 0
+M186	V	0.4
+N186	F	=G186*0.4	=> 0
+A187	V	'Pnuematic Sidewall Lifter with Compressor'
+B187	V	0
+C187	V	'1,000 lb Cap.'
+E187	V	datetime.datetime(2025, 3, 27, 0, 0)
+F187	V	12085.43
+G187	F	=SUM('Standard Parts & Products'!$F187*'Standard Parts & Products'!$B187)*SUM($H$182+1)	=> 0
+J187	F	=B187	=> 0
+K187	V	60
+L187	F	=K187*J187	=> 0
+M187	V	0.4
+N187	F	=G187*0.4	=> 0
+A188	V	'Sidewall Hooks'
+B188	V	0
+C188	V	'Formed Plate | 33"x750 lbs'
+D188	V	'PWSH33750'
+E188	V	datetime.datetime(2025, 3, 27, 0, 0)
+F188	V	115.49
+G188	F	=SUM('Standard Parts & Products'!$F188*'Standard Parts & Products'!$B188)*SUM($H$182+1)	=> 0
+J188	F	=B188	=> 0
+K188	V	2
+L188	F	=K188*J188	=> 0
+M188	V	0.4
+N188	F	=G188*0.4	=> 0
+A189	V	'Sidewall Hooks'
+B189	V	0
+C189	V	'Formed Plate | 20"x500 lbs'
+D189	V	'PWSH20500'
+E189	V	datetime.datetime(2025, 3, 27, 0, 0)
+F189	V	105.09
+G189	F	=SUM('Standard Parts & Products'!$F189*'Standard Parts & Products'!$B189)*SUM($H$182+1)	=> 0
+J189	F	=B189	=> 0
+K189	V	2
+L189	F	=K189*J189	=> 0
+M189	V	0.4
+N189	F	=G189*0.4	=> 0
+A190	V	'Sidewall Hooks'
+B190	V	0
+C190	V	'Formed Plate | 15"x500 lbs'
+D190	V	'PWSH15500'
+E190	V	datetime.datetime(2025, 3, 27, 0, 0)
+F190	V	94.58
+G190	F	=SUM('Standard Parts & Products'!$F190*'Standard Parts & Products'!$B190)*SUM($H$182+1)	=> 0
+J190	F	=B190	=> 0
+K190	V	2
+L190	F	=K190*J190	=> 0
+M190	V	0.4
+N190	F	=G190*0.4	=> 0
+A191	V	"24' Roof Lifter"
+B191	V	0
+E191	V	datetime.datetime(2025, 3, 27, 0, 0)
+F191	V	3047.63
+G191	F	=SUM('Standard Parts & Products'!$F191*'Standard Parts & Products'!$B191)*SUM($H$182+1)	=> 0
+J191	F	=B191	=> 0
+K191	V	15
+L191	F	=K191*J191	=> 0
+M191	V	0.4
+N191	F	=G191*0.4	=> 0
+A192	V	"32' Roof Lifter"
+B192	V	0
+E192	V	datetime.datetime(2025, 3, 27, 0, 0)
+F192	V	4045.99
+G192	F	=SUM('Standard Parts & Products'!$F192*'Standard Parts & Products'!$B192)*SUM($H$182+1)	=> 0
+J192	F	=B192	=> 0
+K192	V	20
+L192	F	=K192*J192	=> 0
+M192	V	0.4
+N192	F	=G192*0.4	=> 0
+A193	V	'Telescoping A/C carrier'
+B193	V	0
+E193	V	datetime.datetime(2025, 3, 27, 0, 0)
+F193	V	4794.47
+G193	F	=SUM('Standard Parts & Products'!$F193*'Standard Parts & Products'!$B193)*SUM($H$182+1)	=> 0
+J193	F	=B193	=> 0
+K193	V	30
+L193	F	=K193*J193	=> 0
+M193	V	0.4
+N193	F	=G193*0.4	=> 0
+A194	V	'Rubber Roof Dispenser'
+B194	V	0
+E194	V	datetime.datetime(2025, 3, 27, 0, 0)
+F194	V	9983.62
+G194	F	=SUM('Standard Parts & Products'!$F194*'Standard Parts & Products'!$B194)*SUM($H$182+1)	=> 0
+J194	F	=B194	=> 0
+K194	V	20
+L194	F	=K194*J194	=> 0
+M194	V	0.3
+N194	F	=G194*0.4	=> 0
+A195	V	'Decking Lifter Only'
+B195	V	0
+C195	V	'4,500 lb Cap.'
+D195	V	'DLE45001'
+E195	V	datetime.datetime(2025, 3, 27, 0, 0)
+F195	V	20991.88
+G195	F	=SUM('Standard Parts & Products'!$F195*'Standard Parts & Products'!$B195)*SUM($H$182+1)	=> 0
+J195	F	=B195	=> 0
+K195	V	50
+L195	F	=K195*J195	=> 0
+M195	V	0.3
+N195	F	=G195*0.4	=> 0
+A196	V	'Decking Lifter Only'
+B196	V	0
+C196	V	' 3,500 lb Cap.'
+D196	V	'DLM35001'
+E196	V	datetime.datetime(2025, 3, 27, 0, 0)
+F196	V	16788.24
+G196	F	=SUM('Standard Parts & Products'!$F196*'Standard Parts & Products'!$B196)*SUM($H$182+1)	=> 0
+J196	F	=B196	=> 0
+K196	V	50
+L196	F	=K196*J196	=> 0
+M196	V	0.3
+N196	F	=G196*0.4	=> 0
+A197	V	"19' Adjustable Floor Lifter"
+B197	V	0
+C197	V	'1,000 lb Cap.'
+E197	V	datetime.datetime(2025, 3, 27, 0, 0)
+F197	V	3940.9
+G197	F	=SUM('Standard Parts & Products'!$F197*'Standard Parts & Products'!$B197)*SUM($H$182+1)	=> 0
+J197	F	=B197	=> 0
+K197	V	20
+L197	F	=K197*J197	=> 0
+M197	V	0.3
+N197	F	=G197*0.4	=> 0
+A198	V	'Cap Set Anver Lifter w/ Remote Control Air Release'
+B198	V	0
+C198	V	'500 lb Cap.'
+D198	V	'CLE500'
+E198	V	datetime.datetime(2025, 3, 27, 0, 0)
+F198	V	12085.43
+G198	F	=SUM('Standard Parts & Products'!$F198*'Standard Parts & Products'!$B198)*SUM($H$182+1)	=> 0
+J198	F	=B198	=> 0
+K198	V	20
+L198	F	=K198*J198	=> 0
+M198	V	0.2
+N198	F	=G198*0.4	=> 0
+A199	V	'Cost to modify existing unit to remote air release'
+B199	V	0
+E199	V	datetime.datetime(2025, 3, 27, 0, 0)
+F199	V	2101.81
+G199	F	=SUM('Standard Parts & Products'!$F199*'Standard Parts & Products'!$B199)*SUM($H$182+1)	=> 0
+J199	F	=B199	=> 0
+K199	V	5
+L199	F	=K199*J199	=> 0
+M199	V	0.2
+N199	F	=G199*0.4	=> 0
+B200	V	0
+G200	F	=SUM('Standard Parts & Products'!$F200*'Standard Parts & Products'!$B200)*SUM($H$182+1)	=> 0
+J200	F	=B200	=> 0
+K200	V	10
+L200	F	=K200*J200	=> 0
+M200	V	0.4
+N200	F	=G200*0.4	=> 0
+F201	V	'Total'
+G201	F	=SUM(G183:G200)	=> 0
+L201	F	=SUM(L183:L200)	=> 0
+A203	V	'Misc.'
+H203	V	'Markup'
+A204	V	'Description'
+B204	V	'QTY'
+C204	V	'Info'
+D204	V	'Part #'
+E204	V	'Price Last Updated'
+F204	V	'Sell Price'
+G204	V	'Total Price'
+H204	V	0
+J204	V	'QTY'
+K204	V	'Hours'
+L204	V	'Total'
+M204	V	'Gross Percentage'
+N204	V	'Subtotal'
+A205	V	'5KLAS Load Arrest System'
+B205	V	0
+F205	V	1418.73
+G205	F	=SUM('Standard Parts & Products'!$F205*'Standard Parts & Products'!$B205)*SUM($H$204+1)	=> 0
+J205	F	=B205	=> 0
+K205	V	25
+L205	F	=K205*J205	=> 0
+M205	V	0.2
+N205	F	=G205*0.4	=> 0
+A206	V	'PWI Roller Brake Assembly'
+B206	V	0
+F206	V	236.46
+G206	F	=SUM('Standard Parts & Products'!$F206*'Standard Parts & Products'!$B206)*SUM($H$204+1)	=> 0
+J206	F	=B206	=> 0
+K206	V	5
+L206	F	=K206*J206	=> 0
+M206	V	0.2
+N206	F	=G206*0.4	=> 0
+A207	V	'Darko Jib Latch Kit'
+B207	V	0
+F207	V	604.28
+G207	F	=SUM('Standard Parts & Products'!$F207*'Standard Parts & Products'!$B207)*SUM($H$204+1)	=> 0
+J207	F	=B207	=> 0
+K207	V	8
+L207	F	=K207*J207	=> 0
+M207	V	0.2
+N207	F	=G207*0.4	=> 0
+A208	V	'Safety ladder with cage'
+B208	V	0
+C208	V	"20' or shorter"
+F208	V	168.15
+G208	F	=SUM('Standard Parts & Products'!$F208*'Standard Parts & Products'!$B208)*SUM($H$204+1)	=> 0
+J208	F	=B208	=> 0
+K208	V	1.4
+L208	F	=K208*J208	=> 0
+M208	V	0.2
+N208	F	=G208*0.4	=> 0
+A209	V	'Safety ladder with cage'
+B209	V	0
+C209	V	"21' or longer"
+F209	V	147.12
+G209	F	=SUM('Standard Parts & Products'!$F209*'Standard Parts & Products'!$B209)*SUM($H$204+1)	=> 0
+J209	F	=B209	=> 0
+K209	V	1.4
+L209	F	=K209*J209	=> 0
+M209	V	0.2
+N209	F	=G209*0.4	=> 0
+A210	V	'Ladder W/O Cage'
+B210	V	0
+F210	V	788.18
+G210	F	=SUM('Standard Parts & Products'!$F210*'Standard Parts & Products'!$B210)*SUM($H$204+1)	=> 0
+J210	F	=B210	=> 0
+K210	V	1
+L210	F	=K210*J210	=> 0
+M210	V	0.2
+N210	F	=G210*0.4	=> 0
+A211	V	'Door Option for Safety Ladder'
+B211	V	0
+F211	V	255
+G211	F	=SUM('Standard Parts & Products'!$F211*'Standard Parts & Products'!$B211)*SUM($H$204+1)	=> 0
+J211	F	=B211	=> 0
+K211	V	1
+L211	F	=K211*J211	=> 0
+M211	V	0.2
+N211	F	=G211*0.4	=> 0
+A212	V	'Tri Pod - 5th Wheel Dolly'
+B212	V	0
+F212	V	875.75
+G212	F	=SUM('Standard Parts & Products'!$F212*'Standard Parts & Products'!$B212)*SUM($H$204+1)	=> 0
+J212	F	=B212	=> 0
+K212	V	6
+L212	F	=K212*J212	=> 0
+M212	V	0.2
+N212	F	=G212*0.4	=> 0
+A213	V	'Tri Pod - 5th Wheel Dolly w/ Bottle Jack'
+B213	V	0
+F213	V	1046.28
+G213	F	=SUM('Standard Parts & Products'!$F213*'Standard Parts & Products'!$B213)*SUM($H$204+1)	=> 0
+J213	F	=B213	=> 0
+K213	V	8
+L213	F	=K213*J213	=> 0
+M213	V	0.2
+N213	F	=G213*0.4	=> 0
+A214	V	'2023 Motorized Travel Trailer Dolly Set'
+B214	V	0
+F214	V	8091.99
+G214	F	=SUM('Standard Parts & Products'!$F214*'Standard Parts & Products'!$B214)*SUM($H$204+1)	=> 0
+J214	F	=B214	=> 0
+K214	V	10
+L214	F	=K214*J214	=> 0
+M214	V	0.35
+N214	F	=G214*0.4	=> 0
+G215	F	=SUM('Standard Parts & Products'!$F215*'Standard Parts & Products'!$B215)*SUM($H$204+1)	=> 0
+J215	F	=B215	=> 0
+K215	V	10
+L215	F	=K215*J215	=> 0
+M215	V	0.2
+N215	F	=G215*0.4	=> 0
+G216	F	=SUM('Standard Parts & Products'!$F216*'Standard Parts & Products'!$B216)*SUM($H$204+1)	=> 0
+J216	F	=B216	=> 0
+K216	V	10
+L216	F	=K216*J216	=> 0
+M216	V	0.2
+N216	F	=G216*0.4	=> 0
+F217	V	'Total'
+G217	F	=SUM(G205:G216)	=> 0
+L217	F	=SUM(L205:L216)	=> 0
+M217	V	'Total:'
+N217	F	=SUM(N5:N216)	=> 0
+A240	V	'White Bottom 20ga. Decking 1.5"'
+A241	V	'White Bottom 22ga. Decking 1.5"'
+I241	F	=IFERROR(IF('Standard Parts & Products'!$A16:$G73>0,'Standard Parts & Products'!$A16:$G73*#REF!,""),"")	=> None
+A242	V	'Galvanized 20ga. Decking 1.5"'
+I242	F	=IFERROR(IF('Standard Parts & Products'!$A16:$G73>0,'Standard Parts & Products'!$A16:$G73*#REF!,""),"")	=> None
+A243	V	'Galvanized 22ga. Decking 1.5"'
+I243	F	=IFERROR(IF('Standard Parts & Products'!$A16:$G73>0,'Standard Parts & Products'!$A16:$G73*#REF!,""),"")	=> None
+A244	V	'3/4" Advantech 8\' x 4\' per sheet'
+I244	F	=IFERROR(IF('Standard Parts & Products'!$A16:$G73>0,'Standard Parts & Products'!$A16:$G73*#REF!,""),"")	=> None
+A245	V	'Pins and Shots'
+I245	F	=IFERROR(IF('Standard Parts & Products'!$A16:$G73>0,'Standard Parts & Products'!$A16:$G73*#REF!,""),"")	=> None
+A246	V	'Wood Screws'
+I246	F	=IFERROR(IF('Standard Parts & Products'!$A16:$G73>0,'Standard Parts & Products'!$A16:$G73*#REF!,""),"")	=> None
+I247	F	=IFERROR(IF('Standard Parts & Products'!$A16:$G73>0,'Standard Parts & Products'!$A16:$G73*#REF!,""),"")	=> None
+A248	V	'1" 19W4'
+I248	F	=IFERROR(IF('Standard Parts & Products'!$A16:$G73>0,'Standard Parts & Products'!$A16:$G73*#REF!,""),"")	=> None
+A249	V	'1.25" 19W4'
+I249	F	=IFERROR(IF('Standard Parts & Products'!$A16:$G73>0,'Standard Parts & Products'!$A16:$G73*#REF!,""),"")	=> None
+I250	F	=IFERROR(IF('Standard Parts & Products'!$A16:$G73>0,'Standard Parts & Products'!$A16:$G73*#REF!,""),"")	=> None
+A251	V	'Saddle Clips and Self Tappers for Bar Grating'
+I251	F	=IFERROR(IF('Standard Parts & Products'!$A16:$G73>0,'Standard Parts & Products'!$A16:$G73*#REF!,""),"")	=> None
+I252	F	=IFERROR(IF('Standard Parts & Products'!$A16:$G73>0,'Standard Parts & Products'!$A16:$G73*#REF!,""),"")	=> None
+A253	V	'Valley Shims'
+I253	F	=IFERROR(IF('Standard Parts & Products'!$A16:$G73>0,'Standard Parts & Products'!$A16:$G73*#REF!,""),"")	=> None
+I254	F	=IFERROR(IF('Standard Parts & Products'!$A16:$G73>0,'Standard Parts & Products'!$A16:$G73*#REF!,""),"")	=> None
+A255	V	'Floor Plate'
+B255	V	False
+I255	F	=IFERROR(IF('Standard Parts & Products'!$A16:$G73>0,'Standard Parts & Products'!$A16:$G73*#REF!,""),"")	=> None
+I256	F	=IFERROR(IF('Standard Parts & Products'!$A16:$G73>0,'Standard Parts & Products'!$A16:$G73*#REF!,""),"")	=> None
+A257	V	'1.25" 19W4 Serrated'
+I257	F	=IFERROR(IF('Standard Parts & Products'!$A16:$G73>0,'Standard Parts & Products'!$A16:$G73*#REF!,""),"")	=> None
+I258	F	=IFERROR(IF('Standard Parts & Products'!$A16:$G73>0,'Standard Parts & Products'!$A16:$G73*#REF!,""),"")	=> None
+I259	F	=IFERROR(IF('Standard Parts & Products'!$A16:$G73>0,'Standard Parts & Products'!$A16:$G73*#REF!,""),"")	=> None
+A260	V	'Tread Plate 1/4"'
+I260	F	=IFERROR(IF('Standard Parts & Products'!$A16:$G73>0,'Standard Parts & Products'!$A16:$G73*#REF!,""),"")	=> None
+A261	V	'Tread Plate 3/16"'
+I261	F	=IFERROR(IF('Standard Parts & Products'!$A16:$G73>0,'Standard Parts & Products'!$A16:$G73*#REF!,""),"")	=> None
+A262	V	'Tread Plate 1/4"'
+I262	F	=IFERROR(IF('Standard Parts & Products'!$A16:$G73>0,'Standard Parts & Products'!$A16:$G73*#REF!,""),"")	=> None
+A263	V	'Tread Plate 3/8"'
+I263	F	=IFERROR(IF('Standard Parts & Products'!$A16:$G73>0,'Standard Parts & Products'!$A16:$G73*#REF!,""),"")	=> None
+I264	F	=IFERROR(IF('Standard Parts & Products'!$A16:$G73>0,'Standard Parts & Products'!$A16:$G73*#REF!,""),"")	=> None
+N264	V	'Row'
+O264	V	'QTY'
+P264	V	'Hours'
+Q264	V	'Total Hours'
+U264	V	'Hardware Calculator'
+I265	F	=IFERROR(IF('Standard Parts & Products'!$A16:$G73>0,'Standard Parts & Products'!$A16:$G73*#REF!,""),"")	=> None
+N265	V	87
+O265	F	=B124	=> 0
+P265	V	13
+Q265	F	=P265*O265	=> 0
+U265	V	'Crane'
+V265	F	=G74	=> 0
+A266	V	'42" OSHA - Bolt Together'
+I266	F	=IFERROR(IF('Standard Parts & Products'!$A16:$G73>0,'Standard Parts & Products'!$A16:$G73*#REF!,""),"")	=> None
+N266	V	88
+O266	F	=B125	=> 0
+P266	V	13
+Q266	F	=P266*O266	=> 0
+U266	V	'Mezz'
+V266	F	=G120	=> 0
+A267	V	'42" IBC - Bolt Together'
+I267	F	=IFERROR(IF('Standard Parts & Products'!$A16:$G73>0,'Standard Parts & Products'!$A16:$G73*#REF!,""),"")	=> None
+N267	V	89
+O267	F	=B126	=> 0
+P267	V	12
+Q267	F	=P267*O267	=> 0
+U267	V	'Subtotal'
+V267	F	=SUM(V265:V266)	=> 0
+I268	F	=IFERROR(IF('Standard Parts & Products'!$A16:$G73>0,'Standard Parts & Products'!$A16:$G73*#REF!,""),"")	=> None
+N268	V	90
+O268	F	=B127	=> 0
+P268	V	11
+Q268	F	=P268*O268	=> 0
+U268	V	'Crane'
+V268	F	=V265/V267	=> '#DIV/0!'
+I269	F	=IFERROR(IF('Standard Parts & Products'!$A16:$G73>0,'Standard Parts & Products'!$A16:$G73*#REF!,""),"")	=> None
+N269	V	91
+O269	F	=B128	=> 0
+P269	V	9
+Q269	F	=P269*O269	=> 0
+U269	V	'Mezz'
+V269	F	=V266/V267	=> '#DIV/0!'
+I270	F	=IFERROR(IF('Standard Parts & Products'!$A16:$G73>0,'Standard Parts & Products'!$A16:$G73*#REF!,""),"")	=> None
+N270	V	92
+O270	F	=B129	=> 0
+P270	V	8
+Q270	F	=P270*O270	=> 0
+I271	F	=IFERROR(IF('Standard Parts & Products'!$A16:$G73>0,'Standard Parts & Products'!$A16:$G73*#REF!,""),"")	=> None
+N271	V	93
+O271	F	=B130	=> 0
+P271	V	7
+Q271	F	=P271*O271	=> 0
+B272	V	4
+C272	V	30
+I272	F	=IFERROR(IF('Standard Parts & Products'!$A16:$G73>0,'Standard Parts & Products'!$A16:$G73*#REF!,""),"")	=> None
+N272	V	94
+O272	F	=B131	=> 0
+P272	V	0
+Q272	F	=P272*O272	=> 0
+B273	V	2
+C273	V	60
+I273	F	=IFERROR(IF('Standard Parts & Products'!$A16:$G73>0,'Standard Parts & Products'!$A16:$G73*#REF!,""),"")	=> None
+N273	V	95
+O273	F	=B132	=> 0
+P273	V	0
+Q273	F	=P273*O273	=> 0
+I274	F	=IFERROR(IF('Standard Parts & Products'!$A16:$G73>0,'Standard Parts & Products'!$A16:$G73*#REF!,""),"")	=> None
+N274	V	96
+O274	F	=B133	=> 0
+P274	V	0
+Q274	F	=P274*O274	=> 0
+I275	F	=IFERROR(IF('Standard Parts & Products'!$A16:$G73>0,'Standard Parts & Products'!$A16:$G73*#REF!,""),"")	=> None
+N275	V	97
+O275	F	=B134	=> 0
+P275	V	0
+Q275	F	=P275*O275	=> 0
+E276	V	'Install Advantech'
+I276	F	=IFERROR(IF('Standard Parts & Products'!$A16:$G73>0,'Standard Parts & Products'!$A16:$G73*#REF!,""),"")	=> None
+N276	V	98
+O276	F	=B135	=> 0
+P276	V	0
+Q276	F	=P276*O276	=> 0
+E277	V	'100 or less'
+F277	V	25
+G277	F	=IF(AND($C$94>0,$C$94<101,$B$94=TRUE),F277*$C$94,0)	=> 0
+I277	F	=IFERROR(IF('Standard Parts & Products'!$A16:$G73>0,'Standard Parts & Products'!$A16:$G73*#REF!,""),"")	=> None
+E278	V	'100-200'
+F278	V	21
+G278	F	=IF(AND($C$94>100,$C$94<201,$B$94=TRUE),F278*$C$94,0)	=> 0
+I278	F	=IFERROR(IF('Standard Parts & Products'!$A16:$G73>0,'Standard Parts & Products'!$A16:$G73*#REF!,""),"")	=> None
+N278	V	112
+O278	F	=B156	=> 0
+P278	V	7
+Q278	F	=P278*O278	=> 0
+E279	V	'200-400'
+F279	V	18
+G279	F	=IF(AND($C$94>200,$C$94<401,$B$94=TRUE),F279*$C$94,0)	=> 0
+I279	F	=IFERROR(IF('Standard Parts & Products'!$A16:$G73>0,'Standard Parts & Products'!$A16:$G73*#REF!,""),"")	=> None
+N279	V	113
+O279	F	=B157	=> 0
+P279	V	16
+Q279	F	=P279*O279	=> 0
+E280	V	'400+'
+F280	V	15
+G280	F	=IF(AND($C$94>400,$B$94=TRUE),F280*$C$94,0)	=> 0
+I280	F	=IFERROR(IF('Standard Parts & Products'!$A16:$G73>0,'Standard Parts & Products'!$A16:$G73*#REF!,""),"")	=> None
+N280	V	114
+O280	F	=B158	=> 0
+P280	V	82
+Q280	F	=P280*O280	=> 0
+G281	F	=SUM(G277:G280)	=> 0
+I281	F	=IFERROR(IF('Standard Parts & Products'!$A16:$G73>0,'Standard Parts & Products'!$A16:$G73*#REF!,""),"")	=> None
+N281	V	115
+O281	F	=B159	=> 0
+P281	V	146
+Q281	F	=P281*O281	=> 0
+N282	V	116
+O282	F	=B161	=> 0
+P282	V	9
+Q282	F	=P282*O282	=> 0
+N283	V	117
+O283	F	=B162	=> 0
+P283	V	9
+Q283	F	=P283*O283	=> 0
+N284	V	118
+O284	F	=B163	=> 0
+P284	V	9
+Q284	F	=P284*O284	=> 0
+N285	V	119
+O285	F	=B164	=> 0
+P285	V	9
+Q285	F	=P285*O285	=> 0
+N286	V	120
+O286	F	=B165	=> 0
+P286	V	9
+Q286	F	=P286*O286	=> 0
+N287	V	121
+O287	F	=B166	=> 0
+P287	V	9
+Q287	F	=P287*O287	=> 0
+N288	V	122
+O288	F	=B167	=> 0
+P288	V	9
+Q288	F	=P288*O288	=> 0
+N289	V	123
+O289	F	=B168	=> 0
+P289	V	9
+Q289	F	=P289*O289	=> 0
+N290	V	124
+O290	F	=B169	=> 0
+P290	V	9
+Q290	F	=P290*O290	=> 0
+N291	V	125
+O291	F	=B170	=> 0
+P291	V	9
+Q291	F	=P291*O291	=> 0
+N292	V	126
+O292	F	=B171	=> 0
+P292	V	9
+Q292	F	=P292*O292	=> 0
+N293	V	127
+O293	F	=B172	=> 0
+P293	V	0.5
+Q293	F	=P293*O293	=> 0
+N294	V	128
+O294	F	=B173	=> 0
+P294	V	0.5
+Q294	F	=P294*O294	=> 0
+N295	V	129
+O295	F	=B174	=> 0
+P295	V	4
+Q295	F	=P295*O295	=> 0
+N296	V	130
+O296	F	=B175	=> 0
+P296	V	10
+Q296	F	=P296*O296	=> 0
+N297	V	131
+O297	F	=B176	=> 0
+P297	V	2
+Q297	F	=P297*O297	=> 0
+N298	V	132
+O298	F	=B178	=> 0
+P298	V	4
+Q298	F	=P298*O298	=> 0
+N300	V	135
+O300	F	=B183	=> 0
+P300	V	0.25
+Q300	F	=P300*O300	=> 0
+N301	V	136
+O301	F	=B184	=> 0
+P301	V	0.25
+Q301	F	=P301*O301	=> 0
+N302	V	137
+O302	F	=B186	=> 0
+P302	V	0
+Q302	F	=P302*O302	=> 0
+N303	V	138
+O303	F	=B187	=> 0
+P303	V	20
+Q303	F	=P303*O303	=> 0
+N304	V	139
+O304	F	=B188	=> 0
+P304	V	0
+Q304	F	=P304*O304	=> 0
+N305	V	140
+O305	F	=B189	=> 0
+P305	V	0
+Q305	F	=P305*O305	=> 0
+N306	V	141
+O306	F	=B190	=> 0
+P306	V	0
+Q306	F	=P306*O306	=> 0
+N307	V	142
+O307	F	=B191	=> 0
+P307	V	16
+Q307	F	=P307*O307	=> 0
+N308	V	143
+O308	F	=B192	=> 0
+P308	V	16
+Q308	F	=P308*O308	=> 0
+N309	V	144
+O309	F	=B193	=> 0
+P309	V	16
+Q309	F	=P309*O309	=> 0
+N310	V	145
+O310	F	=B194	=> 0
+P310	V	16
+Q310	F	=P310*O310	=> 0
+N311	V	146
+O311	F	=B195	=> 0
+P311	V	50
+Q311	F	=P311*O311	=> 0
+N312	V	147
+O312	F	=B196	=> 0
+P312	V	50
+Q312	F	=P312*O312	=> 0
+N313	V	148
+O313	F	=B197	=> 0
+P313	V	6
+Q313	F	=P313*O313	=> 0
+N314	V	149
+O314	F	=B198	=> 0
+P314	V	16
+Q314	F	=P314*O314	=> 0
+N315	V	150
+O315	F	=B200	=> 0
+P315	V	0
+Q315	F	=P315*O315	=> 0
+N317	V	153
+O317	F	=B205	=> 0
+P317	V	0
+Q317	F	=P317*O317	=> 0
+N318	V	154
+O318	F	=B206	=> 0
+P318	V	0
+Q318	F	=P318*O318	=> 0
+N319	V	155
+O319	F	=B207	=> 0
+P319	V	0
+Q319	F	=P319*O319	=> 0
+N320	V	156
+O320	F	=B208	=> 0
+P320	V	0
+Q320	F	=P320*O320	=> 0
+N321	V	157
+O321	F	=B209	=> 0
+P321	V	0
+Q321	F	=P321*O321	=> 0
+N322	V	158
+O322	F	=B210	=> 0
+P322	V	0
+Q322	F	=P322*O322	=> 0
+N323	V	159
+O323	F	=B212	=> 0
+P323	V	0
+Q323	F	=P323*O323	=> 0
+N324	V	160
+O324	F	=B213	=> 0
+P324	V	0
+Q324	F	=P324*O324	=> 0
+N325	V	161
+O325	F	=B216	=> 0
+P325	V	0
+Q325	F	=P325*O325	=> 0
+A332	V	'Fall Protection'
+A336	V	"PWFP1053S     53'"
+C336	V	'10" Truss Height     40\' span capable'
+E336	V	4450
+F336	V	13
+G336	V	'Does not include hangers/supports'
+A337	V	"PWFP0753S    53'"
+C337	V	'7" Truss Height     20\' span capable'
+E337	V	3919
+F337	V	13
+G337	V	'Does not include hangers/supports'
+A338	V	"PWFP1043S    43'"
+C338	V	'10" Truss Height     40\' span capable'
+E338	V	3750
+F338	V	12
+G338	V	'Does not include hangers/supports'
+A339	V	"PWFP0743S    43'"
+C339	V	'7" Truss Height      20\' span capable'
+E339	V	3369
+F339	V	11
+G339	V	'Does not include hangers/supports'
+A340	V	"PWFP1032S    32'"
+C340	V	'10" Truss Height     30\' span capable'
+E340	V	3100
+F340	V	9
+G340	V	'Does not include hangers/supports'
+A341	V	"PWFP0732S   32'"
+C341	V	'7" Truss Height      20\' span capable'
+E341	V	2764
+F341	V	8
+G341	V	'Does not include hangers/supports'
+A342	V	"PWFP0721S   21'"
+C342	V	'7"  Truss Height     20\' span capable'
+E342	V	2159
+F342	V	7
+G342	V	'Does not include hangers/supports'
+I343	F	=IFERROR(IF('Standard Parts & Products'!$A16:$G73>0,'Standard Parts & Products'!$A16:$G73*#REF!,""),"")	=> None
+A344	V	'Bar Joists'
+C344	V	"Drop rod connection with hdwr and clamp (Longer than 6')"
+E344	V	130
+I344	F	=IFERROR(IF('Standard Parts & Products'!$A16:$G73>0,'Standard Parts & Products'!$A16:$G73*#REF!,""),"")	=> None
+A345	V	'Bar Joists'
+C345	V	"Drop rod connection with hdwr and clamp (Less than 6' long)"
+E345	V	100
+I345	F	=IFERROR(IF('Standard Parts & Products'!$A16:$G73>0,'Standard Parts & Products'!$A16:$G73*#REF!,""),"")	=> None
+A346	V	'S300-TSK'
+C346	V	'Splice - Enclosed track only (Not Fall protection)'
+E346	V	57
+A347	V	'Beam Hanger'
+C347	V	'Clamp Plates to W-Beam flange w/drop - Fall Protection'
+E347	V	90
+N349	V	'Mezz Gates'
+O349	V	'Hours'
+P349	V	'Install'
+A350	V	'Jayco Style Crosswalk Closer Plate Kit'
+C350	V	'Set of longer hinges and closure plates on CRX'
+E350	V	750
+N350	V	89
+O350	V	0
+N351	V	90
+O351	F	=10*B113	=> 0
+P351	F	=32*B113	=> 0
+N352	V	91
+O352	F	=8*B114	=> 0
+P352	F	=32*B114	=> 0
+N353	V	92
+O353	F	=8*B115	=> 0
+A354	V	'Frame Rotation Products'
+B354	V	'Model #'
+D354	V	'Model Numbers'
+N354	V	93
+O354	F	=6*B116	=> 0
+N355	V	94
+O355	F	=2*B119	=> 0
+A356	V	'Travel Trailer Rotation Unit'
+B356	V	'1500 lbs'
+C356	V	895
+D356	V	'PWTT1500'
+E356	V	7
+N356	V	'Total Install Hours of Built Items'
+P356	F	=SUM(P350:P355)	=> 0
+A357	V	'BTH Cordless Electric Frame Rotator'
+B357	V	'2000 lbs'
+C357	V	11900
+D357	V	'FRC2110, 2000# cap, 110 inch tube.  Picked up at PWI-Includes charger and Inmotion Radio kit, (you may want to consider receiver for hitch end too)'
+E357	V	16
+A358	V	'Frame Rotator system'
+B358	V	'4,000 lbs'
+C358	V	19000
+D358	V	'4K72R 4000# cap, 72" lift. Picked up at PWI -includes floor track and grip strip'
+E358	V	42
+N358	V	'Frame Rotator Local Install'
+N359	F	=IF(AND(A155="Frame Rotator System",$F$123=TRUE),TRUE,FALSE)	=> False
+O359	F	=IF(H163=TRUE,SUM(3000*B158),0)	=> 0
+P359	F	=O359/Labor!$H$2	=> 0
+A365	V	'Double Darco rack - FR Attachment Option '
+B365	V	'PWFR60297'
+C365	V	1550
+D365	V	8
+A366	V	'Lippert - 2022 Upgraded 5th Wheel Front Rotation Coupler'
+B366	V	'PWFW3000'
+C366	V	1595
+D366	V	9
+A367	V	'Rhino - 2022 Upgraded 5th Wheel Front Rotation Coupler'
+B367	V	'PWFW3007'
+C367	V	1595
+D367	V	9
+A368	V	'RotoFlex - 2022 Upgraded 5th Wheel Front Rotation Coupler'
+B368	V	'PWFW3006'
+C368	V	1595
+D368	V	9
+A369	V	'MorRyde - 2022 Upgraded 5th Wheel Front Rotation Coupler'
+B369	V	'PWFW3008'
+C369	V	1595
+D369	V	9
+A370	V	'(Rhino/Lippert)  2022 Double 5th wheel front rotation   '
+B370	V	'PWFW3002'
+C370	V	2995
+D370	V	9
+A371	V	'(Rhino/MorRyde) 2022 Double 5th wheel front rotation   '
+B371	V	'PWFW3003'
+C371	V	2995
+D371	V	9
+A372	V	'(MorRyde/Lippert) 2022 Double 5th wheel front rotation  '
+B372	V	'PWFW3004'
+C372	V	2995
+D372	V	9
+A373	V	'(MORyde & LCI original) 2022 Double 5th wheel front rotation'
+B373	V	'PWFW3005'
+C373	V	2995
+D373	V	9
+A374	V	'Gen-Y 5th Wheel Front Rotation Coupler'
+B374	V	'PWFW3009'
+C374	V	1595
+D374	V	9
+A375	V	'5th Wheel Coupler - Blank New Head unit'
+B375	V	'PWFW3100'
+C375	V	1100
+D375	V	9
+A376	V	'5th Wheel Coupler - Handle only (Repair Part)'
+B376	V	'PWFW3101'
+C376	V	320
+D376	V	9
+A382	V	"Floor Track For FR (20' section with end stops)"
+B382	V	0.5
+C382	V	250
+D382	V	'No anchors included'
+A383	V	"Drive Wheel Grip Track (20' section for drive wheel propulsion)"
+B383	V	0.5
+C383	V	100
+D383	V	'No anchors included'
+A386	V	'Bumper coupler tube & Adjustable type w/2 tube bumper clamps'
+B386	V	4
+C386	V	1550
+D386	V	'Includes (1) Nachie Drive attachment fixture with 4" tube (2) sliding clamps for 4" Square tube bumper'
+A387	V	'Bumper coupler tube & Adjustable type w/4 I-beam clamps'
+B387	V	10
+C387	V	1750
+D387	V	'Includes (1) Nachie Drive attachment fixture with 4" tube (4) I-beam frame clamps'
+A388	V	'Adjustable sliding tube bumper clamps only | standard w/pins | 2 pcs'
+B388	V	2
+C388	V	575
+A389	V	'Adjustable sliding clamps only | I-beam style | 4 pcs'
+B389	V	4
+C389	V	875
+A405	V	'Lifters'
+C405	V	'Updated '
+D405	V	'12.13.22'
+A407	V	'Axle lifter        | 250   lb Cap.'
+B407	V	0.25
+C407	V	425
+E407	V	'PWAXL0250'
+H407	V	"Compressor On Lifter | 10' Long | Requires 240V | 1PH transformer included"
+A408	V	'Axle lifter HD | 1000 lb Cap.'
+B408	V	0.25
+C408	V	525
+E408	V	'PWAXL1000'
+A410	V	'Formed Plate | 33"x750 lbs'
+B410	V	0
+C410	V	100
+D410	V	'PWSH33750'
+A411	V	'Formed Plate | 20"x500 lbs'
+B411	V	0
+C411	V	90
+D411	V	'PWSH20500'
+H411	V	'Hoist Not Included'
+A412	V	'Formed Plate | 15"x500 lbs'
+B412	V	0
+C412	V	80
+D412	V	'PWSH15500'
+H412	V	'Double FOB PWI | No Install/Hoist'
+H413	V	'FOB PWI | Motorized w/ Radio | 3 Ton Hoist'
+A414	V	'Little Giant 60 Wall Lifter'
+B414	V	0
+C414	V	895
+H414	V	'FOB PWI | Manual | 2 Ton Hoist'
+A415	V	'Pnuematic Sidewall Lifter | 1,000 lb Cap.'
+B415	V	20
+C415	V	10500
+D415	V	'1,000lb capacity, '
+F415	V	'Ref 21880'
+H415	V	'3 Arms | 1,000 lb Capacity'
+A417	V	"24' Roof Lifter"
+C417	V	2900
+E417	V	6
+A418	V	"32' Roof Lifter"
+C418	V	3850
+E418	V	8
+A419	V	'Telescoping A/C carrier (see products catalog)'
+B419	V	'W/O hoist included'
+C419	V	3000
+E419	V	16
+A420	V	'Rubber Roof Dispenser'
+B420	V	'plus install- drive time per person, plus 12 hrs'
+C420	V	8500
+E420	V	16
+A421	V	'Decking Lifter Only | 4,500 lb Cap.'
+C421	V	18975
+D421	V	'DLE45001'
+E421	V	50
+A422	V	'Decking Lifter Only | 3,500 lb Cap.'
+C422	V	14975
+D422	V	'DLM35001'
+E422	V	50
+A423	V	"19' Adjustable Floor Lifter | 1,000 lb Cap."
+B423	V	'1,000lb capacity'
+C423	V	3500
+E423	V	6
+A426	V	'Cap Set Anver Lifter w/ Remote Control Air Release | 500 lb Cap.'
+B426	V	'CLE500'
+C426	V	10000
+D426	V	'500 lb cap., Remote control air release included '
+E426	V	16
+A427	V	'Cost to modify existing unit to remote air release-'
+C427	V	2000
+D427	V	'Done by PWI service team'
+E427	V	0
+A436	V	'Guardrail'
+A437	V	'Type1'
+A438	V	'Part'
+B438	V	'QTY'
+C438	V	'Material'
+D438	V	'Cost'
+E438	V	'Markup'
+F438	V	'Total'
+B439	V	0
+D439	F	=IF(C439="","",VLOOKUP(C439,List!$A$1:$D$573,4,0))	=> None
+E439	V	0
+F439	F	=IF(C439="","",D439*B439*SUM(E439+1))	=> None
+B440	V	0
+D440	F	=IF(C440="","",VLOOKUP(C440,List!$A$1:$D$573,4,0))	=> None
+E440	V	0
+F440	F	=IF(C440="","",D440*B440*SUM(E440+1))	=> None
+B441	V	0
+D441	F	=IF(C441="","",VLOOKUP(C441,List!$A$1:$D$573,4,0))	=> None
+E441	V	0
+F441	F	=IF(C441="","",D441*B441*SUM(E441+1))	=> None
+B442	V	0
+D442	F	=IF(C442="","",VLOOKUP(C442,List!$A$1:$D$573,4,0))	=> None
+E442	V	0
+F442	F	=IF(C442="","",D442*B442*SUM(E442+1))	=> None
+B443	V	0
+D443	F	=IF(C443="","",VLOOKUP(C443,List!$A$1:$D$573,4,0))	=> None
+E443	V	0
+F443	F	=IF(C443="","",D443*B443*SUM(E443+1))	=> None
+B444	V	0
+D444	F	=IF(C444="","",VLOOKUP(C444,List!$A$1:$D$573,4,0))	=> None
+E444	V	0
+F444	F	=IF(C444="","",D444*B444*SUM(E444+1))	=> None
+B445	V	0
+D445	F	=IF(C445="","",VLOOKUP(C445,List!$A$1:$D$573,4,0))	=> None
+E445	V	0
+F445	F	=IF(C445="","",D445*B445*SUM(E445+1))	=> None
+B446	V	0
+D446	F	=IF(C446="","",VLOOKUP(C446,List!$A$1:$D$573,4,0))	=> None
+E446	V	0
+F446	F	=IF(C446="","",D446*B446*SUM(E446+1))	=> None
+B447	V	0
+D447	F	=IF(C447="","",VLOOKUP(C447,List!$A$1:$D$573,4,0))	=> None
+E447	V	0
+F447	F	=IF(C447="","",D447*B447*SUM(E447+1))	=> None
+B448	V	0
+D448	F	=IF(C448="","",VLOOKUP(C448,List!$A$1:$D$573,4,0))	=> None
+E448	V	0
+F448	F	=IF(C448="","",D448*B448*SUM(E448+1))	=> None
+B449	V	0
+D449	F	=IF(C449="","",VLOOKUP(C449,List!$A$1:$D$573,4,0))	=> None
+E449	V	0
+F449	F	=IF(C449="","",D449*B449*SUM(E449+1))	=> None
+B450	V	0
+D450	F	=IF(C450="","",VLOOKUP(C450,List!$A$1:$D$573,4,0))	=> None
+E450	V	0
+F450	F	=IF(C450="","",D450*B450*SUM(E450+1))	=> None
+B451	V	0
+D451	F	=IF(C451="","",VLOOKUP(C451,List!$A$1:$D$573,4,0))	=> None
+E451	V	0
+F451	F	=IF(C451="","",D451*B451*SUM(E451+1))	=> None
+B452	V	0
+D452	F	=IF(C452="","",VLOOKUP(C452,List!$A$1:$D$573,4,0))	=> None
+E452	V	0
+F452	F	=IF(C452="","",D452*B452*SUM(E452+1))	=> None
+B453	V	0
+D453	F	=IF(C453="","",VLOOKUP(C453,List!$A$1:$D$573,4,0))	=> None
+E453	V	0
+F453	F	=IF(C453="","",D453*B453*SUM(E453+1))	=> None
+B454	V	0
+D454	F	=IF(C454="","",VLOOKUP(C454,List!$A$1:$D$573,4,0))	=> None
+E454	V	0
+F454	F	=IF(C454="","",D454*B454*SUM(E454+1))	=> None
+B455	V	0
+D455	F	=IF(C455="","",VLOOKUP(C455,List!$A$1:$D$573,4,0))	=> None
+E455	V	0
+F455	F	=IF(C455="","",D455*B455*SUM(E455+1))	=> None
+G455	V	'Total'
+B456	V	0
+D456	F	=IF(C456="","",VLOOKUP(C456,List!$A$1:$D$573,4,0))	=> None
+E456	V	0
+F456	F	=IF(C456="","",D456*B456*SUM(E456+1))	=> None
+G456	F	=SUM(F439:F456)	=> 0
+A457	V	'Type2'
+A458	V	'Part'
+B458	V	'QTY'
+C458	V	'Material'
+D458	V	'Cost'
+E458	V	'Markup'
+F458	V	'Total'
+B459	V	0
+D459	F	=IF(C459="","",VLOOKUP(C459,List!$A$1:$D$573,4,0))	=> None
+E459	V	0
+F459	F	=IF(C459="","",D459*B459*SUM(E459+1))	=> None
+B460	V	0
+D460	F	=IF(C460="","",VLOOKUP(C460,List!$A$1:$D$573,4,0))	=> None
+E460	V	0
+F460	F	=IF(C460="","",D460*B460*SUM(E460+1))	=> None
+B461	V	0
+D461	F	=IF(C461="","",VLOOKUP(C461,List!$A$1:$D$573,4,0))	=> None
+E461	V	0
+F461	F	=IF(C461="","",D461*B461*SUM(E461+1))	=> None
+B462	V	0
+D462	F	=IF(C462="","",VLOOKUP(C462,List!$A$1:$D$573,4,0))	=> None
+E462	V	0
+F462	F	=IF(C462="","",D462*B462*SUM(E462+1))	=> None
+B463	V	0
+D463	F	=IF(C463="","",VLOOKUP(C463,List!$A$1:$D$573,4,0))	=> None
+E463	V	0
+F463	F	=IF(C463="","",D463*B463*SUM(E463+1))	=> None
+B464	V	0
+D464	F	=IF(C464="","",VLOOKUP(C464,List!$A$1:$D$573,4,0))	=> None
+E464	V	0
+F464	F	=IF(C464="","",D464*B464*SUM(E464+1))	=> None
+B465	V	0
+D465	F	=IF(C465="","",VLOOKUP(C465,List!$A$1:$D$573,4,0))	=> None
+E465	V	0
+F465	F	=IF(C465="","",D465*B465*SUM(E465+1))	=> None
+B466	V	0
+D466	F	=IF(C466="","",VLOOKUP(C466,List!$A$1:$D$573,4,0))	=> None
+E466	V	0
+F466	F	=IF(C466="","",D466*B466*SUM(E466+1))	=> None
+B467	V	0
+D467	F	=IF(C467="","",VLOOKUP(C467,List!$A$1:$D$573,4,0))	=> None
+E467	V	0
+F467	F	=IF(C467="","",D467*B467*SUM(E467+1))	=> None
+B468	V	0
+D468	F	=IF(C468="","",VLOOKUP(C468,List!$A$1:$D$573,4,0))	=> None
+E468	V	0
+F468	F	=IF(C468="","",D468*B468*SUM(E468+1))	=> None
+B469	V	0
+D469	F	=IF(C469="","",VLOOKUP(C469,List!$A$1:$D$573,4,0))	=> None
+E469	V	0
+F469	F	=IF(C469="","",D469*B469*SUM(E469+1))	=> None
+B470	V	0
+D470	F	=IF(C470="","",VLOOKUP(C470,List!$A$1:$D$573,4,0))	=> None
+E470	V	0
+F470	F	=IF(C470="","",D470*B470*SUM(E470+1))	=> None
+B471	V	0
+D471	F	=IF(C471="","",VLOOKUP(C471,List!$A$1:$D$573,4,0))	=> None
+E471	V	0
+F471	F	=IF(C471="","",D471*B471*SUM(E471+1))	=> None
+B472	V	0
+D472	F	=IF(C472="","",VLOOKUP(C472,List!$A$1:$D$573,4,0))	=> None
+E472	V	0
+F472	F	=IF(C472="","",D472*B472*SUM(E472+1))	=> None
+B473	V	0
+D473	F	=IF(C473="","",VLOOKUP(C473,List!$A$1:$D$573,4,0))	=> None
+E473	V	0
+F473	F	=IF(C473="","",D473*B473*SUM(E473+1))	=> None
+B474	V	0
+D474	F	=IF(C474="","",VLOOKUP(C474,List!$A$1:$D$573,4,0))	=> None
+E474	V	0
+F474	F	=IF(C474="","",D474*B474*SUM(E474+1))	=> None
+B475	V	0
+D475	F	=IF(C475="","",VLOOKUP(C475,List!$A$1:$D$573,4,0))	=> None
+E475	V	0
+F475	F	=IF(C475="","",D475*B475*SUM(E475+1))	=> None
+G475	V	'Total'
+B476	V	0
+D476	F	=IF(C476="","",VLOOKUP(C476,List!$A$1:$D$573,4,0))	=> None
+E476	V	0
+F476	F	=IF(C476="","",D476*B476*SUM(E476+1))	=> None
+G476	F	=SUM(F459:F476)	=> 0
+A477	V	'Type3'
+A478	V	'Part'
+B478	V	'QTY'
+C478	V	'Material'
+D478	V	'Cost'
+E478	V	'Markup'
+F478	V	'Total'
+B479	V	0
+D479	F	=IF(C479="","",VLOOKUP(C479,List!$A$1:$D$573,4,0))	=> None
+E479	V	0
+F479	F	=IF(C479="","",D479*B479*SUM(E479+1))	=> None
+B480	V	0
+D480	F	=IF(C480="","",VLOOKUP(C480,List!$A$1:$D$573,4,0))	=> None
+E480	V	0
+F480	F	=IF(C480="","",D480*B480*SUM(E480+1))	=> None
+B481	V	0
+D481	F	=IF(C481="","",VLOOKUP(C481,List!$A$1:$D$573,4,0))	=> None
+E481	V	0
+F481	F	=IF(C481="","",D481*B481*SUM(E481+1))	=> None
+B482	V	0
+D482	F	=IF(C482="","",VLOOKUP(C482,List!$A$1:$D$573,4,0))	=> None
+E482	V	0
+F482	F	=IF(C482="","",D482*B482*SUM(E482+1))	=> None
+B483	V	0
+D483	F	=IF(C483="","",VLOOKUP(C483,List!$A$1:$D$573,4,0))	=> None
+E483	V	0
+F483	F	=IF(C483="","",D483*B483*SUM(E483+1))	=> None
+B484	V	0
+D484	F	=IF(C484="","",VLOOKUP(C484,List!$A$1:$D$573,4,0))	=> None
+E484	V	0
+F484	F	=IF(C484="","",D484*B484*SUM(E484+1))	=> None
+B485	V	0
+D485	F	=IF(C485="","",VLOOKUP(C485,List!$A$1:$D$573,4,0))	=> None
+E485	V	0
+F485	F	=IF(C485="","",D485*B485*SUM(E485+1))	=> None
+B486	V	0
+D486	F	=IF(C486="","",VLOOKUP(C486,List!$A$1:$D$573,4,0))	=> None
+E486	V	0
+F486	F	=IF(C486="","",D486*B486*SUM(E486+1))	=> None
+B487	V	0
+D487	F	=IF(C487="","",VLOOKUP(C487,List!$A$1:$D$573,4,0))	=> None
+E487	V	0
+F487	F	=IF(C487="","",D487*B487*SUM(E487+1))	=> None
+B488	V	0
+D488	F	=IF(C488="","",VLOOKUP(C488,List!$A$1:$D$573,4,0))	=> None
+E488	V	0
+F488	F	=IF(C488="","",D488*B488*SUM(E488+1))	=> None
+B489	V	0
+D489	F	=IF(C489="","",VLOOKUP(C489,List!$A$1:$D$573,4,0))	=> None
+E489	V	0
+F489	F	=IF(C489="","",D489*B489*SUM(E489+1))	=> None
+B490	V	0
+D490	F	=IF(C490="","",VLOOKUP(C490,List!$A$1:$D$573,4,0))	=> None
+E490	V	0
+F490	F	=IF(C490="","",D490*B490*SUM(E490+1))	=> None
+B491	V	0
+D491	F	=IF(C491="","",VLOOKUP(C491,List!$A$1:$D$573,4,0))	=> None
+E491	V	0
+F491	F	=IF(C491="","",D491*B491*SUM(E491+1))	=> None
+B492	V	0
+D492	F	=IF(C492="","",VLOOKUP(C492,List!$A$1:$D$573,4,0))	=> None
+E492	V	0
+F492	F	=IF(C492="","",D492*B492*SUM(E492+1))	=> None
+B493	V	0
+D493	F	=IF(C493="","",VLOOKUP(C493,List!$A$1:$D$573,4,0))	=> None
+E493	V	0
+F493	F	=IF(C493="","",D493*B493*SUM(E493+1))	=> None
+B494	V	0
+D494	F	=IF(C494="","",VLOOKUP(C494,List!$A$1:$D$573,4,0))	=> None
+E494	V	0
+F494	F	=IF(C494="","",D494*B494*SUM(E494+1))	=> None
+B495	V	0
+D495	F	=IF(C495="","",VLOOKUP(C495,List!$A$1:$D$573,4,0))	=> None
+E495	V	0
+F495	F	=IF(C495="","",D495*B495*SUM(E495+1))	=> None
+G495	V	'Total'
+B496	V	0
+D496	F	=IF(C496="","",VLOOKUP(C496,List!$A$1:$D$573,4,0))	=> None
+E496	V	0
+F496	F	=IF(C496="","",D496*B496*SUM(E496+1))	=> None
+G496	F	=SUM(F479:F496)	=> 0
+A497	V	'Type4'
+A498	V	'Part'
+B498	V	'QTY'
+C498	V	'Material'
+D498	V	'Cost'
+E498	V	'Markup'
+F498	V	'Total'
+B499	V	0
+D499	F	=IF(C499="","",VLOOKUP(C499,List!$A$1:$D$573,4,0))	=> None
+E499	V	0
+F499	F	=IF(C499="","",D499*B499*SUM(E499+1))	=> None
+B500	V	0
+D500	F	=IF(C500="","",VLOOKUP(C500,List!$A$1:$D$573,4,0))	=> None
+E500	V	0
+F500	F	=IF(C500="","",D500*B500*SUM(E500+1))	=> None
+B501	V	0
+D501	F	=IF(C501="","",VLOOKUP(C501,List!$A$1:$D$573,4,0))	=> None
+E501	V	0
+F501	F	=IF(C501="","",D501*B501*SUM(E501+1))	=> None
+B502	V	0
+D502	F	=IF(C502="","",VLOOKUP(C502,List!$A$1:$D$573,4,0))	=> None
+E502	V	0
+F502	F	=IF(C502="","",D502*B502*SUM(E502+1))	=> None
+B503	V	0
+D503	F	=IF(C503="","",VLOOKUP(C503,List!$A$1:$D$573,4,0))	=> None
+E503	V	0
+F503	F	=IF(C503="","",D503*B503*SUM(E503+1))	=> None
+B504	V	0
+D504	F	=IF(C504="","",VLOOKUP(C504,List!$A$1:$D$573,4,0))	=> None
+E504	V	0
+F504	F	=IF(C504="","",D504*B504*SUM(E504+1))	=> None
+B505	V	0
+D505	F	=IF(C505="","",VLOOKUP(C505,List!$A$1:$D$573,4,0))	=> None
+E505	V	0
+F505	F	=IF(C505="","",D505*B505*SUM(E505+1))	=> None
+B506	V	0
+D506	F	=IF(C506="","",VLOOKUP(C506,List!$A$1:$D$573,4,0))	=> None
+E506	V	0
+F506	F	=IF(C506="","",D506*B506*SUM(E506+1))	=> None
+B507	V	0
+D507	F	=IF(C507="","",VLOOKUP(C507,List!$A$1:$D$573,4,0))	=> None
+E507	V	0
+F507	F	=IF(C507="","",D507*B507*SUM(E507+1))	=> None
+B508	V	0
+D508	F	=IF(C508="","",VLOOKUP(C508,List!$A$1:$D$573,4,0))	=> None
+E508	V	0
+F508	F	=IF(C508="","",D508*B508*SUM(E508+1))	=> None
+B509	V	0
+D509	F	=IF(C509="","",VLOOKUP(C509,List!$A$1:$D$573,4,0))	=> None
+E509	V	0
+F509	F	=IF(C509="","",D509*B509*SUM(E509+1))	=> None
+B510	V	0
+D510	F	=IF(C510="","",VLOOKUP(C510,List!$A$1:$D$573,4,0))	=> None
+E510	V	0
+F510	F	=IF(C510="","",D510*B510*SUM(E510+1))	=> None
+B511	V	0
+D511	F	=IF(C511="","",VLOOKUP(C511,List!$A$1:$D$573,4,0))	=> None
+E511	V	0
+F511	F	=IF(C511="","",D511*B511*SUM(E511+1))	=> None
+B512	V	0
+D512	F	=IF(C512="","",VLOOKUP(C512,List!$A$1:$D$573,4,0))	=> None
+E512	V	0
+F512	F	=IF(C512="","",D512*B512*SUM(E512+1))	=> None
+B513	V	0
+D513	F	=IF(C513="","",VLOOKUP(C513,List!$A$1:$D$573,4,0))	=> None
+E513	V	0
+F513	F	=IF(C513="","",D513*B513*SUM(E513+1))	=> None
+B514	V	0
+D514	F	=IF(C514="","",VLOOKUP(C514,List!$A$1:$D$573,4,0))	=> None
+E514	V	0
+F514	F	=IF(C514="","",D514*B514*SUM(E514+1))	=> None
+B515	V	0
+D515	F	=IF(C515="","",VLOOKUP(C515,List!$A$1:$D$573,4,0))	=> None
+E515	V	0
+F515	F	=IF(C515="","",D515*B515*SUM(E515+1))	=> None
+G515	V	'Total'
+B516	V	0
+D516	F	=IF(C516="","",VLOOKUP(C516,List!$A$1:$D$573,4,0))	=> None
+E516	V	0
+F516	F	=IF(C516="","",D516*B516*SUM(E516+1))	=> None
+G516	F	=SUM(F499:F516)	=> 0

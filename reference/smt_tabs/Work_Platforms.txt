@@ -1,0 +1,1000 @@
+A1	V	'Work Platform Set'
+C1	V	'QTY of Sets'
+A2	V	'Standard RV Work Platform Set with Wood Floor'
+C2	V	0
+A4	V	'WP Basic Info'
+E4	F	=IF(C2>0,"Estimated Shop Hours Per Set","")	=> None
+A5	V	'Enter Length of Platform (not including extensions) in Feet'
+B5	V	55
+A6	V	'Enter Width of Platform in Feet'
+B6	V	6
+C6	F	=IF(B6>4,(J170+J171+((B6-4)*500)),0)	=> 2335.0150000000003
+E6	F	=IF(C2>0,C6*0.75/75,"")	=> None
+A7	V	'Does this WP have any finger racks or storage system?'
+B7	V	False
+A8	V	'Will this WP have motorized width adjustability?'
+B8	V	False
+A9	V	'Current Price of 3/4" Advantech Per Sheet'
+B9	V	50
+C9	F	=IF(C2>0,((B5*B6*2+96)/32*B9*2),0)	=> 0
+A10	V	'Longest Customer Unit in Feet'
+B10	V	48
+A11	V	'Shortest Customer Unit in Feet'
+B11	V	28
+A12	V	'Widest Customer Unit in Feet'
+B12	V	8.5
+A13	V	'Narrowest Customer Unit in Feet'
+B13	V	7
+A14	V	'Tallest Customer Unit in Feet'
+B14	V	13.5
+A15	V	'Truss Design Selection'
+B15	F	=IF(OR(B5>57,B6>6,B7=TRUE,B8=TRUE),"Box Truss Style","Triangular Truss Style")	=> 'Triangular Truss Style'
+A16	V	'Tower Height Selection'
+B16	F	=IF(B14>14,"Tall 30'","Standard 24'")	=> "Standard 24'"
+C16	F	=IF(B16="Standard 24'",0,J170+300)	=> 0
+A17	V	'Starke Hoist Brand Selection'
+B17	V	True
+C17	V	0
+A18	V	'Hoist'
+B18	F	=IF(B5>62,"3 Ton",IF(OR(B5>40,B6>4,B7=TRUE,B8=TRUE),"2 Ton","1 Ton"))	=> '2 Ton'
+C18	F	=IF(AND(B18="1 Ton",B17=TRUE),A70,IF(AND(B18="2 Ton",B17=TRUE),A71,IF(AND(B18="1 Ton",B17=FALSE),A73,IF(AND(B18="2 Ton",B17=FALSE),A74,IF(AND(B18="3 Ton",B17=TRUE),A72,IF(AND(B18="3 Ton",B17=FALSE),A75,""))))))	=> 'STK2026-20-460V-3PH-A'
+A19	V	'Secondary Brake Device'
+C19	F	=IF(B18="1 Ton",A76,IF(OR(B18="2 Ton",B18="3 Ton"),A77,""))	=> 'S3KLAS-20'
+A21	V	'WP Options and Accessories (Per Set)'
+A22	V	'All quantities are per WP set (not for the total project)'
+A23	V	'Crosswalks'
+A24	V	'Quantity of Standard PWI Crosswalks'
+B24	V	0
+C24	F	=B24*2000	=> 0
+E24	F	=IF(C2>0,C24/3/75,"")	=> None
+A25	V	'Quantity of Pivot Style PWI Crosswalks'
+B25	V	0
+C25	F	=B25*2400	=> 0
+E25	F	=IF(C2>0,C25/3/75,"")	=> None
+A26	V	'Quantity of Expandable PWI Crosswalks'
+B26	V	0
+C26	F	=IF(B28>6,SUM((B28-6)*600)*B26)+4500*B26	=> 0
+E26	F	=IF(C2>0,C26/3/75,"")	=> None
+A27	V	'Quantity of Werner Plank Aluminum Extendable PWI Crosswalks'
+B27	V	0
+C27	F	=IF(B12>8.5,SUM(5500*B27),SUM(4500*B27))	=> 0
+E27	F	=IF(C2>0,C27/3/75,"")	=> None
+A28	V	'Expandable Crosswalk Extended Length'
+B28	V	0
+A29	V	'Aluminum Angle Gap Protection'
+B29	V	False
+C29	F	=IF(B29,(B24+B25+B26)*800,0)	=> 0
+E29	F	=IF(C2>0,C29/2/75,"")	=> None
+A30	V	'V-Nose Protection'
+B30	V	False
+C30	F	=IF(B30,2700,0)	=> 0
+E30	F	=IF(C2>0,C30/2/75,"")	=> None
+C31	F	=B31*2000	=> 0
+C32	F	=B32*2000	=> 0
+A33	V	'Dead Zone Protection'
+A34	V	'Quantity of Telescoping Guardrail Sections'
+B34	V	0
+C34	F	=IF(B35>6,SUM((B35-10)*200)*B34)+800*B34	=> 0
+E34	F	=IF(C2>0,C34/2/75,"")	=> None
+A35	V	'Telescoping Guardrail Extended Length'
+B35	V	0
+A36	V	'Cam Gate Coverage Front of Unit'
+B36	V	0
+C36	F	=B36*2*(J166+150)	=> 0
+E36	F	=IF(C2>0,B36*2*1.25,"")	=> None
+A37	V	'Cam Gate Coverage Rear of Unit'
+B37	V	0
+C37	F	=B37*2*(J166+150)	=> 0
+E37	F	=IF(C2>0,B37*2*1.25,"")	=> None
+A38	V	'Calculated Total Interior Guardrail Length'
+B38	F	=IF((B36+B37)<1,0,(B5-B36-B37+B40))*2	=> 0
+C38	F	=B38*(J167+18.75)	=> 0
+E38	F	=IF(C2>0,C38*0.75/75,"")	=> None
+A39	V	'Outrigger/Mezzanine Access'
+A40	V	'Quantity of WP End Extensions'
+B40	V	0
+C40	F	=IF(C2>0,B40*(J168+275),0)	=> 0
+E40	F	=IF(C2>0,B40*3.66,"")	=> None
+A41	V	'Quantity of WP End Caps'
+B41	F	=IF(C2>0,(4-B40),"0")	=> '0'
+C41	F	=B41*(J169+125)	=> 0
+E41	F	=IF(C2>0,B41*1.66,"")	=> None
+A42	V	'Quantity of Swing Gates'
+B42	F	=B40	=> 0
+C42	F	=IF(C2>0,B42*(J165+135),0)	=> 0
+E42	F	=IF(C2>0,B42*1.8,"")	=> None
+A43	V	'Miscellaneous Accessories '
+A44	V	'Line Feet of Finger Racks for Trim Storage '
+B44	V	0
+C44	F	=SUM(B44*J164*2)+(B44/2*75)	=> 0
+E44	F	=IF(C2>0,B44/2,"")	=> None
+A45	V	'Slide out Tread Plate Extension Sheet Coverage'
+B45	V	False
+C45	F	=IF(B45,(B10*J109*2*1.75),0)	=> 0
+E45	F	=IF(C2>0,C45*0.4/75,"")	=> None
+A46	V	'Does this WP need ladder access?'
+B46	V	False
+C46	F	=IF(B46=TRUE,300,0)	=> 0
+E46	F	=IF(AND(B46=TRUE,C2>0),C2*2.5,"")	=> None
+A47	V	'Additional Runs of PWI 300 Series Tracks'
+B47	V	0
+C47	F	=I69*B47	=> 0
+A48	V	'Sum of Options and Accessories'
+C48	F	=SUM(C6,C9,C16:C17,C24:C27,C29:C32,C34,C38:C38,C40:C42,C44:C47)	=> 2335.0150000000003
+D48	F	=IF(C2>0,"Total Sum of All WP Accessories:","")	=> None
+E48	F	=IF(C2>0,SUM(E5:E47)*C2,"")	=> None
+A51	V	'Group'
+B51	V	'Tons'
+C51	V	'Dollars'
+A52	V	'Components'
+C52	F	=K79	=> 0
+O52	V	'Gross Margin'
+A53	V	'Specialty Order Items'
+C53	F	=K96	=> 0
+A54	V	'Flat Bar, Plate, and Sheet Steel'
+B54	F	=SUM(H99:H108)+SUM(H111:H120)	=> 0
+C54	F	=K121	=> 0
+A55	V	'Structural Materials'
+B55	F	=SUM(H124:H139)	=> 1498.5798375000002
+C55	F	=IF(B15="Triangular Truss Style",K140,K161)	=> 0
+A56	V	'Options and Accessories'
+C56	F	=C48*$C$2	=> 0
+A57	V	'Shop Labor'
+C57	F	=Labor!B71*Labor!C2	=> 0
+O57	F	=C56*0.3	=> 0
+A58	V	'AutoCad Design Charges (Per Set)'
+B58	V	600
+C58	F	=B58*$C$2	=> 0
+O58	F	=C57*0.41	=> 0
+A59	V	'Project Management (Per Set)'
+B59	V	600
+C59	F	=B59*$C$2	=> 0
+O59	F	=C58*0.3	=> 0
+A60	V	'Paint Booth Charges - 1 White Primer, 1 Yellow (Per Set)'
+B60	V	1600
+C60	F	=B60*$C$2	=> 0
+O60	F	=C59*0.3	=> 0
+A61	V	'Incoming Freight Charges (Per Set)'
+B61	V	125
+C61	F	=B61*$C$2	=> 0
+O61	F	=C60*0.16	=> 0
+A62	V	'Total Project Price'
+B62	F	=SUM(B54+(B55/2000))*C2	=> 0
+C62	F	=IF(C2>0,SUM(C52:C61),0)	=> 0
+O62	F	=C61*0.1	=> 0
+A66	V	'Parts & Components List'
+A67	V	'Item Description'
+B67	V	'QTY'
+C67	V	'Description'
+G67	V	'List Price'
+H67	V	'Discount'
+I67	V	'Each'
+J67	V	'Total'
+K67	V	'Components Markup %'
+N67	V	'List Subtotal'
+O67	V	'PWI Cost Each'
+P67	V	'PWI Total Cost'
+Q67	V	'Gross Margin'
+A68	V	'Siren and Strobe Alarm Kit - If installed at PWI'
+B68	F	=2*$C$2	=> 0
+G68	V	1200
+H68	V	0
+I68	F	=G68-(H68*G68)+(G68*$K$68)	=> 1200
+J68	F	=I68*B68	=> 0
+K68	V	0
+N68	F	=B68*G68	=> 0
+O68	V	800
+P68	F	=B68*O68	=> 0
+Q68	F	=J68-P68	=> 0
+A69	V	"300 Series Enclosed Track @ 55' long "
+B69	F	=2*$C$2	=> 0
+C69	V	'S300-53'
+G69	V	1122
+H69	V	0.15
+I69	F	=G69-(H69*G69)+(G69*$K$68)	=> 953.7
+J69	F	=I69*B69	=> 0
+N69	F	=B69*G69	=> 0
+O69	V	477
+P69	F	=B69*O69	=> 0
+Q69	F	=J69-P69	=> 0
+A70	V	'STK1026-20-460V-3PH-A'
+B70	F	=IF($C$18=A70,4*$C$2,0)	=> 0
+C70	V	'1 Ton - 26 FPM'
+G70	F	=_xlfn.XLOOKUP(A70,List!AF:AF,List!AH:AH)	=> 3655
+H70	V	0.15
+I70	F	=G70-(H70*G70)+(G70*$K$68)	=> 3106.75
+J70	F	=I70*B70	=> 0
+N70	F	=B70*G70	=> 0
+O70	F	=G70/2	=> 1827.5
+P70	F	=B70*O70	=> 0
+Q70	F	=J70-P70	=> 0
+A71	V	'STK2026-20-460V-3PH-A'
+B71	F	=IF($C$18=A71,4*$C$2,0)	=> 0
+C71	V	'2 Ton - 26 FPM'
+G71	F	=_xlfn.XLOOKUP(A71,List!AF:AF,List!AH:AH)	=> 4697
+H71	V	0.15
+I71	F	=G71-(H71*G71)+(G71*$K$68)	=> 3992.45
+J71	F	=I71*B71	=> 0
+N71	F	=B71*G71	=> 0
+O71	F	=G71/2	=> 2348.5
+P71	F	=B71*O71	=> 0
+Q71	F	=J71-P71	=> 0
+A72	V	'STK3021-20-460V-3PH-A'
+B72	F	=IF($C$18=A72,4*$C$2,0)	=> 0
+C72	V	'3 Ton - 21 FPM'
+G72	F	=_xlfn.XLOOKUP(A72,List!AF:AF,List!AH:AH)	=> 6452
+H72	V	0.15
+I72	F	=G72-(H72*G72)+(G72*$K$68)	=> 5484.2
+J72	F	=I72*B72	=> 0
+N72	F	=B72*G72	=> 0
+O72	F	=G72/2	=> 3226
+P72	F	=B72*O72	=> 0
+Q72	F	=J72-P72	=> 0
+A73	V	"CM L - 20'"
+B73	F	=IF($C$18=A73,4*$C$2,0)	=> 0
+C73	F	=List!AB46	=> '1 Ton - 16 FPM'
+G73	F	=_xlfn.XLOOKUP(MID(A73,4,LEN(A73)-3),List!AA:AA,List!AC:AC)	=> 6366.73005
+H73	V	0.2
+I73	F	=G73-(H73*G73)+(G73*$K$68)	=> 5093.38404
+J73	F	=I73*B73	=> 0
+N73	F	=B73*G73	=> 0
+O73	F	=G73*0.55	=> 3501.7015275000003
+P73	F	=B73*O73	=> 0
+Q73	F	=J73-P73	=> 0
+A74	V	"CM RRS - 20'"
+B74	F	=IF($C$18=A74,4*$C$2,0)	=> 0
+C74	F	=List!AB48	=> '2 Ton - 16 FPM'
+G74	F	=_xlfn.XLOOKUP(MID(A74,4,LEN(A74)-3),List!AA:AA,List!AC:AC)	=> 7381.707975
+H74	V	0.2
+I74	F	=G74-(H74*G74)+(G74*$K$68)	=> 5905.36638
+J74	F	=I74*B74	=> 0
+N74	F	=B74*G74	=> 0
+O74	F	=G74*0.55	=> 4059.9393862500006
+P74	F	=B74*O74	=> 0
+Q74	F	=J74-P74	=> 0
+A75	V	"CM RRT - 20'"
+B75	F	=IF($C$18=A75,4*$C$2,0)	=> 0
+C75	F	=List!AB52	=> '3 Ton - 11 FPM'
+G75	F	=_xlfn.XLOOKUP(MID(A75,4,LEN(A75)-3),List!AA:AA,List!AC:AC)	=> 11020.23495
+H75	V	0.2
+I75	F	=G75-(H75*G75)+(G75*$K$68)	=> 8816.18796
+J75	F	=I75*B75	=> 0
+N75	F	=B75*G75	=> 0
+O75	F	=G75*0.55	=> 6061.129222500001
+P75	F	=B75*O75	=> 0
+Q75	F	=J75-P75	=> 0
+A76	V	'S2KLAS-20'
+B76	F	=IF($C$19=A76,4*$C$2,0)	=> 0
+C76	V	'2204 lb capacity'
+G76	F	=_xlfn.XLOOKUP(A76,List!AF:AF,List!AH:AH)	=> 2469
+H76	V	0.15
+I76	F	=G76-(H76*G76)+(G76*$K$68)	=> 2098.65
+J76	F	=I76*B76	=> 0
+N76	F	=B76*G76	=> 0
+O76	F	=G76/2	=> 1234.5
+P76	F	=B76*O76	=> 0
+Q76	F	=J76-P76	=> 0
+A77	V	'S3KLAS-20'
+B77	F	=IF($C$19=A77,4*$C$2,0)	=> 0
+C77	V	'3527 lb capacity'
+G77	F	=_xlfn.XLOOKUP(A77,List!AF:AF,List!AH:AH)	=> 3465
+H77	V	0.15
+I77	F	=G77-(H77*G77)+(G77*$K$68)	=> 2945.25
+J77	F	=I77*B77	=> 0
+N77	F	=B77*G77	=> 0
+O77	F	=G77/2	=> 1732.5
+P77	F	=B77*O77	=> 0
+Q77	F	=J77-P77	=> 0
+H78	V	0.1
+I78	F	=G78-(H78*G78)+(G78*$K$68)	=> 0
+J78	F	=I78*B78	=> 0
+N78	F	=B78*G78	=> 0
+O78	F	=G78/2	=> 0
+P78	F	=B78*O78	=> 0
+Q78	F	=J78-P78	=> 0
+H79	V	'Total Price of Components'
+K79	F	=SUM(J68:J78)	=> 0
+P79	V	'Total Gross:'
+Q79	F	=SUM(Q68:Q78)	=> 0
+A80	V	'Specialty Order Items'
+A81	V	'Description and Part Number'
+B81	V	'Qty'
+H81	V	'Price Last updated'
+I81	V	'Each'
+J81	V	'Total'
+K81	V	'Specialty Order Markup %'
+N81	V	'Price Subtotal:'
+O81	F	=SUM(J82:J95,J99:J120,J124:J139,J143:J160)	=> 0
+A82	V	'Cut @ 2" x 4-1/2" - Black 3/8" UHMW '
+B82	F	=16*$C$2	=> 0
+I82	V	1.25
+J82	F	=SUM(I82*B82*($K$82+1))	=> 0
+K82	V	0.25
+N82	V	'Gross Margin:'
+O82	F	=O81*0.16666	=> 0
+A83	V	'Cut @ 2" x 4-1/2" - Black 7/16" UHMW '
+B83	F	=16*$C$2	=> 0
+I83	V	2.4
+J83	F	=SUM(I83*B83*($K$82+1))	=> 0
+A84	V	'Tower Bracing U-Bolt - TR51015U'
+B84	F	=8*$C$2	=> 0
+I84	V	7
+J84	F	=SUM(I84*B84*($K$82+1))	=> 0
+N84	V	'Gross Margin Tab Total:'
+O84	F	=SUM(O57:O62,Q79,O82)	=> 0
+A85	V	'UHMW Tower Slide / 5/16" Screws'
+B85	F	=64*$C$2	=> 0
+I85	V	0.2
+J85	F	=SUM(I85*B85*($K$82+1))	=> 0
+A86	V	'UHMW Tower Slide / 5/16" Nylon Nuts'
+B86	F	=64*$C$2	=> 0
+I86	V	0.07
+J86	F	=SUM(I86*B86*($K$82+1))	=> 0
+A87	V	'3/4" Cup Point Set Screws / Tower Base'
+B87	F	=16*$C$2	=> 0
+I87	V	1.95
+J87	F	=SUM(I87*B87*($K$82+1))	=> 0
+A88	V	'PWI Standard Decal 4" x 7" '
+B88	F	=8*$C$2	=> 0
+I88	V	10
+J88	F	=SUM(I88*B88*($K$82+1))	=> 0
+A89	V	'Hoist Bolts'
+B89	F	=8*$C$2	=> 0
+I89	V	3.96
+J89	F	=SUM(I89*B89*($K$82+1))	=> 0
+A90	V	'Hoist Bolt Nuts'
+B90	F	=8*$C$2	=> 0
+I90	V	1.8
+J90	F	=SUM(I90*B90*($K$82+1))	=> 0
+A91	V	'End Unit Attchment Bolt'
+B91	F	=16*$C$2	=> 0
+I91	V	1.25
+J91	F	=SUM(I91*B91*($K$82+1))	=> 0
+A92	V	'End Unit Attchment Nut'
+B92	F	=16*$C$2	=> 0
+I92	V	1
+J92	F	=SUM(I92*B92*($K$82+1))	=> 0
+A93	V	'End Unit Attchment Heavy Washer'
+B93	F	=16*$C$2	=> 0
+I93	V	0.25
+J93	F	=SUM(I93*B93*($K$82+1))	=> 0
+A94	V	'PWI built wiring harnesses, complete'
+B94	F	=1*$C$2	=> 0
+I94	V	1000
+J94	F	=SUM(I94*B94*($K$82+1))	=> 0
+A95	V	'Base Plates'
+B95	F	=16*$C$2	=> 0
+I95	V	3
+J95	F	=SUM(I95*B95*($K$82+1))	=> 0
+H96	V	'Total Price of Special Order Items'
+K96	F	=SUM(J82:J95)	=> 0
+A97	V	'Flat Bar, Sheets, and Plate Steel'
+A98	V	'Plasma Cut Plate or Sheet'
+B98	V	'QTY'
+C98	V	'Thickness (In.)'
+D98	V	'Width\n(In.)'
+E98	V	'Length (In.)'
+F98	V	'$/lb'
+G98	V	'lb/PC'
+H98	V	'Total Tons'
+I98	V	'Each'
+J98	V	'Total'
+K98	V	'Plate Markup %'
+A99	V	'End Unit UHMW Plates'
+B99	F	=32*$C$2	=> 0
+C99	V	0.1875
+D99	V	4
+E99	V	6
+F99	V	1
+G99	F	=C99*D99*E99*0.2833	=> 1.27485
+H99	F	=G99*B99/2000	=> 0
+I99	F	=F99*G99	=> 1.27485
+J99	F	=SUM(B99*I99*($K$99+1))	=> 0
+K99	V	0.25
+A100	V	'Hoist Tabs'
+B100	F	=16*$C$2	=> 0
+C100	V	0.5
+D100	V	3
+E100	V	5
+F100	V	1
+G100	F	=C100*D100*E100*0.2833	=> 2.12475
+H100	F	=G100*B100/2000	=> 0
+I100	F	=F100*G100	=> 2.12475
+J100	F	=SUM(B100*I100*($K$99+1))	=> 0
+A101	V	'Base Plates'
+B101	F	=4*$C$2	=> 0
+C101	V	0.5
+D101	V	10
+E101	V	10
+F101	V	1
+G101	F	=C101*D101*E101*0.2833	=> 14.165
+H101	F	=G101*B101/2000	=> 0
+I101	F	=F101*G101	=> 14.165
+J101	F	=SUM(B101*I101*($K$99+1))	=> 0
+A102	V	'Base Unit/Holder'
+B102	F	=16*$C$2	=> 0
+C102	V	0.25
+D102	V	6
+E102	V	6
+F102	V	1
+G102	F	=C102*D102*E102*0.2833	=> 2.5497
+H102	F	=G102*B102/2000	=> 0
+I102	F	=F102*G102	=> 2.5497
+J102	F	=SUM(B102*I102*($K$99+1))	=> 0
+A103	V	'Tower Top Gussets'
+B103	F	=8*$C$2	=> 0
+C103	V	0.25
+D103	V	10
+E103	V	10
+F103	V	1
+G103	F	=C103*D103*E103*0.2833	=> 7.0825
+H103	F	=G103*B103/2000	=> 0
+I103	F	=F103*G103	=> 7.0825
+J103	F	=SUM(B103*I103*($K$99+1))	=> 0
+A104	V	'Top U Bolt Plate'
+B104	F	=4*$C$2	=> 0
+C104	V	0.5
+D104	V	8
+E104	V	10
+F104	V	1
+G104	F	=C104*D104*E104*0.2833	=> 11.332
+H104	F	=G104*B104/2000	=> 0
+I104	F	=F104*G104	=> 11.332
+J104	F	=SUM(B104*I104*($K$99+1))	=> 0
+A105	V	'Decal plate'
+B105	F	=2*$C$2	=> 0
+C105	V	0.125
+D105	V	6
+E105	V	12
+F105	V	1
+G105	F	=C105*D105*E105*0.2833	=> 2.5497
+H105	F	=G105*B105/2000	=> 0
+I105	F	=F105*G105	=> 2.5497
+J105	F	=SUM(B105*I105*($K$99+1))	=> 0
+A106	V	'End Carriage Channel Assemblies '
+B106	F	=4*$C$2	=> 0
+C106	V	0.25
+D106	V	12
+E106	V	20
+F106	V	1
+G106	F	=C106*D106*E106*0.2833	=> 16.998
+H106	F	=G106*B106/2000	=> 0
+I106	F	=F106*G106	=> 16.998
+J106	F	=SUM(B106*I106*($K$99+1))	=> 0
+A107	V	'WP End Channel Assemblies '
+B107	F	=4*$C$2	=> 0
+C107	V	0.25
+D107	V	9
+E107	V	20
+F107	V	1
+G107	F	=C107*D107*E107*0.2833	=> 12.7485
+H107	F	=G107*B107/2000	=> 0
+I107	F	=F107*G107	=> 12.7485
+J107	F	=SUM(B107*I107*($K$99+1))	=> 0
+A108	V	'Shim Plates'
+B108	F	=4*$C$2	=> 0
+C108	V	0.13
+D108	V	6
+E108	V	20
+F108	V	1
+G108	F	=C108*D108*E108*0.2833	=> 4.41948
+H108	F	=G108*B108/2000	=> 0
+I108	F	=F108*G108	=> 4.41948
+J108	F	=SUM(B108*I108*($K$99+1))	=> 0
+A109	V	'WP Extension Sheets'
+B109	F	=1*$C$2	=> 0
+C109	V	0.1875
+D109	V	12
+E109	V	36
+F109	V	1
+G109	F	=C109*D109*E109*0.2833	=> 22.9473
+H109	F	=G109*B109/2000	=> 0
+I109	F	=F109*G109	=> 22.9473
+J109	F	=SUM(B109*I109*($K$99+1))	=> 0
+A110	V	'Toe Kick'
+B110	F	=2*$C$2	=> 0
+C110	V	0.105
+D110	V	6
+E110	V	600
+F110	V	0.8
+G110	F	=C110*D110*E110*0.2833	=> 107.0874
+H110	F	=G110*B110/2000	=> 0
+I110	F	=F110*G110	=> 85.66992
+J110	F	=SUM(B110*I110*($K$99+1))	=> 0
+I111	V	0
+J111	F	=SUM(B111*I111*($K$99+1))	=> 0
+I112	V	0
+J112	F	=SUM(B112*I112*($K$99+1))	=> 0
+I113	V	0
+J113	F	=SUM(B113*I113*($K$99+1))	=> 0
+I114	V	0
+J114	F	=SUM(B114*I114*($K$99+1))	=> 0
+I115	V	0
+J115	F	=SUM(B115*I115*($K$99+1))	=> 0
+I116	V	0
+J116	F	=SUM(B116*I116*($K$99+1))	=> 0
+I117	V	0
+J117	F	=SUM(B117*I117*($K$99+1))	=> 0
+I118	V	0
+J118	F	=SUM(B118*I118*($K$99+1))	=> 0
+I119	V	0
+J119	F	=SUM(B119*I119*($K$99+1))	=> 0
+I120	V	0
+J120	F	=SUM(B120*I120*($K$99+1))	=> 0
+H121	V	'Total Price of Plate'
+K121	F	=SUM(J99:J120)	=> 0
+A122	V	'Structural - Triangular Style'
+A123	V	'MATERIAL USED FOR:'
+B123	V	'QTY'
+C123	V	'Item'
+D123	V	'Length Feet'
+E123	V	'lb/ft'
+F123	V	'$/lb'
+G123	V	'Tons'
+H123	V	'Each'
+I123	V	'Length Adjustor'
+J123	V	'Total Price'
+K123	V	'Structural Markup %'
+A124	V	'Main Tower- Column'
+B124	F	=IF(B15="Triangular Truss Style",4*$C$2,0)	=> 0
+C124	V	'ST 5 x 5 x 7ga'
+D124	V	20
+E124	F	=IF(C124="","",VLOOKUP(C124,List!$A$1:$D$573,3,0))	=> 11.97
+F124	F	=IF(C124="","",VLOOKUP(C124,List!$A$1:$D$573,4,0))	=> 1.55
+G124	F	=IF(C124="","",SUM(B124*D124*E124)/2000)	=> 0
+H124	F	=IF(G124="",0,SUM(E124*F124*D124))	=> 371.07000000000005
+I124	V	1
+J124	F	=IF(B124=0,0,SUM(I124*H124*B124*($K$124+1)))	=> 0
+K124	V	0.25
+A125	V	'Main Tower- Top'
+B125	F	=IF(B15="Triangular Truss Style",4*$C$2,0)	=> 0
+C125	V	'ST 5 x 5 x 1/4'
+D125	V	2
+E125	F	=IF(C125="","",VLOOKUP(C125,List!$A$1:$D$573,3,0))	=> 15.62
+F125	F	=IF(C125="","",VLOOKUP(C125,List!$A$1:$D$573,4,0))	=> 1.55
+G125	F	=IF(C125="","",SUM(B125*D125*E125)/2000)	=> 0
+H125	F	=IF(G125="",0,SUM(E125*F125*D125))	=> 48.422
+I125	V	1
+J125	F	=IF(B125=0,0,SUM(I125*H125*B125*($K$124+1)))	=> 0
+A126	V	'Carriage - Tube'
+B126	F	=IF(B15="Triangular Truss Style",4*$C$2,0)	=> 0
+C126	V	'ST 5 x 5 x 7ga'
+D126	V	5
+E126	F	=IF(C126="","",VLOOKUP(C126,List!$A$1:$D$573,3,0))	=> 11.97
+F126	F	=IF(C126="","",VLOOKUP(C126,List!$A$1:$D$573,4,0))	=> 1.55
+G126	F	=IF(C126="","",SUM(B126*D126*E126)/2000)	=> 0
+H126	F	=IF(G126="",0,SUM(E126*F126*D126))	=> 92.76750000000001
+I126	V	1
+J126	F	=IF(B126=0,0,SUM(I126*H126*B126*($K$124+1)))	=> 0
+A127	V	'Tower -Angle Bracing'
+B127	F	=IF(B15="Triangular Truss Style",6*$C$2,0)	=> 0
+C127	V	'AI 2 1/2 x 2 1/2 x 3/16'
+D127	V	10
+E127	F	=IF(C127="","",VLOOKUP(C127,List!$A$1:$D$573,3,0))	=> 3.07
+F127	F	=IF(C127="","",VLOOKUP(C127,List!$A$1:$D$573,4,0))	=> 1
+G127	F	=IF(C127="","",SUM(B127*D127*E127)/2000)	=> 0
+H127	F	=IF(G127="",0,SUM(E127*F127*D127))	=> 30.7
+I127	V	1
+J127	F	=IF(B127=0,0,SUM(I127*H127*B127*($K$124+1)))	=> 0
+A128	V	'Tower - Lateral Brace (Top Tube)'
+B128	F	=IF(B15="Triangular Truss Style",2*$C$2,)	=> 0
+C128	V	'ST 3 1/2 x 3 1/2 x 7ga'
+D128	V	15
+E128	F	=IF(C128="","",VLOOKUP(C128,List!$A$1:$D$573,3,0))	=> 8.15
+F128	F	=IF(C128="","",VLOOKUP(C128,List!$A$1:$D$573,4,0))	=> 1.55
+G128	F	=IF(C128="","",SUM(B128*D128*E128)/2000)	=> 0
+H128	F	=IF(G128="",0,SUM(E128*F128*D128))	=> 189.4875
+I128	V	1
+J128	F	=IF(B128=0,0,SUM(I128*H128*B128*($K$124+1)))	=> 0
+A129	V	'Platform - Truss Pipes'
+B129	F	=IF(B15="Triangular Truss Style",164*$C$2,0)	=> 0
+C129	V	'PI 1/2 x #40'
+D129	V	1.75
+E129	F	=IF(C129="","",VLOOKUP(C129,List!$A$1:$D$573,3,0))	=> 0.851
+F129	F	=IF(C129="","",VLOOKUP(C129,List!$A$1:$D$573,4,0))	=> 1.55
+G129	F	=IF(C129="","",SUM(B129*D129*E129)/2000)	=> 0
+H129	F	=IF(G129="",0,SUM(E129*F129*D129))	=> 2.3083375
+I129	F	=$B$5/50	=> 1.1
+J129	F	=IF(B129=0,0,SUM(I129*H129*B129*($K$124+1)))	=> 0
+A130	V	'Platform - Side Chord'
+B130	F	=IF(B15="Triangular Truss Style",1*$C$2,0)	=> 0
+C130	V	'RT 3 x 2 x 11ga'
+D130	V	50
+E130	F	=IF(C130="","",VLOOKUP(C130,List!$A$1:$D$573,3,0))	=> 3.9
+F130	F	=IF(C130="","",VLOOKUP(C130,List!$A$1:$D$573,4,0))	=> 1.55
+G130	F	=IF(C130="","",SUM(B130*D130*E130)/2000)	=> 0
+H130	F	=IF(G130="",0,SUM(E130*F130*D130))	=> 302.25
+I130	F	=$B$5/50	=> 1.1
+J130	F	=IF(B130=0,0,SUM(I130*H130*B130*($K$124+1)))	=> 0
+A131	V	'Platform - Bottom Chord'
+B131	F	=IF(B15="Triangular Truss Style",2*$C$2,0)	=> 0
+C131	V	'ST 2 1/2 x 2 1/2 x 7ga'
+D131	V	50
+E131	F	=IF(C131="","",VLOOKUP(C131,List!$A$1:$D$573,3,0))	=> 5.59
+F131	F	=IF(C131="","",VLOOKUP(C131,List!$A$1:$D$573,4,0))	=> 1.55
+G131	F	=IF(C131="","",SUM(B131*D131*E131)/2000)	=> 0
+H131	F	=IF(G131="",0,SUM(E131*F131*D131))	=> 433.225
+I131	F	=$B$5/50	=> 1.1
+J131	F	=IF(B131=0,0,SUM(I131*H131*B131*($K$124+1)))	=> 0
+A132	V	'Platform - Floor Structure'
+B132	F	=IF(B15="Triangular Truss Style",50*$C$2,0)	=> 0
+C132	V	'RT 2 x 1 1/2 x 11ga'
+D132	V	4
+E132	F	=IF(C132="","",VLOOKUP(C132,List!$A$1:$D$573,3,0))	=> 2.66
+F132	F	=IF(C132="","",VLOOKUP(C132,List!$A$1:$D$573,4,0))	=> 1.55
+G132	F	=IF(C132="","",SUM(B132*D132*E132)/2000)	=> 0
+H132	F	=IF(G132="",0,SUM(E132*F132*D132))	=> 16.492
+I132	F	=$B$5/50	=> 1.1
+J132	F	=IF(B132=0,0,SUM(I132*H132*B132*($K$124+1)))	=> 0
+A133	V	'Platform - Guardrail'
+B133	F	=IF(B15="Triangular Truss Style",2*$C$2,0)	=> 0
+C133	V	'ST 2 x 2 x 11ga'
+D133	V	2.5
+E133	F	=IF(C133="","",VLOOKUP(C133,List!$A$1:$D$573,3,0))	=> 3.06
+F133	F	=IF(C133="","",VLOOKUP(C133,List!$A$1:$D$573,4,0))	=> 1.55
+G133	F	=IF(C133="","",SUM(B133*D133*E133)/2000)	=> 0
+H133	F	=IF(G133="",0,SUM(E133*F133*D133))	=> 11.857500000000002
+I133	F	=$B$5/50	=> 1.1
+J133	F	=IF(B133=0,0,SUM(I133*H133*B133*($K$124+1)))	=> 0
+E134	F	=IF(C134="","",VLOOKUP(C134,List!$A$1:$D$573,3,0))	=> None
+F134	F	=IF(C134="","",VLOOKUP(C134,List!$A$1:$D$573,4,0))	=> None
+G134	F	=IF(C134="","",SUM(B134*D134*E134)/2000)	=> None
+H134	F	=IF(G134="",0,SUM(E134*F134*D134))	=> 0
+I134	F	=$B$5/50	=> 1.1
+J134	F	=IF(B134=0,0,SUM(I134*H134*B134*($K$124+1)))	=> 0
+E135	F	=IF(C135="","",VLOOKUP(C135,List!$A$1:$D$573,3,0))	=> None
+F135	F	=IF(C135="","",VLOOKUP(C135,List!$A$1:$D$573,4,0))	=> None
+G135	F	=IF(C135="","",SUM(B135*D135*E135)/2000)	=> None
+H135	F	=IF(G135="",0,SUM(E135*F135*D135))	=> 0
+I135	F	=$B$5/50	=> 1.1
+J135	F	=IF(B135=0,0,SUM(I135*H135*B135*($K$124+1)))	=> 0
+E136	F	=IF(C136="","",VLOOKUP(C136,List!$A$1:$D$573,3,0))	=> None
+F136	F	=IF(C136="","",VLOOKUP(C136,List!$A$1:$D$573,4,0))	=> None
+G136	F	=IF(C136="","",SUM(B136*D136*E136)/2000)	=> None
+H136	F	=IF(G136="",0,SUM(E136*F136*D136))	=> 0
+I136	F	=$B$5/50	=> 1.1
+J136	F	=IF(B136=0,0,SUM(I136*H136*B136*($K$124+1)))	=> 0
+E137	F	=IF(C137="","",VLOOKUP(C137,List!$A$1:$D$573,3,0))	=> None
+F137	F	=IF(C137="","",VLOOKUP(C137,List!$A$1:$D$573,4,0))	=> None
+G137	F	=IF(C137="","",SUM(B137*D137*E137)/2000)	=> None
+H137	F	=IF(G137="",0,SUM(E137*F137*D137))	=> 0
+I137	F	=$B$5/50	=> 1.1
+J137	F	=IF(B137=0,0,SUM(I137*H137*B137*($K$124+1)))	=> 0
+E138	F	=IF(C138="","",VLOOKUP(C138,List!$A$1:$D$573,3,0))	=> None
+F138	F	=IF(C138="","",VLOOKUP(C138,List!$A$1:$D$573,4,0))	=> None
+G138	F	=IF(C138="","",SUM(B138*D138*E138)/2000)	=> None
+H138	F	=IF(G138="",0,SUM(E138*F138*D138))	=> 0
+I138	F	=$B$5/50	=> 1.1
+J138	F	=IF(B138=0,0,SUM(I138*H138*B138*($K$124+1)))	=> 0
+E139	F	=IF(C139="","",VLOOKUP(C139,List!$A$1:$D$573,3,0))	=> None
+F139	F	=IF(C139="","",VLOOKUP(C139,List!$A$1:$D$573,4,0))	=> None
+G139	F	=IF(C139="","",SUM(B139*D139*E139)/2000)	=> None
+H139	F	=IF(G139="",0,SUM(E139*F139*D139))	=> 0
+I139	F	=$B$5/50	=> 1.1
+J139	F	=IF(B139=0,0,SUM(I139*H139*B139*($K$124+1)))	=> 0
+H140	V	'Total Price of Structural'
+K140	F	=SUM(J124:J139)	=> 0
+A141	V	'Structural - Box Style'
+A142	V	'MATERIAL USED FOR:'
+B142	V	'QTY'
+C142	V	'Item'
+D142	V	'Length Feet'
+E142	V	'lb/ft'
+F142	V	'$/lb'
+G142	V	'Tons'
+H142	V	'Each'
+I142	V	'Length Adjustor'
+J142	V	'Total Price'
+K142	V	'Structural Markup %'
+A143	V	'Main Tower- Column'
+B143	F	=IF(B15="Box Truss Style",4*$C$2,0)	=> 0
+C143	V	'ST 5 x 5 x 7ga'
+D143	V	24
+E143	F	=IF(C143="","",VLOOKUP(C143,List!$A$1:$D$573,3,0))	=> 11.97
+F143	F	=IF(C143="","",VLOOKUP(C143,List!$A$1:$D$573,4,0))	=> 1.55
+G143	F	=IF(C143="","",SUM(B143*D143*E143)/2000)	=> 0
+H143	F	=IF(G143="",0,SUM(E143*F143*D143))	=> 445.2840000000001
+I143	V	1
+J143	F	=IF(B143=0,0,SUM(I143*H143*B143*($K$124+1)))	=> 0
+K143	V	0.25
+A144	V	'Main Tower- Top'
+B144	F	=IF(B15="Box Truss Style",5*$C$2,0)	=> 0
+C144	V	'ST 5 x 5 x 1/4'
+D144	V	21
+E144	F	=IF(C144="","",VLOOKUP(C144,List!$A$1:$D$573,3,0))	=> 15.62
+F144	F	=IF(C144="","",VLOOKUP(C144,List!$A$1:$D$573,4,0))	=> 1.55
+G144	F	=IF(C144="","",SUM(B144*D144*E144)/2000)	=> 0
+H144	F	=IF(G144="",0,SUM(E144*F144*D144))	=> 508.431
+I144	V	1
+J144	F	=IF(B144=0,0,SUM(I144*H144*B144*($K$124+1)))	=> 0
+A145	V	'Carriage - Tube'
+B145	F	=IF(B15="Box Truss Style",1*$C$2,0)	=> 0
+C145	V	'ST 6 x 6 x 7ga'
+D145	V	4
+E145	F	=IF(C145="","",VLOOKUP(C145,List!$A$1:$D$573,3,0))	=> 14.53
+F145	F	=IF(C145="","",VLOOKUP(C145,List!$A$1:$D$573,4,0))	=> 1.55
+G145	F	=IF(C145="","",SUM(B145*D145*E145)/2000)	=> 0
+H145	F	=IF(G145="",0,SUM(E145*F145*D145))	=> 90.086
+I145	V	1
+J145	F	=IF(B145=0,0,SUM(I145*H145*B145*($K$124+1)))	=> 0
+A146	V	'Tower - Angle Bracing'
+B146	F	=IF(B15="Box Truss Style",4*$C$2,0)	=> 0
+C146	V	'AI 2 1/2 x 2 1/2 x 3/16'
+D146	V	20
+E146	F	=IF(C146="","",VLOOKUP(C146,List!$A$1:$D$573,3,0))	=> 3.07
+F146	F	=IF(C146="","",VLOOKUP(C146,List!$A$1:$D$573,4,0))	=> 1
+G146	F	=IF(C146="","",SUM(B146*D146*E146)/2000)	=> 0
+H146	F	=IF(G146="",0,SUM(E146*F146*D146))	=> 61.4
+I146	V	1
+J146	F	=IF(B146=0,0,SUM(I146*H146*B146*($K$124+1)))	=> 0
+A147	V	'Tower - Lateral Brace (Top Tube)'
+B147	F	=IF(B15="Box Truss Style",2*$C$2,0)	=> 0
+C147	V	'ST 3 1/2 x 3 1/2 x 7ga'
+D147	V	16
+E147	F	=IF(C147="","",VLOOKUP(C147,List!$A$1:$D$573,3,0))	=> 8.15
+F147	F	=IF(C147="","",VLOOKUP(C147,List!$A$1:$D$573,4,0))	=> 1.55
+G147	F	=IF(C147="","",SUM(B147*D147*E147)/2000)	=> 0
+H147	F	=IF(G147="",0,SUM(E147*F147*D147))	=> 202.12
+I147	V	1
+J147	F	=IF(B147=0,0,SUM(I147*H147*B147*($K$124+1)))	=> 0
+A148	V	'Platform - Truss Tubes'
+B148	F	=IF(B15="Box Truss Style",224*$C$2,0)	=> 0
+C148	V	'ST 1 1/4 x 1 1/4 x 11ga'
+D148	V	2
+E148	F	=IF(C148="","",VLOOKUP(C148,List!$A$1:$D$573,3,0))	=> 1.844
+F148	F	=IF(C148="","",VLOOKUP(C148,List!$A$1:$D$573,4,0))	=> 1.55
+G148	F	=IF(C148="","",SUM(B148*D148*E148)/2000)	=> 0
+H148	F	=IF(G148="",0,SUM(E148*F148*D148))	=> 5.7164
+I148	F	=$B$5/50	=> 1.1
+J148	F	=IF(B148=0,0,SUM(I148*H148*B148*($K$124+1)))	=> 0
+A149	V	'Platform - Box Structure'
+B149	F	=IF(B15="Box Truss Style",2*$C$2,0)	=> 0
+C149	V	'ST 2 x 2 x 7ga'
+D149	V	180
+E149	F	=IF(C149="","",VLOOKUP(C149,List!$A$1:$D$573,3,0))	=> 4.32
+F149	F	=IF(C149="","",VLOOKUP(C149,List!$A$1:$D$573,4,0))	=> 1.55
+G149	F	=IF(C149="","",SUM(B149*D149*E149)/2000)	=> 0
+H149	F	=IF(G149="",0,SUM(E149*F149*D149))	=> 1205.2800000000002
+I149	F	=$B$5/50	=> 1.1
+J149	F	=IF(B149=0,0,SUM(I149*H149*B149*($K$124+1)))	=> 0
+A150	V	'Platform - Misc Structure'
+B150	F	=IF(B15="Box Truss Style",8*$C$2,0)	=> 0
+C150	V	'RT 3 x 2 x 7ga'
+D150	V	4
+E150	F	=IF(C150="","",VLOOKUP(C150,List!$A$1:$D$573,3,0))	=> 5.59
+F150	F	=IF(C150="","",VLOOKUP(C150,List!$A$1:$D$573,4,0))	=> 1.55
+G150	F	=IF(C150="","",SUM(B150*D150*E150)/2000)	=> 0
+H150	F	=IF(G150="",0,SUM(E150*F150*D150))	=> 34.658
+I150	F	=$B$5/50	=> 1.1
+J150	F	=IF(B150=0,0,SUM(I150*H150*B150*($K$124+1)))	=> 0
+A151	V	'Platform - Floor Structure'
+B151	F	=IF(B15="Box Truss Style",82*$C$2,0)	=> 0
+C151	V	'RT 2 x 1 1/2 x 11ga'
+D151	V	4
+E151	F	=IF(C151="","",VLOOKUP(C151,List!$A$1:$D$573,3,0))	=> 2.66
+F151	F	=IF(C151="","",VLOOKUP(C151,List!$A$1:$D$573,4,0))	=> 1.55
+G151	F	=IF(C151="","",SUM(B151*D151*E151)/2000)	=> 0
+H151	F	=IF(G151="",0,SUM(E151*F151*D151))	=> 16.492
+I151	F	=$B$5/50	=> 1.1
+J151	F	=IF(B151=0,0,SUM(I151*H151*B151*($K$124+1)))	=> 0
+A152	V	'Platform - Guardrail'
+B152	F	=IF(B15="Box Truss Style",1*$C$2,0)	=> 0
+C152	V	'ST 2 x 2 x 11ga'
+D152	V	240
+E152	F	=IF(C152="","",VLOOKUP(C152,List!$A$1:$D$573,3,0))	=> 3.06
+F152	F	=IF(C152="","",VLOOKUP(C152,List!$A$1:$D$573,4,0))	=> 1.55
+G152	F	=IF(C152="","",SUM(B152*D152*E152)/2000)	=> 0
+H152	F	=IF(G152="",0,SUM(E152*F152*D152))	=> 1138.3200000000002
+I152	F	=$B$5/50	=> 1.1
+J152	F	=IF(B152=0,0,SUM(I152*H152*B152*($K$124+1)))	=> 0
+E153	F	=IF(C153="","",VLOOKUP(C153,List!$A$1:$D$573,3,0))	=> None
+F153	F	=IF(C153="","",VLOOKUP(C153,List!$A$1:$D$573,4,0))	=> None
+G153	F	=IF(C153="","",SUM(B153*D153*E153)/2000)	=> None
+H153	F	=IF(G153="",0,SUM(E153*F153*D153))	=> 0
+I153	F	=$B$5/50	=> 1.1
+J153	F	=IF(B153=0,0,SUM(I153*H153*B153*($K$124+1)))	=> 0
+E154	F	=IF(C154="","",VLOOKUP(C154,List!$A$1:$D$573,3,0))	=> None
+F154	F	=IF(C154="","",VLOOKUP(C154,List!$A$1:$D$573,4,0))	=> None
+G154	F	=IF(C154="","",SUM(B154*D154*E154)/2000)	=> None
+H154	F	=IF(G154="",0,SUM(E154*F154*D154))	=> 0
+I154	F	=$B$5/50	=> 1.1
+J154	F	=IF(B154=0,0,SUM(I154*H154*B154*($K$124+1)))	=> 0
+E155	F	=IF(C155="","",VLOOKUP(C155,List!$A$1:$D$573,3,0))	=> None
+F155	F	=IF(C155="","",VLOOKUP(C155,List!$A$1:$D$573,4,0))	=> None
+G155	F	=IF(C155="","",SUM(B155*D155*E155)/2000)	=> None
+H155	F	=IF(G155="",0,SUM(E155*F155*D155))	=> 0
+I155	F	=$B$5/50	=> 1.1
+J155	F	=IF(B155=0,0,SUM(I155*H155*B155*($K$124+1)))	=> 0
+E156	F	=IF(C156="","",VLOOKUP(C156,List!$A$1:$D$573,3,0))	=> None
+F156	F	=IF(C156="","",VLOOKUP(C156,List!$A$1:$D$573,4,0))	=> None
+G156	F	=IF(C156="","",SUM(B156*D156*E156)/2000)	=> None
+H156	F	=IF(G156="",0,SUM(E156*F156*D156))	=> 0
+I156	F	=$B$5/50	=> 1.1
+J156	F	=IF(B156=0,0,SUM(I156*H156*B156*($K$124+1)))	=> 0
+E157	F	=IF(C157="","",VLOOKUP(C157,List!$A$1:$D$573,3,0))	=> None
+F157	F	=IF(C157="","",VLOOKUP(C157,List!$A$1:$D$573,4,0))	=> None
+G157	F	=IF(C157="","",SUM(B157*D157*E157)/2000)	=> None
+H157	F	=IF(G157="",0,SUM(E157*F157*D157))	=> 0
+I157	F	=$B$5/50	=> 1.1
+J157	F	=IF(B157=0,0,SUM(I157*H157*B157*($K$124+1)))	=> 0
+E158	F	=IF(C158="","",VLOOKUP(C158,List!$A$1:$D$573,3,0))	=> None
+F158	F	=IF(C158="","",VLOOKUP(C158,List!$A$1:$D$573,4,0))	=> None
+G158	F	=IF(C158="","",SUM(B158*D158*E158)/2000)	=> None
+H158	F	=IF(G158="",0,SUM(E158*F158*D158))	=> 0
+I158	F	=$B$5/50	=> 1.1
+J158	F	=IF(B158=0,0,SUM(I158*H158*B158*($K$124+1)))	=> 0
+E159	F	=IF(C159="","",VLOOKUP(C159,List!$A$1:$D$573,3,0))	=> None
+F159	F	=IF(C159="","",VLOOKUP(C159,List!$A$1:$D$573,4,0))	=> None
+G159	F	=IF(C159="","",SUM(B159*D159*E159)/2000)	=> None
+H159	F	=IF(G159="",0,SUM(E159*F159*D159))	=> 0
+I159	F	=$B$5/50	=> 1.1
+J159	F	=IF(B159=0,0,SUM(I159*H159*B159*($K$124+1)))	=> 0
+E160	F	=IF(C160="","",VLOOKUP(C160,List!$A$1:$D$573,3,0))	=> None
+F160	F	=IF(C160="","",VLOOKUP(C160,List!$A$1:$D$573,4,0))	=> None
+G160	F	=IF(C160="","",SUM(B160*D160*E160)/2000)	=> None
+H160	F	=IF(G160="",0,SUM(E160*F160*D160))	=> 0
+I160	F	=$B$5/50	=> 1.1
+J160	F	=IF(B160=0,0,SUM(I160*H160*B160*($K$124+1)))	=> 0
+H161	V	'Total Price of Structural'
+K161	F	=SUM(J143:J160)	=> 0
+A162	V	'Structural - Calculator Components (Do Not Touch)'
+A163	V	'MATERIAL USED FOR:'
+B163	V	'QTY'
+C163	V	'Item'
+D163	V	'Length Feet'
+E163	V	'lb/ft'
+F163	V	'$/lb'
+G163	V	'Tons'
+H163	V	'Each'
+I163	V	'Length Adjustor'
+J163	V	'Total Price'
+K163	V	'Structural Markup %'
+A164	V	'Finger Racks Tubing'
+B164	V	1
+C164	V	'ST 2 x 2 x 11ga'
+D164	V	8
+E164	F	=IF(C164="","",VLOOKUP(C164,List!$A$1:$D$573,3,0))	=> 3.06
+F164	F	=IF(C164="","",VLOOKUP(C164,List!$A$1:$D$573,4,0))	=> 1.55
+G164	F	=IF(C164="","",SUM(B164*D164*E164)/2000)	=> 0.012240000000000001
+H164	F	=IF(G164="",0,SUM(E164*F164*D164))	=> 37.944
+I164	V	1
+J164	F	=SUM(H164*I164*B164*($K$164+1))	=> 47.43000000000001
+K164	V	0.25
+A165	V	'Swing Gates'
+B165	V	1
+C165	V	'ST 1 1/2 x 1 1/2 x 11ga'
+D165	V	12
+E165	F	=IF(C165="","",VLOOKUP(C165,List!$A$1:$D$573,3,0))	=> 2.252
+F165	F	=IF(C165="","",VLOOKUP(C165,List!$A$1:$D$573,4,0))	=> 1.55
+G165	F	=IF(C165="","",SUM(B165*D165*E165)/2000)	=> 0.013511999999999998
+H165	F	=IF(G165="",0,SUM(E165*F165*D165))	=> 41.88719999999999
+I165	V	1
+J165	F	=SUM(H165*I165*B165*($K$164+1))	=> 52.358999999999995
+A166	V	'Cam Gate Material'
+B166	V	1
+C166	V	'ST 1 1/2 x 1 1/2 x 11ga'
+D166	V	18
+E166	F	=IF(C166="","",VLOOKUP(C166,List!$A$1:$D$573,3,0))	=> 2.252
+F166	F	=IF(C166="","",VLOOKUP(C166,List!$A$1:$D$573,4,0))	=> 1.55
+G166	F	=IF(C166="","",SUM(B166*D166*E166)/2000)	=> 0.020267999999999998
+H166	F	=IF(G166="",0,SUM(E166*F166*D166))	=> 62.830799999999996
+I166	V	1
+J166	F	=SUM(H166*I166*B166*($K$164+1))	=> 78.5385
+A167	V	'Inner Guardrail Material'
+B167	V	1
+C167	V	'ST 2 x 2 x 11ga'
+D167	V	3
+E167	F	=IF(C167="","",VLOOKUP(C167,List!$A$1:$D$573,3,0))	=> 3.06
+F167	F	=IF(C167="","",VLOOKUP(C167,List!$A$1:$D$573,4,0))	=> 1.55
+G167	F	=IF(C167="","",SUM(B167*D167*E167)/2000)	=> 0.0045899999999999995
+H167	F	=IF(G167="",0,SUM(E167*F167*D167))	=> 14.229000000000001
+I167	V	1
+J167	F	=SUM(H167*I167*B167*($K$164+1))	=> 17.786250000000003
+A168	V	'End Extensions'
+B168	V	1
+C168	V	'ST 2 1/2 x 2 1/2 x 7ga'
+D168	V	15
+E168	F	=IF(C168="","",VLOOKUP(C168,List!$A$1:$D$573,3,0))	=> 5.59
+F168	F	=IF(C168="","",VLOOKUP(C168,List!$A$1:$D$573,4,0))	=> 1.55
+G168	F	=IF(C168="","",SUM(B168*D168*E168)/2000)	=> 0.041925
+H168	F	=IF(G168="",0,SUM(E168*F168*D168))	=> 129.9675
+I168	V	1
+J168	F	=SUM(H168*I168*B168*($K$164+1))	=> 162.459375
+A169	V	'End Cap Material'
+B169	V	1
+C169	V	'ST 2 x 2 x 11ga'
+D169	V	10
+E169	F	=IF(C169="","",VLOOKUP(C169,List!$A$1:$D$573,3,0))	=> 3.06
+F169	F	=IF(C169="","",VLOOKUP(C169,List!$A$1:$D$573,4,0))	=> 1.55
+G169	F	=IF(C169="","",SUM(B169*D169*E169)/2000)	=> 0.015300000000000001
+H169	F	=IF(G169="",0,SUM(E169*F169*D169))	=> 47.43000000000001
+I169	V	1
+J169	F	=SUM(H169*I169*B169*($K$164+1))	=> 59.28750000000001
+A170	V	'Extra Long Tower Material'
+B170	V	4
+C170	V	'ST 5 x 5 x 7ga'
+D170	V	8
+E170	F	=IF(C170="","",VLOOKUP(C170,List!$A$1:$D$573,3,0))	=> 11.97
+F170	F	=IF(C170="","",VLOOKUP(C170,List!$A$1:$D$573,4,0))	=> 1.55
+G170	F	=IF(C170="","",SUM(B170*D170*E170)/2000)	=> 0.19152000000000002
+H170	F	=IF(G170="",0,SUM(E170*F170*D170))	=> 148.42800000000003
+I170	V	1
+J170	F	=SUM(H170*I170*B170*($K$164+1))	=> 742.1400000000001
+A171	V	'Extra Runner Tubes For WP Width'
+B171	V	2
+C171	V	'ST 2 x 2 x 11ga'
+D171	V	50
+E171	F	=IF(C171="","",VLOOKUP(C171,List!$A$1:$D$573,3,0))	=> 3.06
+F171	F	=IF(C171="","",VLOOKUP(C171,List!$A$1:$D$573,4,0))	=> 1.55
+G171	F	=IF(C171="","",SUM(B171*D171*E171)/2000)	=> 0.153
+H171	F	=IF(G171="",0,SUM(E171*F171*D171))	=> 237.15
+I171	V	1
+J171	F	=SUM(H171*I171*B171*($K$164+1))	=> 592.875
+E172	F	=IF(C172="","",VLOOKUP(C172,List!$A$1:$D$573,3,0))	=> None
+F172	F	=IF(C172="","",VLOOKUP(C172,List!$A$1:$D$573,4,0))	=> None
+G172	F	=IF(C172="","",SUM(B172*D172*E172)/2000)	=> None
+H172	F	=IF(G172="",0,SUM(E172*F172*D172))	=> 0
+I172	V	1
+J172	F	=SUM(H172*I172*B172*($K$164+1))	=> 0
+E173	F	=IF(C173="","",VLOOKUP(C173,List!$A$1:$D$573,3,0))	=> None
+F173	F	=IF(C173="","",VLOOKUP(C173,List!$A$1:$D$573,4,0))	=> None
+G173	F	=IF(C173="","",SUM(B173*D173*E173)/2000)	=> None
+H173	F	=IF(G173="",0,SUM(E173*F173*D173))	=> 0
+I173	V	1
+J173	F	=SUM(H173*I173*B173*($K$164+1))	=> 0
+E174	F	=IF(C174="","",VLOOKUP(C174,List!$A$1:$D$573,3,0))	=> None
+F174	F	=IF(C174="","",VLOOKUP(C174,List!$A$1:$D$573,4,0))	=> None
+G174	F	=IF(C174="","",SUM(B174*D174*E174)/2000)	=> None
+H174	F	=IF(G174="",0,SUM(E174*F174*D174))	=> 0
+I174	V	1
+J174	F	=SUM(H174*I174*B174*($K$164+1))	=> 0
+E175	F	=IF(C175="","",VLOOKUP(C175,List!$A$1:$D$573,3,0))	=> None
+F175	F	=IF(C175="","",VLOOKUP(C175,List!$A$1:$D$573,4,0))	=> None
+G175	F	=IF(C175="","",SUM(B175*D175*E175)/2000)	=> None
+H175	F	=IF(G175="",0,SUM(E175*F175*D175))	=> 0
+I175	V	1
+J175	F	=SUM(H175*I175*B175*($K$164+1))	=> 0
+E176	F	=IF(C176="","",VLOOKUP(C176,List!$A$1:$D$573,3,0))	=> None
+F176	F	=IF(C176="","",VLOOKUP(C176,List!$A$1:$D$573,4,0))	=> None
+G176	F	=IF(C176="","",SUM(B176*D176*E176)/2000)	=> None
+H176	F	=IF(G176="",0,SUM(E176*F176*D176))	=> 0
+I176	V	1
+J176	F	=SUM(H176*I176*B176*($K$164+1))	=> 0
+E177	F	=IF(C177="","",VLOOKUP(C177,List!$A$1:$D$573,3,0))	=> None
+F177	F	=IF(C177="","",VLOOKUP(C177,List!$A$1:$D$573,4,0))	=> None
+G177	F	=IF(C177="","",SUM(B177*D177*E177)/2000)	=> None
+H177	F	=IF(G177="",0,SUM(E177*F177*D177))	=> 0
+I177	V	1
+J177	F	=SUM(H177*I177*B177*($K$164+1))	=> 0
+E178	F	=IF(C178="","",VLOOKUP(C178,List!$A$1:$D$573,3,0))	=> None
+F178	F	=IF(C178="","",VLOOKUP(C178,List!$A$1:$D$573,4,0))	=> None
+G178	F	=IF(C178="","",SUM(B178*D178*E178)/2000)	=> None
+H178	F	=IF(G178="",0,SUM(E178*F178*D178))	=> 0
+I178	V	1
+J178	F	=SUM(H178*I178*B178*($K$164+1))	=> 0
+E179	F	=IF(C179="","",VLOOKUP(C179,List!$A$1:$D$573,3,0))	=> None
+F179	F	=IF(C179="","",VLOOKUP(C179,List!$A$1:$D$573,4,0))	=> None
+G179	F	=IF(C179="","",SUM(B179*D179*E179)/2000)	=> None
+H179	F	=IF(G179="",0,SUM(E179*F179*D179))	=> 0
+I179	V	1
+J179	F	=SUM(H179*I179*B179*($K$164+1))	=> 0
+E180	F	=IF(C180="","",VLOOKUP(C180,List!$A$1:$D$573,3,0))	=> None
+F180	F	=IF(C180="","",VLOOKUP(C180,List!$A$1:$D$573,4,0))	=> None
+G180	F	=IF(C180="","",SUM(B180*D180*E180)/2000)	=> None
+H180	F	=IF(G180="",0,SUM(E180*F180*D180))	=> 0
+I180	V	1
+J180	F	=SUM(H180*I180*B180*($K$164+1))	=> 0
+E181	F	=IF(C181="","",VLOOKUP(C181,List!$A$1:$D$573,3,0))	=> None
+F181	F	=IF(C181="","",VLOOKUP(C181,List!$A$1:$D$573,4,0))	=> None
+G181	F	=IF(C181="","",SUM(B181*D181*E181)/2000)	=> None
+H181	F	=IF(G181="",0,SUM(E181*F181*D181))	=> 0
+I181	V	1
+J181	F	=SUM(H181*I181*B181*($K$164+1))	=> 0
+E182	F	=IF(C182="","",VLOOKUP(C182,List!$A$1:$D$573,3,0))	=> None
+F182	F	=IF(C182="","",VLOOKUP(C182,List!$A$1:$D$573,4,0))	=> None
+G182	F	=IF(C182="","",SUM(B182*D182*E182)/2000)	=> None
+H182	F	=IF(G182="",0,SUM(E182*F182*D182))	=> 0
+I182	V	1
+J182	F	=SUM(H182*I182*B182*($K$164+1))	=> 0
+H183	V	'Total Price of Structural'
+K183	F	=SUM(J164:J182)	=> 1752.8756250000001

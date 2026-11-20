@@ -1,0 +1,81 @@
+A1	V	'125% Load Test / Pre Use Inspection'
+A2	F	='Main Summary'!A1	=> '  #  '
+A3	V	'RENTAL ITEM'
+B3	V	'QTY'
+C3	V	'Daily'
+D3	V	'Total Charge'
+T3	V	'Gross'
+A4	V	'1 Ton Hoist, test weight'
+B4	V	0
+C4	V	200
+D4	F	=C4*B4	=> 0
+T4	F	=D4*0.9	=> 0
+A5	V	'2 Ton Hoist, test weight'
+B5	V	0
+C5	V	400
+D5	F	=C5*B5	=> 0
+T5	F	=D5*0.9	=> 0
+A6	V	'3 Ton Hoist, test weight'
+B6	V	0
+C6	V	600
+D6	F	=C6*B6	=> 0
+T6	F	=D6*0.9	=> 0
+A7	V	'5 Ton Hoist, test weight'
+B7	V	0
+C7	V	1000
+D7	F	=C7*B7	=> 0
+T7	F	=D7*0.9	=> 0
+A8	V	'10 Ton Hoist, test weight'
+B8	V	0
+C8	V	1500
+D8	F	=C8*B8	=> 0
+T8	F	=D8*0.9	=> 0
+A9	V	'Rental - 1 Ton Hoist, test weight'
+B9	V	0
+C9	V	400
+D9	F	=C9*B9	=> 0
+T9	F	=D9*0.1	=> 0
+A10	V	'Rental - 2 Ton Hoist, test weight'
+B10	V	0
+C10	V	800
+D10	F	=C10*B10	=> 0
+T10	F	=D10*0.1	=> 0
+A11	V	'Rental - 3 Ton Hoist, test weight'
+B11	V	0
+C11	V	1600
+D11	F	=C11*B11	=> 0
+T11	F	=D11*0.1	=> 0
+A12	V	'Rental - 5 Ton Hoist, test weight'
+B12	V	0
+C12	V	2000
+D12	F	=C12*B12	=> 0
+T12	F	=D12*0.1	=> 0
+A13	V	'Rental - 10 Ton Hoist, test weight'
+B13	V	0
+C13	V	3000
+D13	F	=C13*B13	=> 0
+T13	F	=D13*0.1	=> 0
+A14	V	'Pre Use inspection hourly fee'
+B14	V	0
+C14	V	160
+D14	F	=C14*B14	=> 0
+T14	F	=D14*0.65	=> 0
+A15	V	'Scissor lift day rental'
+B15	V	0
+C15	V	90
+D15	F	=C15*B15	=> 0
+T15	F	=D15*0.5	=> 0
+A16	V	'Round Trip Freight Charge'
+B16	V	0
+C16	V	300
+D16	F	=C16*B16	=> 0
+T16	F	=D16*0.2	=> 0
+A17	V	'Office Charge'
+B17	V	0
+C17	V	80
+D17	F	=C17*B17	=> 0
+T17	F	=D17*0.41	=> 0
+A18	V	'PWI Policy on Load Tests'
+D18	F	=SUM(D4:D17)	=> 0
+S18	V	'Gross Total'
+T18	F	=SUM(T4:T17)	=> 0

@@ -1,0 +1,38 @@
+A1	V	'VRC'
+A2	V	'Item Description'
+B2	V	'QTY'
+A3	V	'PWHD1010'
+B3	V	0
+A5	F	=IF($A$3="PWSD0505",List!N18,IF($A$3="PWSD0606",List!N37,IF($A$3="PWSD0510",List!N57,IF($A$3="PWSD0610",List!N81,IF($A$3="PWSD0812",List!N101,IF($A$3="PWHD1010",List!N127,""))))))	=> "Heavy Duty - 10'x10'"
+A6	F	=IF($A$3="PWSD0505",List!N19,IF($A$3="PWSD0606",List!N38,IF($A$3="PWSD0510",List!N58,IF($A$3="PWSD0610",List!N82,IF($A$3="PWSD0812",List!N107,IF($A$3="PWHD1010",List!N128,""))))))	=> 'Maximum Load Lifting Capacity: 6,000 LB'
+A7	F	=IF($A$3="PWSD0505",List!N20,IF($A$3="PWSD0606",List!N39,IF($A$3="PWSD0510",List!N59,IF($A$3="PWSD0610",List!N83,IF($A$3="PWSD0812",List!N108,IF($A$3="PWHD1010",List!N129,""))))))	=> '460v Power Supply'
+A8	F	=IF($A$3="PWSD0505",List!N21,IF($A$3="PWSD0606",List!N40,IF($A$3="PWSD0510",List!N60,IF($A$3="PWSD0610",List!N84,IF($A$3="PWSD0812",List!N109,IF($A$3="PWHD1010",List!N130,""))))))	=> 'Lifting Speed: 15 fpm (VFD for Smooth Engagement)'
+A9	F	=IF($A$3="PWSD0505",List!N22,IF($A$3="PWSD0606",List!N41,IF($A$3="PWSD0510",List!N61,IF($A$3="PWSD0610",List!N85,IF($A$3="PWSD0812",List!N110,IF($A$3="PWHD1010",List!N131,""))))))	=> 'HD Roller Chain Lift Design'
+A10	F	=IF($A$3="PWSD0505",List!N23,IF($A$3="PWSD0606",List!N42,IF($A$3="PWSD0510",List!N62,IF($A$3="PWSD0610",List!N86,IF($A$3="PWSD0812",List!N111,IF($A$3="PWHD1010",List!N132,""))))))	=> '(4) Starke S3KLAS Secondary Safety Brake'
+A11	F	=IF($A$3="PWSD0505",List!N24,IF($A$3="PWSD0606",List!N43,IF($A$3="PWSD0510",List!N63,IF($A$3="PWSD0610",List!N87,IF($A$3="PWSD0812",List!N112,IF($A$3="PWHD1010",List!N133,""))))))	=> 'Load Cell Chain Slack Sensor Included (Provides Overweight Shutdown)'
+A12	F	=IF($A$3="PWSD0505",List!N25,IF($A$3="PWSD0606",List!N44,IF($A$3="PWSD0510",List!N64,IF($A$3="PWSD0610",List!N88,IF($A$3="PWSD0812",List!N113,IF($A$3="PWHD1010",List!N134,""))))))	=> 'Carriage Weight: 3,500 LB'
+A13	F	=IF($A$3="PWSD0505",List!N26,IF($A$3="PWSD0606",List!N45,IF($A$3="PWSD0510",List!N65,IF($A$3="PWSD0610",List!N89,IF($A$3="PWSD0812",List!N114,IF($A$3="PWHD1010",List!N135,""))))))	=> 'Carriage Gates: Automatic Overhead Gates'
+A14	F	=IF($A$3="PWSD0505",List!N27,IF($A$3="PWSD0606",List!N46,IF($A$3="PWSD0510",List!N66,IF($A$3="PWSD0610",List!N90,IF($A$3="PWSD0812",List!N115,IF($A$3="PWHD1010",List!N136,""))))))	=> 'Perimeter Gates: Powered Overhead Sectional Gates'
+A15	V	'TOTAL'
+B15	F	=IF(A3="",0,IF($A$3="PWSD0505",List!O30,IF($A$3="PWSD0606",List!O49,IF($A$3="PWSD0510",List!O69,IF($A$3="PWSD0610",List!O93,IF($A$3="PWSD0812",List!O118,IF($A$3="PWHD1010",List!O139,))))))*B3+(B22*B3)+B23)	=> 0
+A16	V	'Base Price'
+B16	F	=B15-B17	=> 0
+ED16	V	'Max Load'
+A17	V	'Base VRC On-Site Install'
+B17	F	=Labor!I73	=> 0
+ED17	V	'Hoist Lifting Design'
+A18	V	'Extra VRC On-Site Install'
+B18	F	=SUM(Labor!I74:I79)	=> 0
+ED18	V	'Lift Speed'
+ED19	V	'Flush Floor'
+ED20	V	'S3KLAS'
+ED21	V	'Chain Slack Sensor'
+A22	V	'NO PIT'
+B22	F	=IF(AND($A$3="PWSD0505",A22="NO PIT"),List!$O$28,IF(AND($A$3="PWSD0606",A22="NO PIT"),List!$O$48,0))	=> 0
+ED22	V	'Carriage Weight'
+A23	V	'HD Columns'
+B23	F	=IF(A23=List!N14,0,IF(A3=List!N17,0,IF(A3=List!N36,0,IF(AND(A3=List!N56,A23=List!N15),List!O67*B3,IF(AND(A3=List!N80,A23=List!N15),List!O92*B3,IF(AND(A3=List!N100,A23=List!N15),List!O117*B3,IF(AND(A3=List!N126,A23=List!N15),List!O138*B3,"")))))))	=> 0
+A28	V	'VRCs are 30% shop labor'
+A29	V	'VRCs are 20% on-site labor'
+A30	V	'VRCs are 50% components'
+B32	F	=B16*0.3091	=> 0

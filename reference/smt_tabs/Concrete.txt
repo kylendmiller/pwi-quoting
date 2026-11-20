@@ -1,0 +1,129 @@
+A1	V	'Concrete Qty Calculator'
+H1	V	'Is this concrete for Crane Footers?'
+M1	V	False
+A2	V	'Ozinga Dispatch Office (Goshen): 574-642-4455   /  Technical Questions: Kerm @ 574-536-1325 '
+A3	V	'Project Seq #'
+B3	V	'QTY'
+C3	V	'Depth (in.)'
+D3	V	'Length (in.)'
+E3	V	'Width (in.)'
+F3	V	'Cubic Inch'
+G3	V	'Cubic Inches Per Seq.'
+A4	V	1
+B4	V	0
+C4	V	0
+D4	V	0
+E4	V	0
+F4	F	=SUM(C4*D4*E4)	=> 0
+G4	F	=F4*B4	=> 0
+A5	V	2
+B5	V	0
+C5	V	0
+D5	V	0
+E5	V	0
+F5	F	=C5*D5*E5	=> 0
+G5	F	=F5*B5	=> 0
+A6	V	3
+B6	V	0
+C6	V	0
+D6	V	0
+E6	V	0
+F6	F	=C6*D6*E6	=> 0
+G6	F	=F6*B6	=> 0
+A7	V	4
+B7	V	0
+C7	V	0
+D7	V	0
+E7	V	0
+F7	F	=C7*D7*E7	=> 0
+G7	F	=F7*B7	=> 0
+A8	V	5
+B8	V	0
+C8	V	0
+D8	V	0
+E8	V	0
+F8	F	=C8*D8*E8	=> 0
+G8	F	=F8*B8	=> 0
+A9	V	6
+B9	V	0
+C9	V	0
+D9	V	0
+E9	V	0
+F9	F	=C9*D9*E9	=> 0
+G9	F	=F9*B9	=> 0
+A10	V	7
+B10	V	0
+C10	V	0
+D10	V	0
+E10	V	0
+F10	F	=C10*D10*E10	=> 0
+G10	F	=F10*B10	=> 0
+A11	V	8
+B11	V	0
+C11	V	0
+D11	V	0
+E11	V	0
+F11	F	=C11*D11*E11	=> 0
+G11	F	=F11*B11	=> 0
+A12	V	9
+B12	V	0
+C12	V	0
+D12	V	0
+E12	V	0
+F12	F	=C12*D12*E12	=> 0
+G12	F	=F12*B12	=> 0
+A13	V	10
+B13	V	0
+C13	V	0
+D13	V	0
+E13	V	0
+F13	F	=C13*D13*E13	=> 0
+G13	F	=F13*B13	=> 0
+A14	V	'Total '
+B14	F	=B4+B5+B6+B7+B8+B9+B10+B11+B12+B13	=> 0
+C14	F	=C4+C5+C6+C7+C8+C9+C10+C11+C12+C13	=> 0
+D14	F	=D4+D5+D6+D7+D8+D9+D10+D11+D12+D13	=> 0
+E14	F	=E4+E5+E6+E7+E8+E9+E10+E11+E12+E13	=> 0
+F14	F	=F4+F5+F6+F7+F8+F9+F10+F11+F12+F13	=> 0
+G14	F	=SUM(G4:G13)	=> 0
+A15	V	'Total Cubic Feet'
+G15	F	=G14/1728	=> 0
+A16	V	'Total Yards of Concrete Required'
+G16	F	=G15/27	=> 0
+A17	V	'Truckloads'
+G17	F	=SUM(G16/10)	=> 0
+H17	F	=IF(AND(G16<2,B14>0),"1/5 Truck Minimum Required","")	=> None
+A18	V	'Material Cost'
+B18	V	'              Enter Current Price Per Yard'
+F18	V	170
+G18	F	=SUM(G16*F18)	=> 0
+A20	V	'Labor, Materials, and Equipment Concrete Footers'
+B21	V	'QTY'
+C21	V	'Price Last Updated'
+D21	V	'Sell Price'
+E21	V	'Dollars'
+A22	V	'Sono Tubes 24" Diameter - 48" Long'
+B22	V	0
+D22	V	90
+E22	F	=SUM(G12*0.0018)*D22	=> 0
+A23	V	'J-Bolt/Embed Anchors'
+B23	V	0
+D23	V	10
+E23	F	=SUM(G13*0.0018)*D23	=> 0
+A24	V	'3/4" Rebar (Linear Foot and Cost)'
+B24	F	=E24/1.75	=> 0
+D24	V	0.331
+E24	F	=SUM(G14*0.0018)*D24	=> 0
+A25	V	'JEM Concrete Cutting'
+E25	F	=B25*D25	=> 0
+A26	V	'Hydro Vac Truck'
+E26	F	=B26*D26	=> 0
+A27	V	'Misc Materials'
+E27	F	=B27*D27	=> 0
+E28	F	=B28*D28	=> 0
+E29	F	=B29*D29	=> 0
+A30	V	'Total Project Price'
+E30	F	=IF(G17=0,0,SUM(E28+E29+E26+E22+E23+E24+G18+E25+E27))	=> 0
+E32	F	=E30*0.16666	=> 0
+A84	V	'Rental Total'
+B84	F	=SUM(E25:E26)	=> 0

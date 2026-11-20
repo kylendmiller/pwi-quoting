@@ -1,0 +1,537 @@
+A1	F	=CONCATENATE(Quote!B5,"  ","#"," ",Quote!B8)	=> '  #  '
+E1	V	'Turn Off 1%'
+L1	V	'Color Code Guide'
+E2	V	False
+L2	V	'Title'
+S2	F	=A1	=> '  #  '
+B3	V	'Tons/Hours'
+D3	V	'Dollars'
+L3	V	'Title 2'
+A4	V	'Standard Parts & Products'
+C4	F	=IF(E2=FALSE, (D4*0.01))	=> 0
+D4	F	=SUM('Standard Parts & Products'!G12,'Standard Parts & Products'!G74,'Standard Parts & Products'!G120,'Standard Parts & Products'!G151,'Standard Parts & Products'!H157)	=> 0
+L4	V	'Editables'
+A5	V	'Hoist & Crane Vendor Items'
+C5	F	=IF(E2=FALSE, (D5*0.01))	=> 0
+D5	F	='Hoist & Crane Vendor Items'!I79	=> 0
+F5	V	'Lead Time JSON'
+L5	V	'Uneditables'
+S5	V	'Income Categories'
+T5	V	'Totals'
+Y5	V	'Mezzanine Portions'
+Z5	V	'Subtotals'
+AB5	V	'Crane Portions'
+AC5	V	'Subtotals'
+AE5	V	'Misc Portions'
+AF5	V	'Subtotals'
+AH5	V	'Fall Protection Portions'
+AI5	V	'Subtotals'
+A6	V	'Cost Based Special Items'
+C6	F	=IF(E2=FALSE, (D6*0.01))	=> 0
+D6	F	='Cost Based Items'!F29	=> 0
+L6	V	'Prices'
+S6	V	'Mezzanines'
+T6	F	=(IF(E29>0,Z22*(1-E29),Z22))*1.01	=> 0
+Y6	V	'Stairs'
+Z6	F	=Stairways!H23	=> 0
+AE6	V	'PM + Eng'
+A7	V	'Stairways'
+C7	F	=IF(E2=FALSE, (D7*0.01))	=> 0
+D7	F	=Stairways!H24	=> 0
+F7	V	'Quote Lead Time'
+S7	V	'Cranes'
+T7	F	=(IF($E$29>0,$AC$22*(1-$E$29),$AC$22))*1.01	=> 0
+Y7	V	'Labor'
+Z7	F	=Labor!D36	=> 0
+AB7	V	'Labor'
+AC7	F	=Labor!D22	=> 0
+AE7	V	'Labor'
+AF7	F	=Labor!D45	=> 0
+A8	V	'Structural'
+B8	F	=IF(SUM(Structural!G8:G61)>0,SUM(Structural!G8:G61),"")	=> None
+C8	F	=IF(E2=FALSE, (D8*0.01))	=> 0
+D8	F	=IF(Structural!A5>0,Structural!A5,0)	=> 0
+F8	V	'Engineering Lead Time (business days)'
+H8	V	<openpyxl.worksheet.formula.ArrayFormula object at 0x7f22e4187770>
+S8	V	'Installation'
+T8	F	=D32	=> 0
+Y8	V	'VRCs'
+Z8	F	=D12	=> 0
+AB8	V	'Hoists & Crane'
+AC8	F	=D5	=> 0
+A9	V	'Concrete'
+B9	F	=IF(Concrete!G16>0,Concrete!G16,"")	=> None
+C9	F	=IF(E2=FALSE, (D9*0.01))	=> 0
+D9	F	=Concrete!E30	=> 0
+F9	V	'Customer Approval Time (business days) (included in engineering timeline)'
+H9	F	=_xlfn.LET(
+  _xlpm.raw,_xlfn.TEXTJOIN("",TRUE,F6),
+  _xlpm.j,SUBSTITUTE(_xlpm.raw,CHAR(34)&CHAR(34),CHAR(34)),
+  IFERROR(--_xlfn.TEXTBEFORE(TRIM(_xlfn.TEXTAFTER(_xlpm.j,CHAR(34)&"approval"&CHAR(34)&":")),","),0)
+)	=> 0
+S9	V	'Work Platforms'
+T9	F	=(IF(E29>0,D10*(1-E29),D10))*1.01	=> 0
+Y9	V	'Structural'
+Z9	F	=SUM(Structural!I29:I50)	=> 0
+AB9	V	'Structural'
+AC9	F	=SUM(Structural!I9:I27)	=> 0
+AE9	V	'Structural'
+AF9	F	=SUM(Structural!I52:I61)	=> 0
+A10	V	'Work Platforms'
+B10	F	=IF('Work Platforms'!B62>0,'Work Platforms'!B62,"")	=> None
+C10	F	=IF(E2=FALSE, (D10*0.01))	=> 0
+D10	F	=IF('Work Platforms'!C62>0,'Work Platforms'!C62,0)	=> 0
+F10	V	'Production Lead Time (business days)'
+H10	V	<openpyxl.worksheet.formula.ArrayFormula object at 0x7f22e3e0fc50>
+S10	V	'Special Projects and Misc.'
+T10	F	=(IF(E29>0,AF22*(1-E29),AF22))*1.01	=> 0
+Y10	V	'Concrete'
+Z10	F	=IF(Concrete!M1=TRUE,0,Concrete!E30)	=> 0
+AB10	V	'Concrete'
+AC10	F	=IF(Concrete!M1=TRUE,Concrete!E30,0)	=> 0
+A11	V	'Plate'
+B11	F	=IF(Plate!H68>0,Plate!H68,"")	=> None
+C11	F	=IF(E2=FALSE, (D11*0.01))	=> 0
+D11	F	=Plate!J68	=> 0
+F11	V	'Lead Time from PO (business days)'
+H11	F	=ROUNDUP((SUM($H$8,$H$10)),0)	=> 0
+L11	V	'Decal Sets and Individual Decals'
+S11	V	'Outbound Freight & Delivery'
+T11	F	=D33	=> 0
+Y11	V	'Plate'
+Z11	F	=SUM(Plate!J28:J67)	=> 0
+AB11	V	'Plate'
+AC11	F	=SUM(Plate!J7:J26)	=> 0
+A12	V	'VRCs'
+B12	F	=IF(VRC!B3>0,VRC!B3*List!O11,"")	=> None
+C12	F	=IF(E2=FALSE, (D12*0.01))	=> 0
+D12	F	=VRC!B16	=> 0
+F12	V	'Lead Time from PO (weeks)'
+H12	F	=ROUNDUP((SUM($H$8,$H$10)/5),0)	=> 0
+S12	V	'Standalone Structural Deck'
+T12	F	=(IF(E29>0,IF(T6>0,0,SUM('Standard Parts & Products'!G88:G92))*(1-E29),IF(T6>0,0,SUM('Standard Parts & Products'!G88:G92))))*1.01	=> 0
+Y12	V	'Painting'
+Z12	F	=IFERROR(SUM(Painting!D10:D13,Painting!H44)+Painting!D30*SUM(Painting!D10:D13)/Painting!D19,0)	=> 0
+AB12	V	'Painting'
+AC12	F	=IFERROR(SUM(Painting!D4:D7)+Painting!D30*SUM(Painting!D4:D7)/Painting!D19,0)	=> 0
+AE12	V	'Painting'
+AF12	F	=IFERROR(SUM(Painting!D15:D18)+Painting!D30*SUM(Painting!D15:D18)/Painting!D19,0)	=> 0
+A13	V	'Painting Charges'
+C13	F	=IF(E2=FALSE, (D13*0.01))	=> 0
+D13	F	=Painting!H47	=> 0
+S13	V	'Standalone Stairways'
+T13	F	=(IF(E29>0,Stairways!H22*(1-E29),Stairways!H22))*1.01	=> 0
+Y13	V	'Cost Based'
+Z13	F	=SUM('Cost Based Items'!F12:F17)	=> 0
+AB13	V	'Cost Based'
+AC13	F	=SUM('Cost Based Items'!F5:F10)	=> 0
+AE13	V	'Cost Based'
+AF13	F	=SUM('Cost Based Items'!F19:F24)	=> 0
+A14	V	'Project Management & Marketing Fees'
+C14	F	=IF(E2=FALSE, (D14*0.01))	=> 0
+D14	F	=G15*H15	=> 0
+F14	V	'Management & Engineering '
+H14	V	'Hourly Rate'
+L14	V	'PWI Crane System Decal Sets'
+M14	V	'Set Price'
+N14	V	'QTY'
+O14	V	'Subtotal'
+Q14	V	' '
+S14	V	'Fall Protection'
+T14	F	=(IF($E$29>0,$AI$22*(1-$E$29),$AI$22))*1.01	=> 0
+Y14	V	'Hardware'
+Z14	F	=IF('Standard Parts & Products'!V267>0,'Standard Parts & Products'!G12*'Standard Parts & Products'!V269,0)	=> 0
+AB14	V	'Hardware'
+AC14	F	=IF('Standard Parts & Products'!V267>0,'Standard Parts & Products'!G12*'Standard Parts & Products'!V268,0)	=> 0
+AE14	V	'Hardware'
+AF14	F	=IF('Main Summary'!Z14+'Main Summary'!AC14<1,'Standard Parts & Products'!G12,0)	=> 0
+A15	V	'AutoCad Design Charges'
+C15	F	=IF(E2=FALSE, (D15*0.01))	=> 0
+D15	F	=G16*H16	=> 0
+F15	V	'Project Manager'
+G15	V	0
+H15	V	95
+L15	V	'(16" x 46") Motorized Crane Die Cut Set'
+M15	V	215
+N15	V	0
+O15	F	=M15*N15	=> 0
+Q15	V	' '
+S15	V	'Inspections'
+T15	F	=D34	=> 0
+Y15	V	'Standard Parts'
+Z15	F	='Standard Parts & Products'!G120	=> 0
+AB15	V	'Standard Parts'
+AC15	F	='Standard Parts & Products'!G74	=> 0
+AE15	V	'Standard Parts'
+AF15	F	='Standard Parts & Products'!H157	=> 0
+A16	V	'Engineering Charges'
+C16	F	=IF(E2=FALSE, (D16*0.01))	=> 0
+D16	F	=G17*H17	=> 0
+F16	V	'Engineering'
+G16	V	0
+H16	V	120
+L16	V	'(13" x 36") Motorized Crane Die Cut Set'
+M16	V	139
+N16	V	0
+O16	F	=M16*N16	=> 0
+Y16	V	'Decals'
+Z16	F	=O29	=> 0
+AB16	V	'Decals'
+AC16	F	=O22	=> 0
+AE16	V	'Misc.'
+AF16	F	=SUM(D18:D21)	=> 0
+A17	V	'PWI Capacity Decals'
+C17	F	=IF(E2=FALSE, (D17*0.01))	=> 0
+D17	F	=O22+O29	=> 0
+F17	V	'Calculations and P.E. '
+G17	V	0
+H17	V	180
+L17	V	'(8" x 24") Motorized Crane Die Cut Set'
+M17	V	99
+N17	V	0
+O17	F	=M17*N17	=> 0
+S17	V	'Quoted Shop Hours'
+T17	F	=B25	=> 0
+Y17	V	'SubTotal'
+Z17	F	=SUM(Z6:Z16)	=> 0
+AB17	V	'SubTotal'
+AC17	F	=SUM(AC6:AC16)	=> 0
+AE17	V	'SubTotal'
+AF17	F	=SUM(AF6:AF16)	=> 0
+AH17	V	'SubTotal'
+AI17	F	=IF($E$29>0,'Standard Parts & Products'!$G$151*(1-$E$29),'Standard Parts & Products'!$G$151)	=> 0
+A18	V	'Misc Steel Materials'
+C18	F	=IF(E2=FALSE, (D18*0.01))	=> 0
+L18	V	'(11" - 13" tall decals) Manual Crane Decal Set'
+M18	V	79
+N18	V	0
+O18	F	=M18*N18	=> 0
+S18	V	'Quoted Installation Hours'
+T18	F	=B26	=> 0
+A19	V	'Additional PCR Charge for Ultra Lite Crane'
+C19	F	=IF(E2=FALSE, (D19*0.01))	=> 0
+D19	V	0
+F19	V	'Inbound Freight Calculator'
+H19	V	'Price'
+L19	V	'(5" - 10" tall decals) Manual Crane Decal Set '
+M19	V	69
+N19	V	0
+O19	F	=M19*N19	=> 0
+S19	V	'Quoted Customer Support Hours'
+T19	F	='Pre-use Load Test'!B14	=> 0
+Y19	V	'PM, Eng., In-Frt Total'
+Z19	F	=IF($E$29>0,SUM($D$14:$D$16)*(1-$E$29)+$H$26,SUM($D$14:$D$16)+$H$26)	=> 0
+AB19	V	'PM, Eng., In-Frt Total'
+AC19	F	=IF($E$29>0,SUM($D$14:$D$16)*(1-$E$29)+$H$26,SUM($D$14:$D$16)+$H$26)	=> 0
+AE19	V	'PM, Eng., In-Frt Total'
+AF19	F	=IF($E$29>0,SUM($D$14:$D$16)*(1-$E$29)+$H$26,SUM($D$14:$D$16)+$H$26)	=> 0
+AH19	V	'PM, Eng., In-Frt Total'
+AI19	F	=IF($E$29>0,SUM($D$14:$D$16)*(1-$E$29)+$H$26,SUM($D$14:$D$16)+$H$26)	=> 0
+A20	V	'Additional PCR Charge for Stair Stringers'
+C20	F	=IF(E2=FALSE, (D20*0.01))	=> 0
+D20	V	0
+F20	V	'Crane Components'
+H20	V	0
+L20	V	'(6"-10" tall decals) Ultra-Lite Crane Set '
+M20	V	59
+N20	V	0
+O20	F	=M20*N20	=> 0
+Y20	V	'SubTotal Weight'
+Z20	F	=IF(Z17>0,Z17/SUM($Z$17+$AC$17+$AF$17+$AI$17),0)	=> 0
+AB20	V	'SubTotal Weight'
+AC20	F	=IF(AC17>0,AC17/SUM($Z$17+$AC$17+$AF$17+$AI$17),0)	=> 0
+AE20	V	'SubTotal Weight'
+AF20	F	=IF(AF17>0,AF17/SUM($Z$17+$AC$17+$AF$17+$AI$17),0)	=> 0
+AH20	V	'SubTotal Weight'
+AI20	F	=IF(AI17>0,AI17/SUM($Z$17+$AC$17+$AF$17+$AI$17),0)	=> 0
+A21	V	'X-Bracing Package'
+C21	F	=IF(E2=FALSE, (D21*0.01))	=> 0
+D21	V	0
+F21	V	'Anver Parts'
+H21	V	0
+L21	V	'Hyper-Lite Crane Set'
+M21	V	49
+N21	V	0
+O21	F	=M21*N21	=> 0
+S21	V	'Grand Total'
+T21	F	=SUM(T6:T15)	=> 0
+W21	V	'.'
+Y21	V	'Weighted PM + Eng.'
+Z21	F	=Z19*Z20	=> 0
+AB21	V	'Weighted PM + Eng.'
+AC21	F	=AC19*AC20	=> 0
+AE21	V	'Weighted PM + Eng.'
+AF21	F	=AF19*AF20	=> 0
+AH21	V	'Weighted PM + Eng.'
+AI21	F	=AI19*AI20	=> 0
+A22	V	'Inbound Freight Charges (use freight calculator at right) '
+C22	F	=IF(E2=FALSE, (D22*0.01))	=> 0
+D22	F	=H26	=> 0
+F22	V	'Misc. Parts'
+H22	V	0
+L22	V	'Total'
+O22	F	=SUM(O15:O21)	=> 0
+S22	V	'Check'
+T22	F	=T21-(Quote!L17-Quote!L16)	=> 0
+Y22	V	'Final Subtotal'
+Z22	F	=Z17+Z21	=> 0
+AB22	V	'Final Subtotal'
+AC22	F	=AC17+AC21	=> 0
+AE22	V	'Final Subtotal'
+AF22	F	=AF17+AF21+AF23	=> 0
+AH22	V	'Final Subtotal'
+AI22	F	=AI17+AI21	=> 0
+A23	V	'Travel Cost Charges'
+D23	F	='Travel Costs'!E16	=> 0
+L23	V	'PWI Mezzanine Decal Per Decal'
+M23	V	'EA/$'
+N23	V	'QTY'
+AE23	V	'Special Final Subtotal'
+AF23	F	=IF(SUM($Z$17+$AC$17+$AF$17+$AI$17)<1,$AF$19,0)	=> 0
+A24	V	'On-Site Equipment Rentals'
+D24	F	=IF(Equipment!A43>0,Equipment!A43,0)	=> 0
+H24	V	0
+L24	V	'(13"x 30") Mezzanine Decal'
+M24	V	39
+N24	V	0
+O24	F	=M24*N24	=> 0
+A25	V	'Total Shop Fab Labor Hours / Manually Entered Charges'
+B25	F	=Labor!A5	=> 0
+C25	F	=IF(E2=FALSE, (D25*0.01))	=> 0
+D25	F	=Labor!A3	=> 0
+H25	V	0
+L25	V	'(10" x 26") Mezzanine Decal'
+M25	V	26
+N25	V	0
+O25	F	=M25*N25	=> 0
+S25	V	'FREIGHT QUOTING TOOL'
+Y25	V	'FREIGHT QUOTING TOOL'
+A26	V	'Total On-site Labor Hours / Manually Entered Charges'
+B26	F	=Labor!F5	=> 0
+D26	F	=Labor!F3	=> 0
+F26	V	'Total Inbound Freight'
+H26	F	=SUM(H20:H25)	=> 0
+L26	V	'(6" x 18") Mezzanine Decal'
+M26	V	18
+N26	V	0
+O26	F	=M26*N26	=> 0
+A27	V	'Total Project Tons / Price'
+B27	F	=SUM(B4:B13)	=> 0
+C27	F	=SUM(C4:C26)	=> 0
+D27	F	=SUM(D4:D26)+C27	=> 0
+L27	V	'(6" to 8" tall decal) I-Beam FP'
+M27	V	49
+N27	V	0
+O27	F	=M27*N27	=> 0
+S27	V	'Date Filter'
+T27	V	'Oct'
+U27	V	'Input Data'
+Y27	V	'Date Filter'
+Z27	V	'Oct'
+L28	V	'(10" to 13" tall decal) I-Beam FP'
+M28	V	69
+N28	V	0
+O28	F	=M28*N28	=> 0
+S28	V	'Type'
+T28	V	'FB'
+U28	V	'Input Data'
+Y28	V	'Type'
+Z28	V	'OSL'
+E29	V	0
+F29	V	'Enter Dealer or Contractor Discount'
+L29	V	'Total'
+O29	F	=SUM(O24:O28)	=> 0
+S29	V	'Number of Loads'
+T29	V	0
+U29	V	'Input Data'
+Y29	V	'Number of Loads'
+Z29	V	0
+A30	V	'Pricing Breakdown'
+D30	V	'Direct Sell'
+E30	V	'Dealer/GC'
+S30	F	=IF(Quote!B6="","Miles to Customer","Miles to "&Quote!B6)	=> 'Miles to Customer'
+T30	V	0
+U30	V	'Formula '
+Y30	F	=IF(Quote!H6="","Miles to Customer","Miles to "&Quote!H6)	=> 'Miles to Customer'
+Z30	V	0
+A31	V	'Base Price'
+C31	F	=C27	=> 0
+D31	F	=SUM(D4:D22,D25)+C31	=> 0
+E31	F	=IF($E$29>0,SUM(D4:D4,D6:D21,D25)*(1-E29)+D5+D22,0)	=> 0
+S31	V	'Miles Bucket'
+T31	F	=IF(T30<=500,"0-500",IF(T30<=1000,"500-1000",IF(T30<=1500,"1000-1500","1500+")))	=> '0-500'
+U31	V	'Formula'
+Y31	V	'Miles Bucket'
+Z31	F	=IF(Z30<=500,"0-500",IF(Z30<=1000,"500-1000",IF(Z30<=1500,"1000-1500","1500+")))	=> '0-500'
+A32	V	'Installation Charges'
+C32	V	' '
+D32	F	=(D23+D24+D26)*1.01	=> 0
+E32	F	=IF($E$29>0,D32,0)	=> 0
+L32	V	' Standard decals are 1 piece glossy decals'
+S32	V	'Rate per Mile'
+T32	F	=IFERROR(SUMIFS(List!$BJ$2:$BJ$5060,List!$BF$2:$BF$5060,$T$27,List!$BG$2:$BG$5060,$T$28,List!$BH$2:$BH$5060,$T$31)/SUMIFS(List!$BI$2:$BI$5060,List!$BF$2:$BF$5060,$T$27,List!$BG$2:$BG$5060,$T$28,List!$BH$2:$BH$5060,$T$31),IFERROR(SUMIFS(List!$BJ$2:$BJ$5060,List!$BG$2:$BG$5060,$T$28,List!$BH$2:$BH$5060,$T$31)/SUMIFS(List!$BI$2:$BI$5060,List!$BG$2:$BG$5060,$T$28,List!$BH$2:$BH$5060,$T$31),""))	=> 4.512534818941504
+U32	V	'Formula'
+Y32	V	'Rate per Mile'
+Z32	F	=IFERROR(SUMIFS(List!$BJ$2:$BJ$5060,List!$BF$2:$BF$5060,$Z$27,List!$BG$2:$BG$5060,$Z$28,List!$BH$2:$BH$5060,$Z$31)/SUMIFS(List!$BI$2:$BI$5060,List!$BF$2:$BF$5060,$Z$27,List!$BG$2:$BG$5060,$Z$28,List!$BH$2:$BH$5060,$Z$31),IFERROR(SUMIFS(List!$BJ$2:$BJ$5060,List!$BG$2:$BG$5060,$Z$28,List!$BH$2:$BH$5060,$Z$31)/SUMIFS(List!$BI$2:$BI$5060,List!$BG$2:$BG$5060,$Z$28,List!$BH$2:$BH$5060,$Z$31),""))	=> 9.48
+A33	V	'Outbound Freight Charges'
+D33	F	=T35+Z35	=> 0
+E33	F	=IF($E$29>0,D33,0)	=> 0
+S33	V	'Market Up'
+T33	V	0.2
+U33	V	'Formula'
+Y33	V	'Market Up'
+Z33	V	0.2
+A34	V	'Pre-Use Inspections and Load Tests'
+D34	F	='Pre-use Load Test'!D18	=> 0
+E34	F	=D34	=> 0
+S34	V	'Surcharge'
+T34	V	0
+U34	V	'Output'
+Y34	V	'Surcharge'
+Z34	V	0
+A35	V	'Sales Tax'
+D35	F	=IF(F35=TRUE,(D31+D33)*F36,0)	=> 0
+E35	F	=IF(AND(F35=TRUE,E29>0),(E31+E33)*F36,0)	=> 0
+F35	V	False
+L35	V	'Die Cut Decals- Each individual letter is a decal on masking paper'
+S35	V	'Quoted Price'
+T35	F	=ROUNDUP((T32*(1+T33)*(1+T34)*T30),-1)*T29	=> 0
+Y35	V	'Quoted Price'
+Z35	F	=ROUNDUP((Z32*(1+Z33)*(1+Z34)*Z30),-1)*Z29	=> 0
+A36	V	'Total Project Price'
+D36	F	=SUM(D31:D35)	=> 0
+E36	F	=IF(E29>0,SUM(E31:E35),0)	=> 0
+F36	V	0.07
+B37	V	'Check'
+D37	F	=IF(E29>0,0,D36-Quote!L17)	=> 0
+E37	F	=IF(E29=0,0,E36-Quote!L17)	=> 0
+S37	V	'Freight Selection Guide:'
+S38	V	'LTL: < $8K'
+E39	V	'Enter Notes Here'
+L39	V	'Select "Regenerate Link ↑" before clicking "Convert to Project" to ensure the data being converted is up-to-date.'
+M39	V	'CONVERT TO PROJECT'
+S39	V	'HS: $8K – $16K'
+A40	V	'Options'
+S40	V	'FB: $16K – $25K'
+A41	V	True
+S41	V	'OSL: > $25K (or check with Ken)'
+A42	V	False
+A43	V	False
+A44	V	False
+B45	V	'Type Option Pricing Below:'
+A46	V	'Type Option #1 Description Here'
+B46	V	0
+A47	V	'Type Option #2 Description Here'
+B47	V	0
+F47	V	'Rule #1 - Use "Save As" before typing any data'
+A48	V	'Type Option #3 Description Here'
+B48	V	0
+F48	V	'Rule #2 - let Dean know if there is data when you open a new one.'
+A63	V	'Margin Calculator'
+B63	V	'Tab Gross Margin Total'
+D63	V	'Subtotals from Project'
+E63	V	'Gross Margin Per Product Line'
+A64	V	'Standard Parts & Products'
+B64	F	='Standard Parts & Products'!N217	=> 0
+D64	F	=D4	=> 0
+E64	F	=IF(D64>0,B64/D64,0)	=> 0
+A65	V	'Hoist & Crane Vendor Items'
+B65	F	='Hoist & Crane Vendor Items'!N77	=> 0
+D65	F	=D5	=> 0
+E65	F	=IF(D65>0,B65/D65,0)	=> 0
+A66	V	'Cost Based Special Items'
+B66	F	='Cost Based Items'!D31	=> 0
+D66	F	=D6	=> 0
+E66	F	=IF(D66>0,B66/D66,0)	=> 0
+A67	V	'Stairways'
+B67	F	=Stairways!N23	=> '#REF!'
+D67	F	=D7	=> 0
+E67	F	=IF(D67>0,B67/D67,0)	=> 0
+A68	V	'Structural'
+B68	F	=Structural!M8	=> 0
+D68	F	=D8	=> 0
+E68	F	=IF(D68>0,B68/D68,0)	=> 0
+A69	V	'Concrete'
+B69	F	=Concrete!E32	=> 0
+D69	F	=D9	=> 0
+E69	F	=IF(D69>0,B69/D69,0)	=> 0
+A70	V	'Work Platforms'
+B70	F	='Work Platforms'!O84	=> 0
+D70	F	=D10	=> 0
+E70	F	=IF(D70>0,B70/D70,0)	=> 0
+A71	V	'Plate'
+B71	F	=Plate!P68	=> '#VALUE!'
+D71	F	=D11	=> 0
+E71	F	=IF(D71>0,B71/D71,0)	=> 0
+A72	V	'VRCs'
+B72	F	=VRC!B32	=> 0
+D72	F	=D12	=> 0
+E72	F	=IF(D72>0,B72/D72,0)	=> 0
+A73	V	'Painting Charges'
+B73	F	=Painting!L19	=> 0
+D73	F	=D13	=> 0
+E73	F	=IF(D73>0,B73/D73,0)	=> 0
+A74	V	'Project Management & Marketing Fees'
+B74	F	=D74*0.41	=> 0
+D74	F	=D14	=> 0
+E74	F	=IF(D74>0,B74/D74,0)	=> 0
+A75	V	'AutoCad Design Charges'
+B75	F	=D75*0.41	=> 0
+D75	F	=D15	=> 0
+E75	F	=IF(D75>0,B75/D75,0)	=> 0
+A76	V	'Engineering Charges'
+B76	F	=D76*0.17	=> 0
+D76	F	=D16	=> 0
+E76	F	=IF(D76>0,B76/D76,0)	=> 0
+A77	V	'PWI Capacity Decals'
+B77	F	=D77*0.3	=> 0
+D77	F	=D17	=> 0
+E77	F	=IF(D77>0,B77/D77,0)	=> 0
+A78	V	'Misc Steel Materials'
+B78	F	=D78*0.1666	=> 0
+D78	F	=D18	=> 0
+E78	F	=IF(D78>0,B78/D78,0)	=> 0
+A79	V	'Additional PCR Charge for Ultra Lite Crane'
+B79	F	=D79*0.4	=> 0
+D79	F	=D19	=> 0
+E79	F	=IF(D79>0,B79/D79,0)	=> 0
+A80	V	'Additional PCR Charge for Stair Stringers'
+B80	F	=D80*0.4	=> 0
+D80	F	=D20	=> 0
+E80	F	=IF(D80>0,B80/D80,0)	=> 0
+A81	V	'X-Bracing Package'
+B81	F	=D81*0.2	=> 0
+D81	F	=D21	=> 0
+E81	F	=IF(D81>0,B81/D81,0)	=> 0
+A82	V	'Inbound Freight Charges (use freight calculator at right) '
+B82	F	=D82*0.1	=> 0
+D82	F	=D22	=> 0
+E82	F	=IF(D82>0,B82/D82,0)	=> 0
+A83	V	'Travel Cost Charges'
+B83	F	='Travel Costs'!H16	=> 0
+D83	F	=D23	=> 0
+E83	F	=IF(D83>0,B83/D83,0)	=> 0
+A84	V	'On-Site Equipment Rentals'
+B84	F	=Equipment!M23	=> 0
+D84	F	=D24	=> 0
+E84	F	=IF(D84>0,B84/D84,0)	=> 0
+A85	V	'Total Shop Fab Labor Hours / Manually Entered Charges'
+B85	F	=D85*0.41	=> 0
+D85	F	=D25	=> 0
+E85	F	=IF(D85>0,B85/D85,0)	=> 0
+A86	V	'Total On-site Labor Hours / Manually Entered Charges'
+B86	F	=D86*0.47	=> 0
+D86	F	=D26	=> 0
+E86	F	=IF(D86>0,B86/D86,0)	=> 0
+A87	V	'Outbound Freight Charges'
+B87	F	=D87*0.1	=> 0
+D87	F	=D33	=> 0
+E87	F	=IF(D87>0,B87/D87,0)	=> 0
+A88	V	'Pre-Use Inspections and Load Tests'
+B88	F	='Pre-use Load Test'!T18	=> 0
+D88	F	=D34	=> 0
+E88	F	=IF(D88>0,B88/D88,0)	=> 0
+A89	V	'Total'
+B89	F	=SUM(B64:B88)	=> '#REF!'
+D89	F	=SUM(D64:D88)	=> 0
+E89	F	=AVERAGEIF(E64:E88,"<>0")	=> '#DIV/0!'

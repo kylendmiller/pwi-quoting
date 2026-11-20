@@ -1,0 +1,494 @@
+A1	V	'Hoist & Crane Component Pricing (All based on List Prices)'
+A3	V	'Starke Components'
+A4	V	'Part #'
+B4	V	'Description'
+C4	V	'QTY'
+D4	V	'List Each '
+E4	V	'PWI Discount %'
+F4	V	'Cost Each'
+G4	V	'Ext. Cost'
+H4	V	'Customer Discount %'
+I4	V	'Sell Price'
+N4	V	'$ Amount'
+B5	F	=IF(A5="","",VLOOKUP(A5,List!$AF$4:$AH$2015,2,0))	=> None
+D5	F	=IF(A5="",0,VLOOKUP(A5,List!$AF$4:$AH$2015,3,0))	=> 0
+E5	V	50
+F5	F	=SUM(1-(E5*0.01))*D5	=> 0
+G5	F	=F5*C5	=> 0
+H5	V	5
+I5	F	=SUM(1-(H5*0.01))*D5*C5	=> 0
+N5	F	=(I5-G5)*1.1	=> 0
+B6	F	=IF(A6="","",VLOOKUP(A6,List!$AF$4:$AH$2015,2,0))	=> None
+D6	F	=IF(A6="",0,VLOOKUP(A6,List!$AF$4:$AH$2015,3,0))	=> 0
+E6	V	50
+F6	F	=SUM(1-(E6*0.01))*D6	=> 0
+G6	F	=F6*C6	=> 0
+H6	V	5
+I6	F	=SUM(1-(H6*0.01))*D6*C6	=> 0
+N6	F	=(I6-G6)*1.1	=> 0
+B7	F	=IF(A7="","",VLOOKUP(A7,List!$AF$4:$AH$2015,2,0))	=> None
+D7	F	=IF(A7="",0,VLOOKUP(A7,List!$AF$4:$AH$2015,3,0))	=> 0
+E7	V	50
+F7	F	=SUM(1-(E7*0.01))*D7	=> 0
+G7	F	=F7*C7	=> 0
+H7	V	5
+I7	F	=SUM(1-(H7*0.01))*D7*C7	=> 0
+N7	F	=(I7-G7)*1.1	=> 0
+B8	F	=IF(A8="","",VLOOKUP(A8,List!$AF$4:$AH$2015,2,0))	=> None
+D8	F	=IF(A8="",0,VLOOKUP(A8,List!$AF$4:$AH$2015,3,0))	=> 0
+E8	V	50
+F8	F	=SUM(1-(E8*0.01))*D8	=> 0
+G8	F	=F8*C8	=> 0
+H8	V	5
+I8	F	=SUM(1-(H8*0.01))*D8*C8	=> 0
+N8	F	=(I8-G8)*1.1	=> 0
+B9	F	=IF(A9="","",VLOOKUP(A9,List!$AF$4:$AH$2015,2,0))	=> None
+D9	F	=IF(A9="",0,VLOOKUP(A9,List!$AF$4:$AH$2015,3,0))	=> 0
+E9	V	50
+F9	F	=SUM(1-(E9*0.01))*D9	=> 0
+G9	F	=F9*C9	=> 0
+H9	V	5
+I9	F	=SUM(1-(H9*0.01))*D9*C9	=> 0
+N9	F	=(I9-G9)*1.1	=> 0
+B10	F	=IF(A10="","",VLOOKUP(A10,List!$AF$4:$AH$2015,2,0))	=> None
+D10	F	=IF(A10="",0,VLOOKUP(A10,List!$AF$4:$AH$2015,3,0))	=> 0
+E10	V	50
+F10	F	=SUM(1-(E10*0.01))*D10	=> 0
+G10	F	=F10*C10	=> 0
+H10	V	5
+I10	F	=SUM(1-(H10*0.01))*D10*C10	=> 0
+N10	F	=(I10-G10)*1.1	=> 0
+B11	F	=IF(A11="","",VLOOKUP(A11,List!$AF$4:$AH$2015,2,0))	=> None
+D11	F	=IF(A11="",0,VLOOKUP(A11,List!$AF$4:$AH$2015,3,0))	=> 0
+E11	V	50
+F11	F	=SUM(1-(E11*0.01))*D11	=> 0
+G11	F	=F11*C11	=> 0
+H11	V	5
+I11	F	=SUM(1-(H11*0.01))*D11*C11	=> 0
+N11	F	=(I11-G11)*1.1	=> 0
+B12	F	=IF(A12="","",VLOOKUP(A12,List!$AF$4:$AH$2015,2,0))	=> None
+D12	F	=IF(A12="",0,VLOOKUP(A12,List!$AF$4:$AH$2015,3,0))	=> 0
+E12	V	50
+F12	F	=SUM(1-(E12*0.01))*D12	=> 0
+G12	F	=F12*C12	=> 0
+H12	V	5
+I12	F	=SUM(1-(H12*0.01))*D12*C12	=> 0
+N12	F	=(I12-G12)*1.1	=> 0
+B13	F	=IF(A13="","",VLOOKUP(A13,List!$AF$4:$AH$2015,2,0))	=> None
+D13	F	=IF(A13="",0,VLOOKUP(A13,List!$AF$4:$AH$2015,3,0))	=> 0
+E13	V	50
+F13	F	=SUM(1-(E13*0.01))*D13	=> 0
+G13	F	=F13*C13	=> 0
+H13	V	5
+I13	F	=SUM(1-(H13*0.01))*D13*C13	=> 0
+N13	F	=(I13-G13)*1.1	=> 0
+B14	F	=IF(A14="","",VLOOKUP(A14,List!$AF$4:$AH$2015,2,0))	=> None
+D14	F	=IF(A14="",0,VLOOKUP(A14,List!$AF$4:$AH$2015,3,0))	=> 0
+E14	V	50
+F14	F	=SUM(1-(E14*0.01))*D14	=> 0
+G14	F	=F14*C14	=> 0
+H14	V	5
+I14	F	=SUM(1-(H14*0.01))*D14*C14	=> 0
+N14	F	=(I14-G14)*1.1	=> 0
+B15	F	=IF(A15="","",VLOOKUP(A15,List!$AF$4:$AH$2015,2,0))	=> None
+D15	F	=IF(A15="",0,VLOOKUP(A15,List!$AF$4:$AH$2015,3,0))	=> 0
+E15	V	50
+F15	F	=SUM(1-(E15*0.01))*D15	=> 0
+G15	F	=F15*C15	=> 0
+H15	V	5
+I15	F	=SUM(1-(H15*0.01))*D15*C15	=> 0
+N15	F	=(I15-G15)*1.1	=> 0
+B16	F	=IF(A16="","",VLOOKUP(A16,List!$AF$4:$AH$2015,2,0))	=> None
+D16	F	=IF(A16="",0,VLOOKUP(A16,List!$AF$4:$AH$2015,3,0))	=> 0
+E16	V	50
+F16	F	=SUM(1-(E16*0.01))*D16	=> 0
+G16	F	=F16*C16	=> 0
+H16	V	5
+I16	F	=SUM(1-(H16*0.01))*D16*C16	=> 0
+N16	F	=(I16-G16)*1.1	=> 0
+B17	F	=IF(A17="","",VLOOKUP(A17,List!$AF$4:$AH$2015,2,0))	=> None
+D17	F	=IF(A17="",0,VLOOKUP(A17,List!$AF$4:$AH$2015,3,0))	=> 0
+E17	V	50
+F17	F	=SUM(1-(E17*0.01))*D17	=> 0
+G17	F	=F17*C17	=> 0
+H17	V	5
+I17	F	=SUM(1-(H17*0.01))*D17*C17	=> 0
+N17	F	=(I17-G17)*1.1	=> 0
+B18	F	=IF(A18="","",VLOOKUP(A18,List!$AF$4:$AH$2015,2,0))	=> None
+D18	F	=IF(A18="",0,VLOOKUP(A18,List!$AF$4:$AH$2015,3,0))	=> 0
+E18	V	50
+F18	F	=SUM(1-(E18*0.01))*D18	=> 0
+G18	F	=F18*C18	=> 0
+H18	V	5
+I18	F	=SUM(1-(H18*0.01))*D18*C18	=> 0
+N18	F	=(I18-G18)*1.1	=> 0
+B19	F	=IF(A19="","",VLOOKUP(A19,List!$AF$4:$AH$2015,2,0))	=> None
+D19	F	=IF(A19="",0,VLOOKUP(A19,List!$AF$4:$AH$2015,3,0))	=> 0
+E19	V	50
+F19	F	=SUM(1-(E19*0.01))*D19	=> 0
+G19	F	=F19*C19	=> 0
+H19	V	5
+I19	F	=SUM(1-(H19*0.01))*D19*C19	=> 0
+N19	F	=(I19-G19)*1.1	=> 0
+B20	F	=IF(A20="","",VLOOKUP(A20,List!$AF$4:$AH$2015,2,0))	=> None
+D20	F	=IF(A20="",0,VLOOKUP(A20,List!$AF$4:$AH$2015,3,0))	=> 0
+E20	V	50
+F20	F	=SUM(1-(E20*0.01))*D20	=> 0
+G20	F	=F20*C20	=> 0
+H20	V	5
+I20	F	=SUM(1-(H20*0.01))*D20*C20	=> 0
+N20	F	=(I20-G20)*1.1	=> 0
+B21	F	=IF(A21="","",VLOOKUP(A21,List!$AF$4:$AH$2015,2,0))	=> None
+D21	F	=IF(A21="",0,VLOOKUP(A21,List!$AF$4:$AH$2015,3,0))	=> 0
+E21	V	50
+F21	F	=SUM(1-(E21*0.01))*D21	=> 0
+G21	F	=F21*C21	=> 0
+H21	V	5
+I21	F	=SUM(1-(H21*0.01))*D21*C21	=> 0
+N21	F	=(I21-G21)*1.1	=> 0
+B22	F	=IF(A22="","",VLOOKUP(A22,List!$AF$4:$AH$2015,2,0))	=> None
+D22	F	=IF(A22="",0,VLOOKUP(A22,List!$AF$4:$AH$2015,3,0))	=> 0
+E22	V	50
+F22	F	=SUM(1-(E22*0.01))*D22	=> 0
+G22	F	=F22*C22	=> 0
+H22	V	5
+I22	F	=SUM(1-(H22*0.01))*D22*C22	=> 0
+N22	F	=(I22-G22)*1.1	=> 0
+B23	F	=IF(A23="","",VLOOKUP(A23,List!$AF$4:$AH$2015,2,0))	=> None
+D23	F	=IF(A23="",0,VLOOKUP(A23,List!$AF$4:$AH$2015,3,0))	=> 0
+E23	V	50
+F23	F	=SUM(1-(E23*0.01))*D23	=> 0
+G23	F	=F23*C23	=> 0
+H23	V	5
+I23	F	=SUM(1-(H23*0.01))*D23*C23	=> 0
+N23	F	=(I23-G23)*1.1	=> 0
+A25	V	'Street Crane Components '
+A26	V	'Part #'
+B26	V	'Description'
+C26	V	'QTY'
+D26	V	'List Each '
+E26	V	'PWI Discount %'
+F26	V	'Cost Each'
+G26	V	'Ext. Cost'
+H26	V	'Customer Discount %'
+I26	V	'Sell Price'
+J26	V	'Data Sheet '
+B27	F	=IF(A27="","",VLOOKUP(A27,List!$AJ$5:$AL$224,2,0))	=> None
+D27	F	=IF(A27="",0,VLOOKUP(A27,List!$AJ$5:$AL$224,3,0))	=> 0
+E27	V	20
+F27	F	=SUM(1-(E27*0.01))*D27	=> 0
+G27	F	=F27*C27	=> 0
+H27	V	10
+I27	F	=SUM(1-(H27*0.01))*D27*C27	=> 0
+J27	F	=IFERROR(HYPERLINK(VLOOKUP(A27,List!AJ5:AM107,4,FALSE),"Open Link"),"")	=> None
+B28	F	=IF(A28="","",VLOOKUP(A28,List!$AJ$5:$AL$224,2,0))	=> None
+D28	F	=IF(A28="",0,VLOOKUP(A28,List!$AJ$5:$AL$224,3,0))	=> 0
+E28	V	20
+F28	F	=SUM(1-(E28*0.01))*D28	=> 0
+G28	F	=F28*C28	=> 0
+H28	V	10
+I28	F	=SUM(1-(H28*0.01))*D28*C28	=> 0
+J28	F	=IFERROR(HYPERLINK(VLOOKUP(A28,List!AJ6:AM108,4,FALSE),"Open Link"),"")	=> None
+B29	F	=IF(A29="","",VLOOKUP(A29,List!$AJ$5:$AL$224,2,0))	=> None
+D29	F	=IF(A29="",0,VLOOKUP(A29,List!$AJ$5:$AL$224,3,0))	=> 0
+E29	V	20
+F29	F	=SUM(1-(E29*0.01))*D29	=> 0
+G29	F	=F29*C29	=> 0
+H29	V	10
+I29	F	=SUM(1-(H29*0.01))*D29*C29	=> 0
+J29	F	=IFERROR(HYPERLINK(VLOOKUP(A29,List!AJ7:AM109,4,FALSE),"Open Link"),"")	=> None
+B30	F	=IF(A30="","",VLOOKUP(A30,List!$AJ$5:$AL$224,2,0))	=> None
+D30	F	=IF(A30="",0,VLOOKUP(A30,List!$AJ$5:$AL$224,3,0))	=> 0
+E30	V	20
+F30	F	=SUM(1-(E30*0.01))*D30	=> 0
+G30	F	=F30*C30	=> 0
+H30	V	10
+I30	F	=SUM(1-(H30*0.01))*D30*C30	=> 0
+J30	F	=IFERROR(HYPERLINK(VLOOKUP(A30,List!AJ8:AM110,4,FALSE),"Open Link"),"")	=> None
+B31	F	=IF(A31="","",VLOOKUP(A31,List!$AJ$5:$AL$224,2,0))	=> None
+D31	F	=IF(A31="",0,VLOOKUP(A31,List!$AJ$5:$AL$224,3,0))	=> 0
+E31	V	20
+F31	F	=SUM(1-(E31*0.01))*D31	=> 0
+G31	F	=F31*C31	=> 0
+H31	V	10
+I31	F	=SUM(1-(H31*0.01))*D31*C31	=> 0
+J31	F	=IFERROR(HYPERLINK(VLOOKUP(A31,List!AJ9:AM111,4,FALSE),"Open Link"),"")	=> None
+B32	F	=IF(A32="","",VLOOKUP(A32,List!$AJ$5:$AL$224,2,0))	=> None
+D32	F	=IF(A32="",0,VLOOKUP(A32,List!$AJ$5:$AL$224,3,0))	=> 0
+E32	V	20
+F32	F	=SUM(1-(E32*0.01))*D32	=> 0
+G32	F	=F32*C32	=> 0
+H32	V	10
+I32	F	=SUM(1-(H32*0.01))*D32*C32	=> 0
+J32	F	=IFERROR(HYPERLINK(VLOOKUP(A32,List!AJ10:AM112,4,FALSE),"Open Link"),"")	=> None
+B33	F	=IF(A33="","",VLOOKUP(A33,List!$AJ$5:$AL$224,2,0))	=> None
+D33	F	=IF(A33="",0,VLOOKUP(A33,List!$AJ$5:$AL$224,3,0))	=> 0
+E33	V	20
+F33	F	=SUM(1-(E33*0.01))*D33	=> 0
+G33	F	=F33*C33	=> 0
+H33	V	10
+I33	F	=SUM(1-(H33*0.01))*D33*C33	=> 0
+J33	F	=IFERROR(HYPERLINK(VLOOKUP(A33,List!AJ11:AM113,4,FALSE),"Open Link"),"")	=> None
+B34	F	=IF(A34="","",VLOOKUP(A34,List!$AJ$5:$AL$224,2,0))	=> None
+D34	F	=IF(A34="",0,VLOOKUP(A34,List!$AJ$5:$AL$224,3,0))	=> 0
+E34	V	20
+F34	F	=SUM(1-(E34*0.01))*D34	=> 0
+G34	F	=F34*C34	=> 0
+H34	V	10
+I34	F	=SUM(1-(H34*0.01))*D34*C34	=> 0
+J34	F	=IFERROR(HYPERLINK(VLOOKUP(A34,List!AJ12:AM114,4,FALSE),"Open Link"),"")	=> None
+B35	F	=IF(A35="","",VLOOKUP(A35,List!$AJ$5:$AL$224,2,0))	=> None
+D35	F	=IF(A35="",0,VLOOKUP(A35,List!$AJ$5:$AL$224,3,0))	=> 0
+E35	V	20
+F35	F	=SUM(1-(E35*0.01))*D35	=> 0
+G35	F	=F35*C35	=> 0
+H35	V	10
+I35	F	=SUM(1-(H35*0.01))*D35*C35	=> 0
+J35	F	=IFERROR(HYPERLINK(VLOOKUP(A35,List!AJ13:AM115,4,FALSE),"Open Link"),"")	=> None
+A37	V	'Columbus McKinnon Components'
+A38	V	'Part #'
+B38	V	'Description'
+C38	V	'QTY'
+D38	V	'List Each '
+E38	V	'PWI Discount %'
+F38	V	'Cost Each'
+G38	V	'Ext. Cost'
+H38	V	'Customer Discount %'
+I38	V	'Sell Price'
+B39	F	=IF(A39="","",VLOOKUP(A39,List!$AA$5:$AC$224,2,0))	=> None
+D39	F	=IF(A39="",0,VLOOKUP(A39,List!$AA$5:$AC$224,3,0))	=> 0
+E39	V	35
+F39	F	=SUM(1-(E39*0.01))*D39	=> 0
+G39	F	=F39*C39	=> 0
+H39	V	32
+I39	F	=SUM(1-(H39*0.01))*D39*C39	=> 0
+N39	F	=(I39-G39)	=> 0
+B40	F	=IF(A40="","",VLOOKUP(A40,List!$AA$5:$AC$224,2,0))	=> None
+D40	F	=IF(A40="",0,VLOOKUP(A40,List!$AA$5:$AC$224,3,0))	=> 0
+E40	V	35
+F40	F	=IF(D40=0,0,SUM(1-(E40*0.01))*D40)	=> 0
+G40	F	=F40*C40	=> 0
+H40	V	32
+I40	F	=IF(F40=0,0,SUM(1-(H40*0.01))*D40*C40)	=> 0
+N40	F	=(I40-G40)	=> 0
+B41	F	=IF(A41="","",VLOOKUP(A41,List!$AA$5:$AC$224,2,0))	=> None
+D41	F	=IF(A41="",0,VLOOKUP(A41,List!$AA$5:$AC$224,3,0))	=> 0
+E41	V	35
+F41	F	=IF(D41=0,0,SUM(1-(E41*0.01))*D41)	=> 0
+G41	F	=F41*C41	=> 0
+H41	V	32
+I41	F	=IF(F41=0,0,SUM(1-(H41*0.01))*D41*C41)	=> 0
+N41	F	=(I41-G41)	=> 0
+B42	F	=IF(A42="","",VLOOKUP(A42,List!$AA$5:$AC$224,2,0))	=> None
+D42	F	=IF(A42="",0,VLOOKUP(A42,List!$AA$5:$AC$224,3,0))	=> 0
+E42	V	35
+F42	F	=IF(D42=0,0,SUM(1-(E42*0.01))*D42)	=> 0
+G42	F	=F42*C42	=> 0
+H42	V	32
+I42	F	=IF(F42=0,0,SUM(1-(H42*0.01))*D42*C42)	=> 0
+N42	F	=(I42-G42)	=> 0
+B43	F	=IF(A43="","",VLOOKUP(A43,List!$AA$5:$AC$224,2,0))	=> None
+D43	F	=IF(A43="",0,VLOOKUP(A43,List!$AA$5:$AC$224,3,0))	=> 0
+E43	V	35
+F43	F	=IF(D43=0,0,SUM(1-(E43*0.01))*D43)	=> 0
+G43	F	=F43*C43	=> 0
+H43	V	32
+I43	F	=IF(F43=0,0,SUM(1-(H43*0.01))*D43*C43)	=> 0
+N43	F	=(I43-G43)	=> 0
+B44	F	=IF(A44="","",VLOOKUP(A44,List!$AA$5:$AC$224,2,0))	=> None
+D44	F	=IF(A44="",0,VLOOKUP(A44,List!$AA$5:$AC$224,3,0))	=> 0
+E44	V	35
+F44	F	=IF(D44=0,0,SUM(1-(E44*0.01))*D44)	=> 0
+G44	F	=F44*C44	=> 0
+H44	V	32
+I44	F	=IF(F44=0,0,SUM(1-(H44*0.01))*D44*C44)	=> 0
+B45	F	=IF(A45="","",VLOOKUP(A45,List!$AA$5:$AC$224,2,0))	=> None
+D45	F	=IF(A45="",0,VLOOKUP(A45,List!$AA$5:$AC$224,3,0))	=> 0
+E45	V	35
+F45	F	=IF(D45=0,0,SUM(1-(E45*0.01))*D45)	=> 0
+G45	F	=F45*C45	=> 0
+H45	V	32
+I45	F	=IF(F45=0,0,SUM(1-(H45*0.01))*D45*C45)	=> 0
+D46	V	0
+E46	V	35
+F46	F	=IF(D46=0,0,SUM(1-(E46*0.01))*D46)	=> 0
+G46	F	=F46*C46	=> 0
+H46	V	32
+I46	F	=IF(F46=0,0,SUM(1-(H46*0.01))*D46*C46)	=> 0
+D47	V	0
+E47	V	35
+F47	F	=IF(D47=0,0,SUM(1-(E47*0.01))*D47)	=> 0
+G47	F	=F47*C47	=> 0
+H47	V	32
+I47	F	=IF(F47=0,0,SUM(1-(H47*0.01))*D47*C47)	=> 0
+N47	F	=(I47-G47)	=> 0
+A49	V	'InMotion Components'
+A50	V	'Part #'
+B50	V	'Description'
+C50	V	'QTY'
+D50	V	'List Each '
+E50	V	'PWI Discount %'
+F50	V	'Cost Each'
+G50	V	'Ext. Cost'
+H50	V	'Customer Discount %'
+I50	V	'Sell Price'
+B51	F	=IF(A51="","",VLOOKUP(A51,List!$R$5:$U$144,2,0))	=> None
+D51	F	=IF(A51="",0,VLOOKUP(A51,List!$R$5:$U$144,3,0))	=> 0
+E51	V	50
+F51	F	=SUM(1-(E51*0.01))*D51	=> 0
+G51	F	=F51*C51	=> 0
+H51	V	5
+I51	F	=SUM(1-(H51*0.01))*D51*C51	=> 0
+N51	F	=(I51-G51)	=> 0
+B52	F	=IF(A52="","",VLOOKUP(A52,List!$R$5:$U$144,2,0))	=> None
+D52	F	=IF(A52="",0,VLOOKUP(A52,List!$R$5:$U$144,3,0))	=> 0
+E52	V	50
+F52	F	=IF(D52=0,0,SUM(1-(E52*0.01))*D52)	=> 0
+G52	F	=F52*C52	=> 0
+H52	V	5
+I52	F	=IF(D52=0,0,SUM(1-(H52*0.01))*D52*C52)	=> 0
+N52	F	=(I52-G52)	=> 0
+B53	F	=IF(A53="","",VLOOKUP(A53,List!$R$5:$U$144,2,0))	=> None
+D53	F	=IF(A53="",0,VLOOKUP(A53,List!$R$5:$U$144,3,0))	=> 0
+E53	V	50
+F53	F	=IF(D53=0,0,SUM(1-(E53*0.01))*D53)	=> 0
+G53	F	=F53*C53	=> 0
+H53	V	5
+I53	F	=IF(D53=0,0,SUM(1-(H53*0.01))*D53*C53)	=> 0
+N53	F	=(I53-G53)	=> 0
+B54	F	=IF(A54="","",VLOOKUP(A54,List!$R$5:$U$144,2,0))	=> None
+D54	F	=IF(A54="",0,VLOOKUP(A54,List!$R$5:$U$144,3,0))	=> 0
+E54	V	50
+F54	F	=IF(D54=0,0,SUM(1-(E54*0.01))*D54)	=> 0
+G54	F	=F54*C54	=> 0
+H54	V	5
+I54	F	=IF(D54=0,0,SUM(1-(H54*0.01))*D54*C54)	=> 0
+N54	F	=(I54-G54)	=> 0
+B55	F	=IF(A55="","",VLOOKUP(A55,List!$R$5:$U$144,2,0))	=> None
+D55	F	=IF(A55="",0,VLOOKUP(A55,List!$R$5:$U$144,3,0))	=> 0
+E55	V	50
+F55	F	=IF(D55=0,0,SUM(1-(E55*0.01))*D55)	=> 0
+G55	F	=F55*C55	=> 0
+H55	V	5
+I55	F	=IF(D55=0,0,SUM(1-(H55*0.01))*D55*C55)	=> 0
+N55	F	=(I55-G55)	=> 0
+A57	V	'Harrington Components'
+A58	V	'Part #'
+B58	V	'Description'
+C58	V	'QTY'
+D58	V	'List Each '
+E58	V	'PWI Discount %'
+F58	V	'Cost Each'
+G58	V	'Ext. Cost'
+H58	V	'Customer Discount %'
+I58	V	'Sell Price'
+D59	V	0
+E59	V	37
+F59	F	=SUM(1-(E59*0.01))*D59	=> 0
+G59	F	=F59*C59	=> 0
+H59	V	22
+I59	F	=SUM(1-(H59*0.01))*D59*C59	=> 0
+D60	V	0
+E60	V	37
+F60	F	=SUM(1-(E60*0.01))*D60	=> 0
+G60	F	=F60*C60	=> 0
+H60	V	22
+I60	F	=SUM(1-(H60*0.01))*D60*C60	=> 0
+D61	V	0
+E61	V	37
+F61	F	=SUM(1-(E61*0.01))*D61	=> 0
+G61	F	=F61*C61	=> 0
+H61	V	22
+I61	F	=SUM(1-(H61*0.01))*D61*C61	=> 0
+D62	V	0
+E62	V	37
+F62	F	=SUM(1-(E62*0.01))*D62	=> 0
+G62	F	=F62*C62	=> 0
+H62	V	22
+I62	F	=SUM(1-(H62*0.01))*D62*C62	=> 0
+D63	V	0
+E63	V	37
+F63	F	=SUM(1-(E63*0.01))*D63	=> 0
+G63	F	=F63*C63	=> 0
+H63	V	22
+I63	F	=SUM(1-(H63*0.01))*D63*C63	=> 0
+D64	V	0
+E64	V	37
+F64	F	=SUM(1-(E64*0.01))*D64	=> 0
+G64	F	=F64*C64	=> 0
+H64	V	22
+I64	F	=SUM(1-(H64*0.01))*D64*C64	=> 0
+A66	V	'Miscellaneous Components'
+A67	V	'Part #'
+B67	V	'Description'
+C67	V	'QTY'
+D67	V	'List Each '
+E67	V	'PWI Discount %'
+F67	V	'Cost Each'
+G67	V	'Ext. Cost'
+H67	V	'Customer Discount %'
+I67	V	'Sell Price'
+D68	V	0
+E68	V	20
+F68	F	=SUM(1-(E68*0.01))*D68	=> 0
+G68	F	=F68*C68	=> 0
+H68	V	0
+I68	F	=SUM(1-(H68*0.01))*D68*C68	=> 0
+N68	F	=(I68-G68)	=> 0
+D69	V	0
+E69	V	20
+F69	F	=SUM(1-(E69*0.01))*D69	=> 0
+G69	F	=F69*C69	=> 0
+H69	V	0
+I69	F	=SUM(1-(H69*0.01))*D69*C69	=> 0
+N69	F	=(I69-G69)	=> 0
+D70	V	0
+E70	V	20
+F70	F	=SUM(1-(E70*0.01))*D70	=> 0
+G70	F	=F70*C70	=> 0
+H70	V	0
+I70	F	=SUM(1-(H70*0.01))*D70*C70	=> 0
+N70	F	=(I70-G70)	=> 0
+D71	V	0
+E71	V	20
+F71	F	=SUM(1-(E71*0.01))*D71	=> 0
+G71	F	=F71*C71	=> 0
+H71	V	0
+I71	F	=SUM(1-(H71*0.01))*D71*C71	=> 0
+N71	F	=(I71-G71)	=> 0
+D72	V	0
+E72	V	20
+F72	F	=SUM(1-(E72*0.01))*D72	=> 0
+G72	F	=F72*C72	=> 0
+H72	V	0
+I72	F	=SUM(1-(H72*0.01))*D72*C72	=> 0
+N72	F	=(I72-G72)	=> 0
+D73	V	0
+E73	V	20
+F73	F	=SUM(1-(E73*0.01))*D73	=> 0
+G73	F	=F73*C73	=> 0
+H73	V	0
+I73	F	=SUM(1-(H73*0.01))*D73*C73	=> 0
+N73	F	=(I73-G73)	=> 0
+D74	V	0
+E74	V	20
+F74	F	=SUM(1-(E74*0.01))*D74	=> 0
+G74	F	=F74*C74	=> 0
+H74	V	0
+I74	F	=SUM(1-(H74*0.01))*D74*C74	=> 0
+N74	F	=(I74-G74)	=> 0
+D75	V	0
+E75	V	20
+F75	F	=SUM(1-(E75*0.01))*D75	=> 0
+G75	F	=F75*C75	=> 0
+H75	V	0
+I75	F	=SUM(1-(H75*0.01))*D75*C75	=> 0
+N75	F	=(I75-G75)	=> 0
+B77	V	'Total Net Cost'
+G77	F	=SUM(G5:G75)	=> 0
+M77	V	'Total:'
+N77	F	=SUM(N5:N75)	=> 0
+B79	V	'Total Sell Price '
+I79	F	=SUM(I5:I75)	=> 0
+B81	V	'Total Profit '
+D81	F	=I79-G77	=> 0
