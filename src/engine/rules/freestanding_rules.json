@@ -52,7 +52,21 @@
     85
    ]
   ],
-  "maxChartHeightFt": 22
+  "maxChartHeightFt": 22,
+  "builtUpShortColumn": {
+   "_why": "Tuned 11/20 (overnight): 10 t built-up columns \u2264 17' long sold at 55 plf (29354, 15.25' columns); taller 10 t stays 70 plf (29331 mixed 57/85 plf at 20'). Sold engineered sizes, so not below the column limit.",
+   "maxColumnFt": 17,
+   "plfByCap": [
+    [
+     5,
+     57
+    ],
+    [
+     10,
+     55
+    ]
+   ]
+  }
  },
  "basePlate": [
   [
@@ -337,9 +351,15 @@
   ]
  },
  "pmCad": {
-  "pmHrsPer10k": 5.2,
-  "cadHrsPer10k": 4.5,
+  "_why": "Tuned 11/20 (overnight): sold PM+CAD = 8.8% of materials+shop across non-outlier crane jobs 29140, 29213, 29354, 29331, 28192, 28426, 29562 (was 10.2%). Scaled both rates by 0.865.",
+  "pmHrsPer10k": 4.5,
+  "cadHrsPer10k": 3.9,
   "pmMin": 15,
   "cadMin": 12
+ },
+ "bracing": {
+  "_why": "Tuned 11/20 (overnight): tube-column FSTR gets ST3x3 tie-back bracing from 8 columns or \u22653 t. 28640 (6 columns, 2 t) sold without bracing; 29140 (8 columns, 2 t) sold with it.",
+  "tubeFromColumns": 8,
+  "tubeFromCap": 3
  }
 }

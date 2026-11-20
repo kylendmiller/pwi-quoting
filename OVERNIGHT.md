@@ -27,7 +27,7 @@
 - [x] 3. **Calibration harness.** For every fixture whose product matches a builder, rebuild a spec from the fixture's geometry, price it, and write
       `docs/calibration.md`: job, product, sold base, built base, % gap, biggest category differences, likely cause. Add a test that fails if any job's gap
       moves more than 2 points from the table (so later changes can't silently drift).
-- [ ] 4. Tune **freestanding** to ±3% (all FSTR fixtures).
+- [BLOCKED: ±3% not reachable inside the rules — mean abs gap 11.0% → 7.7% (5 jobs, mean +3.7%). What's left is AQT-chart steel heavier than the sold steel on 29354/28640 (can't size below the chart), 29331 spec'd all-10 t (sold half 5 t), and 29140 under (sold PM 60 h, 20' stock columns). See Summary.] 4. Tune **freestanding** to ±3% (all FSTR fixtures).
 - [ ] 5. Tune **bridge** (building runway / crane columns / bridge only). When no W shape meets L/600 within depth limits, add a plate box-girder line via `Kit.box` (check 28426, 29562, 28192).
 - [ ] 6. Tune **mezzanine**.
 - [ ] 7. Tune **gantry**.

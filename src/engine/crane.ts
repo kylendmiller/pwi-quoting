@@ -105,7 +105,10 @@ export function buildCrane(spec: CraneSpec, cat: Catalog, f: Factors = { product
     K.blockers.push(`${s.spanFt}' span at ${cap} t is past the AQT girder chart — engineering must size the girder (priced as ${girder} placeholder).`);
   }
   const builtUp = hasCols && (s.support === 'crane_columns' ? cap >= 5 || !column : cap >= R.columnType.builtUpFromCap || !column || overall > R.columnType.maxChartHeightFt + 2);
-  const builtUpPlf = s.support === 'crane_columns' ? pick([[5, 40], [10, 48], [20, 90], [999, 162]] as [number, number][], cap) : pick(R.columnType.builtUpPlfByCap as [number, number][], cap);   // crane columns: tapered 3-plate (sold 28192 48 plf @10 t, 28970 162 plf @25 t)
+  const SC = (R.columnType as any).builtUpShortColumn;
+  const colLen0 = Math.ceil((overall - (runway ? depthIn(runway) / 12 : 1.5) - (rail ? R.height.railHeightFt : 0) - R.height.topPlateFt) / R.height.roundColumnToFt) * R.height.roundColumnToFt;
+  const builtUpPlf = s.support === 'crane_columns' ? pick([[5, 40], [10, 48], [20, 90], [999, 162]] as [number, number][], cap)
+    : SC && colLen0 <= SC.maxColumnFt && cap <= 10 ? pick(SC.plfByCap as [number, number][], cap) : pick(R.columnType.builtUpPlfByCap as [number, number][], cap);   // crane columns: tapered 3-plate (sold 28192 48 plf @10 t, 28970 162 plf @25 t)
   A.push({ field: 'steelSource', value: 'chart', why: 'Steel from the AQT sizing chart (height × capacity, bay × capacity, span × capacity) — engineering to confirm' });
   const runDepthFt = runway ? depthIn(runway) / 12 : 1.5;
   const colLen = hasCols ? Math.ceil((overall - runDepthFt - (rail ? R.height.railHeightFt : 0) - R.height.topPlateFt) / R.height.roundColumnToFt) * R.height.roundColumnToFt : 0;
@@ -117,7 +120,8 @@ export function buildCrane(spec: CraneSpec, cat: Catalog, f: Factors = { product
   if (hasCols) { if (builtUp) K.box('Built-up plate columns', cols, builtUpPlf, colLen); else K.steel('Columns', column!, cols, colLen); }
   if (hasRunway) K.steel('Runways', runway!, 2 * piecesPerLine * n, pieceFt);
   const girderLb = girder ? K.steel(doubleGirder ? 'Bridge girders (double)' : 'Bridge girder', girder, bridges * (doubleGirder ? 2 : 1), Math.ceil(s.spanFt + 2)) * (doubleGirder ? 2 : 1) : 0;
-  const bracing = s.support === 'freestanding' && (s.bracing ?? (columnType === 'tube' && (colsPer >= 6 || cap >= 3)));
+  const BR = (R as any).bracing ?? { tubeFromColumns: 6, tubeFromCap: 3 };
+  const bracing = s.support === 'freestanding' && (s.bracing ?? (columnType === 'tube' && (colsPer >= BR.tubeFromColumns || cap >= BR.tubeFromCap)));
   if (bracing) K.steel('Bracing', 'ST 3 x 3 x 1/4', 6 * n, 20);
   if (hasCols) {
     const bp = (R.basePlate as [number, number, number][]).find(([m]) => cap <= m) ?? [0, 1, 24];
