@@ -3,6 +3,7 @@
 import { rollup, type CategoryKey, type RollupResult } from './rollup';
 import { rateLine } from './lines';
 import type { Role, Basis, LineDetail } from './lineDetail';
+import type { SectionKey } from './sections';
 export type { Role, Basis, LineDetail } from './lineDetail';
 
 export type LineKind = 'material' | 'shop_labor' | 'site_labor' | 'travel' | 'equipment' | 'pm' | 'cad' | 'engineering';
@@ -55,7 +56,29 @@ export interface Settings {
 }
 
 export interface PricedLine extends QuoteLine { cost: number; sell: number; hours: number }
-export type Flag = { rule: 'INSTALL_BELOW_SUGGESTED' | 'INSTALL_MANUAL_NO_SUGGESTION' | 'PV_BELOW_FLOOR' | 'CLASS_D'; detail: Record<string, unknown> };
+export type FlagRule = 'INSTALL_BELOW_SUGGESTED' | 'INSTALL_MANUAL_NO_SUGGESTION' | 'PV_BELOW_FLOOR' | 'CLASS_D';
+/** A policy flag. `detail` is what an approval covers (hashed on the server), so it holds only rounded,
+ *  order-independent numbers. `section` / `lineKeys` say where the editor shows it inline (not hashed). */
+export type Flag = { rule: FlagRule; detail: Record<string, unknown>; section?: SectionKey; lineKeys?: string[] };
+export interface FlagDef {
+  id: string;                       // lower-case id used by the UI
+  rule: FlagRule;                   // value stored in Flag.rule / approvals.rule
+  label: string;
+  section?: SectionKey;             // where the editor shows it; undefined = whole quote
+  explain(detail: Record<string, unknown>): string;
+}
+const h1 = (x: unknown) => `${Number(x ?? 0).toFixed(1)} h`;
+/** Policy rules that need a sales manager's approval before the quote can be sent. */
+export const flags: FlagDef[] = [
+  { id: 'install_below_suggested', rule: 'INSTALL_BELOW_SUGGESTED', label: 'Install below suggested', section: 'install',
+    explain: d => `Install ${h1(d.quoted)} is below the suggested ${h1(d.suggested)} (rebuilt from the spec) — needs a sales manager.` },
+  { id: 'install_manual_no_suggestion', rule: 'INSTALL_MANUAL_NO_SUGGESTION', label: 'Install hours typed by hand', section: 'install',
+    explain: d => `Install ${h1(d.quoted)} has no auto-built suggestion to check against — needs a sales manager.` },
+  { id: 'pv_below_floor', rule: 'PV_BELOW_FLOOR', label: 'Production value below floor', section: 'costBased',
+    explain: d => `Production value $${d.used}/shop h is below the $${d.floor} floor.` },
+  { id: 'class_d', rule: 'CLASS_D', label: 'Class D duty', explain: () => 'Wording calls for Class D duty — needs a sales manager.' },
+];
+export const flagDef = (rule: FlagRule) => flags.find(f => f.rule === rule);
 export type Lint = { level: 'error' | 'warning'; message: string };
 
 export interface Priced {
@@ -67,6 +90,7 @@ export interface Priced {
 }
 
 const r2 = (x: number) => Math.round(x * 100) / 100;
+const r1 = (x: number) => Math.round(x * 10) / 10;
 
 export function priceManual(doc: QuoteDoc, s: Settings): Priced {
   const rateFor: Record<LineKind, number> = {
@@ -112,12 +136,17 @@ export function priceManual(doc: QuoteDoc, s: Settings): Priced {
   const cadHours = sum(l => l.hours, ['cad']);
 
   const flags: Flag[] = [];
-  if (installHours > 0 || lines.some(l => l.kind === 'site_labor')) {
-    if (doc.suggestedInstallHours == null) flags.push({ rule: 'INSTALL_MANUAL_NO_SUGGESTION', detail: { quoted: installHours } });
-    else if (installHours < doc.suggestedInstallHours) flags.push({ rule: 'INSTALL_BELOW_SUGGESTED', detail: { quoted: installHours, suggested: doc.suggestedInstallHours } });
-  }
+  // S1: install hours are the hours on site-labor lines whatever their category; rounded once (0.1 h) after an
+  // order-independent sum so reordering lines can't change an approval's hash. Deleting, moving or reclassifying
+  // every site line still flags when the spec suggests install hours.
+  const siteLines = lines.filter(l => l.kind === 'site_labor');
+  const quotedInstall = r1(siteLines.map(l => l.hours).sort((a, b) => a - b).reduce((a, h) => a + h, 0));
+  const sugg = doc.suggestedInstallHours;
+  if (sugg != null && sugg > 0) {
+    if (quotedInstall < r1(sugg)) flags.push({ rule: 'INSTALL_BELOW_SUGGESTED', detail: { quoted: quotedInstall, suggested: r1(sugg) }, section: 'install', lineKeys: siteLines.map(l => l.key) });
+  } else if (sugg == null && siteLines.length) flags.push({ rule: 'INSTALL_MANUAL_NO_SUGGESTION', detail: { quoted: quotedInstall }, section: 'install', lineKeys: siteLines.map(l => l.key) });
   if (doc.pvPerHourOverride != null && doc.pvPerHourOverride < s.freestanding_pv_per_shop_hour && (doc.freestandingShopHours ?? 0) > 0)
-    flags.push({ rule: 'PV_BELOW_FLOOR', detail: { used: doc.pvPerHourOverride, floor: s.freestanding_pv_per_shop_hour } });
+    flags.push({ rule: 'PV_BELOW_FLOOR', detail: { used: doc.pvPerHourOverride, floor: s.freestanding_pv_per_shop_hour }, section: 'costBased' });
   if (/class\s*d\b/i.test(doc.wording)) flags.push({ rule: 'CLASS_D', detail: {} });
 
   return {
