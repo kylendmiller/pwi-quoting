@@ -20,7 +20,7 @@ export type Role =
   | 'anchor' | 'bolt' | 'rail' | 'deck' | 'guardrail' | 'gate' | 'stair' | 'decal' | 'casters' | 'vrc' | 'fall_protection'
   | 'hardware' | 'option'
   // services
-  | 'paint' | 'shop_labor' | 'install' | 'travel_time' | 'lodging' | 'per_diem' | 'airfare' | 'rental_car' | 'tool_return'
+  | 'paint' | 'shop_labor' | 'install' | 'mobilization' | 'travel_time' | 'lodging' | 'per_diem' | 'airfare' | 'rental_car' | 'tool_return'
   | 'lift' | 'telehandler' | 'forklift' | 'generator' | 'equipment' | 'rental_delivery' | 'pm' | 'cad' | 'pe'
   | 'freight_in' | 'other';
 

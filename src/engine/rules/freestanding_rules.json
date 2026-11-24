@@ -267,6 +267,7 @@
   "localMaxDriveHrs": 1.5,
   "airfareMultiplier": 2.2,
   "stayWeekendsWhenAway": true,
+  "mobilizationHrsPerMan": 10,
   "workDaysPerWeekAway": 6,
   "_notes": "localMaxDriveHrs: one-way drive time (site driveMinutes, else miles \u00f7 driveMph) at or under this commutes daily; over it the crew stays (hotel + per diem). Away crews work Mon\u2013Sat (workDaysPerWeekAway 6); Sunday is off but still paid (hotel + per diem). Over flyAboveDriveHrs of driving the crew flies and the job box ships. airfareMultiplier: searched 2-weeks-out round-trip fare \u00d7 this (late booking reality; SMT Travel Costs used 1.75), then the travel markup. flightPerMan is the fallback when no fare was searched ($400 typical fare \u00d7 2.2; the travel markup is added on top, same as a searched fare)."
  },

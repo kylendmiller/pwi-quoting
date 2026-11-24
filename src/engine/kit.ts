@@ -289,7 +289,9 @@ export class Kit {
       const men = o.crewMen ?? crewMenFor(workHrs);
       if (!o.crewMen) this.A.push({ field: 'crewMen', value: men, why: `${Math.round(workHrs)} on-site hours → ${men}-man crew`, alt: men === 2 ? 3 : 2 });
       // installDays (spec): the rep's crew days drive the whole trip; the builder's own days stay the install suggestion.
-      const builtDays = crewDaysFor(workHrs, men), setDays = o.installDays && o.installDays > 0 ? o.installDays : undefined;
+      // mobilization / demobilization (one crew-day per job, see below) is time on site, so it counts in the crew days
+      const mobPer: number = (T as any).mobilizationHrsPerMan ?? 0, mobH = men * mobPer;
+      const builtDays = crewDaysFor(workHrs + mobH, men), setDays = o.installDays && o.installDays > 0 ? o.installDays : undefined;
       const crewDays = setDays ?? builtDays;
       const bd = setDays != null ? { builtCrewDays: builtDays } : {};   // detail: the builder's days, only when overridden
       // daily commute when the one-way drive is ≤ 1.5 h (site drive time when known, else miles ÷ mph); fly past flyAboveDriveHrs
@@ -300,8 +302,8 @@ export class Kit {
       const hrsFor = (d: number) => mode === 'local' ? men * 2 * d * miles / T.driveMph : mode === 'fly' ? men * 2 * T.flyDoorToDoorHrsEachWay : men * 2 * miles / T.driveMph;
       const travelHrs = hrsFor(crewDays);
       const tbasis: Basis = setDays != null
-        ? { source: 'spec', text: `${men} men × ${crewDays} crew days set on the spec (installDays; builder suggests ${builtDays} for ${Math.round(workHrs)} on-site h at ${R.crew.hoursPerDay} h/day), ${mode} ${miles} mi`, assumption: 'installDays' }
-        : { source: 'rule', text: `${Math.round(workHrs)} on-site h → ${men} men × ${crewDays} crew days (${R.crew.hoursPerDay} h/day), ${mode} ${miles} mi`, assumption: o.crewMen ? undefined : 'crewMen' };
+        ? { source: 'spec', text: `${men} men × ${crewDays} crew days set on the spec (installDays; builder suggests ${builtDays} for ${Math.round(workHrs + mobH)} on-site h at ${R.crew.hoursPerDay} h/day), ${mode} ${miles} mi`, assumption: 'installDays' }
+        : { source: 'rule', text: `${Math.round(workHrs + mobH)} on-site h (incl. ${mobH} h mobilization) → ${men} men × ${crewDays} crew days (${R.crew.hoursPerDay} h/day), ${mode} ${miles} mi`, assumption: o.crewMen ? undefined : 'crewMen' };
       // the install suggestion (this.site) is always the builder's own: travel hours at the builder's days
       this.site += setDays != null ? (hrsFor(builtDays) > 0 ? Math.round(hrsFor(builtDays)) : 0) : 0;
       if (travelHrs > 0) {
@@ -309,6 +311,14 @@ export class Kit {
         this.push({ kind: 'site_labor', category: 'onsiteLabor', description: `Travel (${mode}, ${men} men, ${miles} mi)`, qty: th, laborOp: 'site_travel' },
           { role: 'travel_time', basis: { source: 'rule', text: mode === 'local' ? `${men} men × 2 × ${crewDays} days × ${miles} mi ÷ ${T.driveMph} mph (daily commute)` : mode === 'fly' ? `${men} men × 2 × ${T.flyDoorToDoorHrsEachWay} h door to door` : `${men} men × 2 × ${miles} mi ÷ ${T.driveMph} mph`, assumption: o.travelMode ? undefined : 'travelMode' },
             detail: { type: 'travel', what: 'travel_time', mode, men, crewDays, miles, driveMph: T.driveMph, ...bd } });
+      }
+      // mobilization / demobilization: sold installs ran ~25% over the task list + travel, most on small jobs (docs/round5/ACCURACY.md);
+      // a fixed crew × h per job fits every size. Always on; when the rep sets installDays, their men × days include it.
+      if (mobH > 0) {
+        this.site += mobH;
+        this.push({ kind: 'site_labor', category: 'onsiteLabor', description: `Mobilization / demobilization (${men} men × ${mobPer} h)`, qty: mobH, laborOp: 'site_mobilization' },
+          { role: 'mobilization', basis: { source: 'rule', text: `${men} men × ${mobPer} h per installed job (unload, set up, layout, punch list, load out — calibrated on 43 sold installs)`, assumption: o.crewMen ? undefined : 'crewMen' },
+            detail: { type: 'labor', where: 'site', op: 'Mobilization / demobilization', smtRow: 'Labor G9:G44 On Site Labor', baseHrs: mobH, factor: 1, factorName: 'install', hours: mobH } as any });
       }
       if (mode !== 'local') {
         // away crews work Mon–Sat; Sunday is off but they stay (hotel + per diem for each Sunday the job spans)

@@ -67,7 +67,7 @@ export function decodeB64(s: string): string {
 // ref = `${itemId}:${slot}`. itemId is a permanent id stored on the spec item (assigned once, then saved with the spec);
 // travel / lodging / equipment lines use itemId 'trip' whether one item or several share the trip. slot is the line's
 // role plus a stable name (description stem, labor op, travel kind, equipment purpose), "#n" for the nth duplicate.
-const TRIP_ROLES = new Set(['travel_time', 'lodging', 'per_diem', 'airfare', 'rental_car', 'tool_return', 'lift', 'telehandler', 'forklift', 'generator', 'equipment', 'rental_delivery']);
+const TRIP_ROLES = new Set(['travel_time', 'mobilization', 'lodging', 'per_diem', 'airfare', 'rental_car', 'tool_return', 'lift', 'telehandler', 'forklift', 'generator', 'equipment', 'rental_delivery']);
 const slug = (t: string) => t.toLowerCase().replace(/\([^)]*\)/g, ' ').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 40) || 'line';
 function hash6(t: string) { let h = 2166136261; for (let i = 0; i < t.length; i++) { h ^= t.charCodeAt(i); h = Math.imul(h, 16777619); } return (h >>> 0).toString(36).slice(0, 6); }
 /** Gives every spec item a permanent `id` (kept when present). Deterministic from the item's content and position,
