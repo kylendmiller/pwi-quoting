@@ -1,0 +1,4 @@
+-- Applied 2026-11-24 via Supabase MCP (airtable_sync_schema + customers_name_unique_app_only). Kept here for the record.
+-- salespeople, sites, sync_state tables; customers/contacts airtable_id + fields; quotes.site_id;
+-- customers name uniqueness only for app-entered customers (Airtable is master and can repeat names).
+-- Cron: select cron.schedule('airtable-sync-15min','*/15 * * * *', <net.http_post to functions/v1/airtable-sync with x-sync-key from sync_state>);
