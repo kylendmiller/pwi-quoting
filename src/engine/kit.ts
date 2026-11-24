@@ -82,11 +82,21 @@ export interface FinishOpts {
   extraEquipment?: string[];
   skipTravel?: boolean;              // multi-product job: travel/lodging/equipment added once for the whole job
   installDays?: number;              // spec.installDays: crew days on site set by the rep (travel follows; site labor via installDaysLine)
+  trip?: TripOpts;                   // spec.trip: job-level travel facts (drive time, searched airfare)
+}
+/** Job-level travel facts from the spec (spec.trip). */
+export interface TripOpts {
+  driveMinutes?: number;             // one-way drive time PWI → site (Airtable building driveTimeSeconds / 60)
+  airfarePerPerson?: number;         // searched round-trip economy fare, ~2 weeks out, Mon→Fri
+  airfareRoute?: string;             // e.g. 'SBN → TUL'
+  airfareDates?: string;             // e.g. '2026-12-07 → 2026-12-11'
+  airfareSearchedOn?: string;        // date the fare was looked up
 }
 export interface JobTravel { workHrs: number; miles: number; workTopFt: number; heaviestPickLb: number; generator?: boolean; crewMen?: number; travelMode?: 'drive' | 'fly' | 'local'; extraEquipment?: string[];
   /** Crew days on site set on the spec (installDays). Nights, per diem, hotel, commute and rental periods use exactly these days.
    *  Unset → days come from the hours (crewDaysFor), as always. */
-  installDays?: number }
+  installDays?: number;
+  trip?: TripOpts }
 
 /** Crew hours per day on site (rules crew.hoursPerDay) — travel and installDays use the same number. */
 export const HOURS_PER_DAY: number = R.crew.hoursPerDay;
@@ -257,7 +267,7 @@ export class Kit {
             detail: { type: 'labor', where: 'site', op: x.desc, smtRow: 'Labor G9:G44 On Site Labor', baseHrs: x.hours, factor: this.f.install, factorName: 'install', hours: hrs } });
       }
       this.workHrs = workHrs;
-      if (!o.skipTravel) this.travel({ workHrs, miles, workTopFt: o.workTopFt, heaviestPickLb: o.heaviestPickLb, generator: o.generator, crewMen: o.crewMen, travelMode: o.travelMode, extraEquipment: o.extraEquipment, ...(o.installDays ? { installDays: o.installDays } : {}) });
+      if (!o.skipTravel) this.travel({ workHrs, miles, workTopFt: o.workTopFt, heaviestPickLb: o.heaviestPickLb, generator: o.generator, crewMen: o.crewMen, travelMode: o.travelMode, extraEquipment: o.extraEquipment, ...(o.installDays ? { installDays: o.installDays } : {}), ...(o.trip ? { trip: o.trip } : {}) });
     }
     // freight (freight history rates by load type and distance)
     const tns = this.lbs / 2000, F = R.freight;
@@ -279,8 +289,11 @@ export class Kit {
       const builtDays = crewDaysFor(workHrs, men), setDays = o.installDays && o.installDays > 0 ? o.installDays : undefined;
       const crewDays = setDays ?? builtDays;
       const bd = setDays != null ? { builtCrewDays: builtDays } : {};   // detail: the builder's days, only when overridden
-      const mode = o.travelMode ?? (miles <= T.localMiles ? 'local' : miles > T.flyAboveMiles ? 'fly' : 'drive');
-      if (!o.travelMode) this.A.push({ field: 'travelMode', value: mode, why: mode === 'local' ? `${miles} mi — daily commute, no lodging` : mode === 'fly' ? `${miles} mi > ${T.flyAboveMiles} — crew flies, rental car, tools ship LTL` : `${miles} mi — crew drives`, alt: mode === 'fly' ? 'drive' : mode === 'drive' ? 'fly' : 'drive' });
+      // daily commute when the one-way drive is ≤ 1.5 h (site drive time when known, else miles ÷ mph); fly past flyAboveMiles
+      const driveHrs = o.trip?.driveMinutes != null ? o.trip.driveMinutes / 60 : miles / T.driveMph;
+      const dh = `${driveHrs.toFixed(1)} h drive${o.trip?.driveMinutes != null ? '' : ` (${miles} mi ÷ ${T.driveMph} mph)`}`;
+      const mode = o.travelMode ?? (driveHrs <= T.localMaxDriveHrs ? 'local' : miles > T.flyAboveMiles ? 'fly' : 'drive');
+      if (!o.travelMode) this.A.push({ field: 'travelMode', value: mode, why: mode === 'local' ? `${dh} ≤ ${T.localMaxDriveHrs} h — daily commute, no lodging` : mode === 'fly' ? `${miles} mi > ${T.flyAboveMiles} — crew flies, rental car, tools ship LTL` : `${dh} > ${T.localMaxDriveHrs} h — crew drives and stays (hotel + per diem)`, alt: mode === 'fly' ? 'drive' : mode === 'drive' ? 'fly' : 'drive' });
       const hrsFor = (d: number) => mode === 'local' ? men * 2 * d * miles / T.driveMph : mode === 'fly' ? men * 2 * T.flyDoorToDoorHrsEachWay : men * 2 * miles / T.driveMph;
       const travelHrs = hrsFor(crewDays);
       const tbasis: Basis = setDays != null
@@ -295,15 +308,19 @@ export class Kit {
             detail: { type: 'travel', what: 'travel_time', mode, men, crewDays, miles, driveMph: T.driveMph, ...bd } });
       }
       if (mode !== 'local') {
-        const days = crewDays + (miles > T.sameDayDriveMiles ? 2 : 0);
+        // work is Mon–Fri; a crew that stays away stays through each weekend it spans (hotel + per diem every night/day)
+        const weekendDays = T.stayWeekendsWhenAway ? 2 * Math.floor(Math.max(0, crewDays - 1) / 5) : 0;
+        const days = crewDays + weekendDays + (miles > T.sameDayDriveMiles ? 2 : 0);
         const tl = (d: string, qty: number, c: number, what: 'hotel' | 'per_diem' | 'flight' | 'rental_car' | 'tool_return', role: Role) => this.push({ kind: 'travel', category: 'travel', description: d, qty, unitCost: c, markupPct: T.markupPct },
           { role, basis: { ...tbasis, assumption: 'crewDays' }, detail: { type: 'travel', what, mode, men, crewDays, tripDays: days, nights: days - 1, miles, rate: c, markupPct: T.markupPct, ...bd } });
         tl(`Hotels — ${men} rooms × ${days - 1} nights`, men * (days - 1), T.hotel, 'hotel', 'lodging');
         tl(`Per diem — ${men} men × ${days} days`, men * days, T.perDiem, 'per_diem', 'per_diem');
-        if (mode === 'fly') { tl('Flights (round trip per man)', men, T.flightPerMan, 'flight', 'airfare'); tl('Rental car (weekly)', Math.ceil(days / 7), T.rentalCarWeekly, 'rental_car', 'rental_car'); tl('LTL tool return to PWI', 1, T.toolReturnLtl, 'tool_return', 'tool_return'); }
+        const fare = o.trip?.airfarePerPerson, fareCost = fare ? Math.round(fare * T.airfareMultiplier * 100) / 100 : T.flightPerMan;
+        if (mode === 'fly' && !fare) this.notes.push(`No airfare searched — flights priced at the $${T.flightPerMan}/man fallback. Search a round trip from South Bend (SBN) ~2 weeks out and add it to the spec (trip.airfarePerPerson).`);
+        if (mode === 'fly') { tl(fare ? `Flights ${o.trip?.airfareRoute ?? ''} (round trip per man: searched $${fare}${o.trip?.airfareDates ? `, ${o.trip.airfareDates}` : ''} × ${T.airfareMultiplier})`.replace('Flights  (', 'Flights (') : 'Flights (round trip per man)', men, fareCost, 'flight', 'airfare'); tl('Rental car (weekly)', Math.ceil(days / 7), T.rentalCarWeekly, 'rental_car', 'rental_car'); tl('LTL tool return to PWI', 1, T.toolReturnLtl, 'tool_return', 'tool_return'); }
         this.A.push({ field: 'crewDays', value: crewDays, why: setDays != null
-          ? `${crewDays} days on site set on the spec (installDays; builder suggests ${builtDays}) + ${days - crewDays} travel days; lodging $${T.hotel}/night, per diem $${T.perDiem} (+${T.markupPct}%)`
-          : `${Math.round(workHrs)} h ÷ (${men} men × ${R.crew.hoursPerDay} h) → ${crewDays} days on site + ${days - crewDays} travel days; lodging $${T.hotel}/night, per diem $${T.perDiem} (+${T.markupPct}%)` });
+          ? `${crewDays} days on site set on the spec (installDays; builder suggests ${builtDays})${weekendDays ? ` + ${weekendDays} weekend days away` : ''} + ${days - crewDays - weekendDays} travel days; lodging $${T.hotel}/night, per diem $${T.perDiem} (+${T.markupPct}%)`
+          : `${Math.round(workHrs)} h ÷ (${men} men × ${R.crew.hoursPerDay} h) → ${crewDays} days on site${weekendDays ? ` + ${weekendDays} weekend days away` : ''} + ${days - crewDays - weekendDays} travel days; lodging $${T.hotel}/night, per diem $${T.perDiem} (+${T.markupPct}%)` });
       }
       const E = R.equipment, weeks = Math.ceil(crewDays / 5);
       const eq = (item: string, qty: number, purpose: 'lift' | 'handler' | 'generator' | 'extra', why: string) => {

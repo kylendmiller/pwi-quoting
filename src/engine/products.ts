@@ -54,7 +54,7 @@ export function buildJib(spec: JibSpec, cat: Catalog, f: Factors = { production:
   K.decal('(11" - 13" tall decals) Manual Crane Decal Set', n);
   K.shop([['Mast fab', mount === 'wall' ? 0 : 6 * n], ['Boom fab', 4 * n], ['After paint assembly', 3 * n]]);
   const job = { workTopFt: overall, heaviestPickLb: (cat.shape(boom)?.lbPerFt ?? 30) * s.spanFt + 400 };
-  K.finish({ install: s.install, miles: s.miles ?? 0, crewMen: s.crewMen, travelMode: s.travelMode, skipTravel: bo.skipTravel, installDays: bo.installDays, ...job,
+  K.finish({ install: s.install, miles: s.miles ?? 0, crewMen: s.crewMen, travelMode: s.travelMode, skipTravel: bo.skipTravel, installDays: bo.installDays, trip: bo.trip, ...job,
     site: [{ desc: 'Unload, layout', hours: 4 }, { desc: `Set and anchor jib${n > 1 ? 's' : ''} (${n})`, hours: (mount === 'floor' ? 8 : mount === 'foundationless' ? 6 : 6) * n }, { desc: 'Electrification + hoist', hours: 3 * n }] });
   K.pmCad(0.8, { pm: 8, cad: 6 });
   const wording = [
@@ -105,7 +105,7 @@ export function buildFallProtection(spec: FallProtectionSpec, cat: Catalog, f: F
   K.A.push({ field: 'layout', value: used.join("' + ") + "'", why: `${s.lengthFt}' track with supports every ${spacing}' → ${truss}" truss kits ${used.join("' + ")}' (${splices} splice${splices === 1 ? '' : 's'}), ${drops} drop rods` });
   K.shop([['Prep and pack', 2 * n]], { handling: true });
   const job = { workTopFt: 20, heaviestPickLb: 600 };
-  K.finish({ install: s.install, miles: s.miles ?? 0, crewMen: s.crewMen, travelMode: s.travelMode, skipTravel: bo.skipTravel, installDays: bo.installDays, ...job,
+  K.finish({ install: s.install, miles: s.miles ?? 0, crewMen: s.crewMen, travelMode: s.travelMode, skipTravel: bo.skipTravel, installDays: bo.installDays, trip: bo.trip, ...job,
     site: [{ desc: 'Unload, layout', hours: 4 }, { desc: `Install drops / braces (${drops})`, hours: 3 * drops }, { desc: `Field splices (${splices * n})`, hours: 3 * splices * n }, { desc: 'Hang track, trolleys and lifelines', hours: 4 * n }] });
   K.pmCad(0.6, { pm: 6, cad: 6 });
   const wording = [
@@ -137,7 +137,7 @@ export function buildVrc(spec: VrcSpec, cat: Catalog, f: Factors = { production:
       role: 'install', basis: { source: 'fixed', text: `20% of VRC price $${Math.round(total).toLocaleString('en-US')} ÷ $113/h (SMT VRC tab)`, assumption: 'vrcPrice' },
       detail: { type: 'labor', where: 'site', op: 'VRC install', smtRow: 'Labor F73 VRCs On-site Install', baseHrs: K.site, factor: 1, factorName: 'install', hours: K.site } } satisfies QuoteLine);
     K.workHrs = K.site;
-    if (!bo.skipTravel) K.travel({ workHrs: K.site, miles: spec.miles ?? 0, workTopFt: 16, heaviestPickLb: 3500, crewMen: spec.crewMen, travelMode: spec.travelMode, installDays: bo.installDays });
+    if (!bo.skipTravel) K.travel({ workHrs: K.site, miles: spec.miles ?? 0, workTopFt: 16, heaviestPickLb: 3500, crewMen: spec.crewMen, travelMode: spec.travelMode, installDays: bo.installDays, trip: bo.trip });
   }
   K.A.push({ field: 'vrcPrice', value: total, why: `${spec.model} list ${m.total}${spec.noPit ? ` − no-pit ${-m.noPitDeduct}` : ''}${spec.hdColumns ? ` + HD columns ${m.hdColumns}` : ''} (SMT VRC tab); 20% is install` });
   const wording = [`# (${n}) - APEX VERTICAL RECIPROCATING CONVEYOR${n > 1 ? 'S' : ''}`, '', `## ${spec.model} — ${m.name}`, ...m.specs.map((x: string) => `- ${x}`),

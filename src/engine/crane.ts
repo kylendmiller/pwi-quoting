@@ -34,7 +34,7 @@ export interface CraneSpec {
 export interface BuildResult { lines: QuoteLine[]; assumptions: Assumption[]; notes: string[]; wording: string; suggestedInstallHours: number; smtShopHours: number;
   outboundFreight: number; preUse: number; blockers: string[]; geometry: Record<string, number | string>; tons: number;
   job?: { workHrs: number; workTopFt: number; heaviestPickLb: number; generator?: boolean } }
-export interface BuildOpts { skipTravel?: boolean; installDays?: number }   // installDays: spec item crew days (buildFromSpec passes it; travel uses it)
+export interface BuildOpts { skipTravel?: boolean; installDays?: number; trip?: import('./kit').TripOpts }   // trip: spec.trip (job-level travel facts)   // installDays: spec item crew days (buildFromSpec passes it; travel uses it)
 
 type Norm = CraneSpec & { support: Support; hanging: 'top_running' | 'underhung'; series: 'UL' | 'M' | 'GM' | 'HL'; systems: number; runwayOalFt: number; trolley: 'manual' | 'motorized'; control: 'radio' | 'pendant'; voltage: '460V/3' | '230V/3' | '208V/3' };
 const KEYS = ['backupPendant', 'series', 'support', 'hanging', 'systems', 'runwayOalFt', 'spanFt', 'capacityTons', 'overallHeightFt', 'hookHeightFt', 'liftFt', 'columnsPerSystem', 'bridgesPerSystem', 'hoistsPerBridge',
@@ -264,7 +264,7 @@ export function buildCrane(spec: CraneSpec, cat: Catalog, f: Factors = { product
   const bridgeLb = girderLb + 1200 + (cap >= 5 ? 1500 : 300);
   const job = { workTopFt: hasCols ? colLen + runDepthFt : overall, heaviestPickLb: Math.max(K.heaviestLb, bridgeLb), generator: rail || (s.support !== 'freestanding' && cap >= 10) };
   K.finish({
-    install: s.install, miles: s.miles ?? 0, crewMen: s.crewMen, travelMode: s.travelMode, skipTravel: bo.skipTravel, installDays: bo.installDays, ...job,
+    install: s.install, miles: s.miles ?? 0, crewMen: s.crewMen, travelMode: s.travelMode, skipTravel: bo.skipTravel, installDays: bo.installDays, trip: bo.trip, ...job,
     site: [
       { desc: 'Unload, set up, layout', hours: S2.setup },
       { desc: `Install columns (${cols})`, hours: S2.column * cols },

@@ -31,9 +31,21 @@ Only ever call the company **PWI** or **PWI Corp**.
 - "Pink columns" → `colors.columns: "pink"`.
 - Any color other than gray or Spark Orange is a custom color. It costs more, and the app prices it.
 
-**Location**
+**Location and travel**
 - A city or ZIP means installed, unless they say "ship only".
-- Estimate one-way road miles from Nappanee, IN 46550 → `miles`.
+- Estimate one-way road miles from Nappanee, IN 46550 → `miles`, and one-way drive time in minutes → `trip.driveMinutes`.
+- The app decides the trip from those:
+  - **1.5 h drive or less** → the crew commutes daily (no hotel).
+  - **Over 1.5 h** → the crew stays: hotel + per diem. A job longer than one work week also pays hotel and per diem **through the weekend** (crews work Mon–Fri and stay).
+  - **Over ~800 mi** → the crew flies.
+
+**Flights (any job the crew flies to)**
+Search a real fare before making the link:
+1. Find the commercial airport nearest the job city.
+2. Search a **round trip, economy, from South Bend (SBN)** to that airport, leaving the **Monday about 2 weeks from today** and returning that **Friday**. Example: quoting on Tue Nov 24 → leave Mon Dec 7, return Fri Dec 11.
+3. Use web search / fetch (Google Flights, Kayak, the airlines) or a browser if you have one. Take the cheapest sensible fare (nonstop or 1 stop).
+4. Put it in the spec: `trip.airfarePerPerson`, `trip.airfareRoute` ("SBN → TUL"), `trip.airfareDates`, `trip.airfareSearchedOn`. The app multiplies the fare by 2.2 (late booking reality) and adds the travel markup, per man.
+5. If you can't find a fare, leave it out and say so in the read-back. The app then uses its flat rate and flags it for the rep.
 
 **Customer and contact**
 - Take the customer name and contact name, email and phone only if they were said or are in an attachment.
@@ -70,7 +82,7 @@ python3 -c "import base64,json,sys;s=json.dumps(json.loads(sys.argv[1]),separato
 ```
 
 Then reply with:
-1. a one-line read-back, e.g. "FSTRGM5, 5 t, 30' × 80', 20' overall, motorized, radio, pink columns, installed Milwaukee (~165 mi). Assumed 460V/3."
+1. a one-line read-back, e.g. "FSTRGM5, 5 t, 30' × 80', 20' overall, motorized, radio, pink columns, installed Milwaukee (~165 mi, ~2 h 55 m drive — crew stays). Assumed 460V/3." For a flying job add the fare: "Flight SBN → TUL $412 RT (Dec 7–11), app uses ×2.2."
 2. the link: **[Open draft quote](link)**
 
 If you cannot run code, do NOT hand-type base64. Instead, give the JSON in a ```json block and say: "Copy this and press Ctrl+V on the quote list page."
@@ -89,8 +101,16 @@ If you cannot run code, do NOT hand-type base64. Instead, give the JSON in a ```
       "spanFt": 30, "runwayOalFt": 80, "overallHeightFt": 20,
       "bridgeDrive": "motorized", "voltage": "460V/3", "control": "radio",
       "colors": { "columns": "pink" }, "install": true, "miles": 165 }
-  ]
+  ],
+  "trip": { "driveMinutes": 175 }
 }
+```
+
+A flying job adds the searched fare:
+
+```json
+"trip": { "driveMinutes": 720, "airfarePerPerson": 412, "airfareRoute": "SBN → TUL",
+          "airfareDates": "2026-12-07 → 2026-12-11", "airfareSearchedOn": "2026-11-24" }
 ```
 
 A job with several products is one spec with several items.

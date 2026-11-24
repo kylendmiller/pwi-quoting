@@ -38,6 +38,8 @@ export interface QuoteSpec {
   location?: string;
   customer?: { name?: string; city?: string; state?: string; contact?: { name?: string; email?: string; phone?: string } };
   items: ({ type: string; id?: string; tag?: string; wording?: string } & Record<string, any>)[];
+  /** Job-level travel facts: one-way drive minutes to the site, and the searched airfare (2 weeks out, round trip from SBN). */
+  trip?: import('./kit').TripOpts;
 }
 
 /** Accepts raw JSON, JSON with chat text / code fences around it, or a full app link (#/new?s=…). */
@@ -214,7 +216,7 @@ export function buildFromSpec(spec0: QuoteSpec, cat0: Catalog, settings: any, ba
     let days: number | undefined;
     try {
       days = installDaysOf(it);
-      r = B.build(bare, cat, { production: pf[B.fam] ?? B.def[0], install: inf[B.fam] ?? B.def[1] }, { skipTravel: shared && !!it.install, ...(days && !shared ? { installDays: days } : {}) });
+      r = B.build(bare, cat, { production: pf[B.fam] ?? B.def[0], install: inf[B.fam] ?? B.def[1] }, { skipTravel: shared && !!it.install, ...(days && !shared ? { installDays: days } : {}), ...(spec.trip ? { trip: spec.trip } : {}) });
     }
     catch (e: any) { blockers.push(`${label}${e.message ?? e}`); return; }
     const group = `${spec.items.length > 1 ? `Item ${i + 1}` : 'Item'}${it.tag ? ` (${it.tag})` : ''} — ${it.type.replace(/_/g, ' ')}`;
@@ -254,7 +256,7 @@ export function buildFromSpec(spec0: QuoteSpec, cat0: Catalog, settings: any, ba
         if (adj) lines = lines.concat(stampRefs([{ ...adj, auto: true, source: 'auto' as const, item: x.i, group: x.group }], () => x.id) as any);
       }
     }
-    K.travel(tripDays ? { ...trip, installDays: tripDays } : trip);
+    K.travel({ ...(tripDays ? { ...trip, installDays: tripDays } : trip), ...(spec.trip ? { trip: spec.trip } : {}) });
     lines = lines.concat(stampRefs(K.lines.map(l => ({ ...l, auto: true, source: 'auto' as const, item: -1, group: `Shared trip (${installed.length} installed items)` })), () => 'trip') as any);
     assumptions.push(...K.A.map(a => ({ ...a, item: -1 })));
     notes.push(`One shared trip for ${installed.length} installed items (${Math.round(trip.workHrs)} on-site hours).`);

@@ -67,7 +67,7 @@ describe('installDays: one item', () => {
   it('travel uses exactly those days: nights, hotel rooms, per diem', () => {
     const days = builtDays + 2;
     const d = build(spec({ installDays: days })).doc;
-    const extra = 400 > RULES.travel.sameDayDriveMiles ? 2 : 0;
+    const extra = (400 > RULES.travel.sameDayDriveMiles ? 2 : 0) + 2 * Math.floor((days - 1) / 5);   // travel days + weekends stayed
     const hotel = travelDetail(d, 'hotel'), pd = travelDetail(d, 'per_diem');
     expect((hotel.detail as any).crewDays).toBe(days);
     expect((hotel.detail as any).nights).toBe(days + extra - 1);
