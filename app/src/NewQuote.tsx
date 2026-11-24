@@ -7,7 +7,6 @@ import { buildFromSpec } from '../../src/engine/buildSpec';
 
 export function NewQuote() {
   const [spec, setSpec] = useState(getPending);
-  const [customers, setCustomers] = useState<any[]>([]);
   const [search, setSearch] = useState(spec?.customer?.name ?? '');
   const [customer, setCustomer] = useState<any>(null);
   const [contacts, setContacts] = useState<any[]>([]);
@@ -19,14 +18,28 @@ export function NewQuote() {
   const [brand, setBrand] = useState('PWI');
   const [err, setErr] = useState('');
   const [busy, setBusy] = useState(false);
+  const [matches, setMatches] = useState<any[]>([]);
+  const [confirmNew, setConfirmNew] = useState(false);
 
-  useEffect(() => { supabase.from('customers').select('*').order('name').then(({ data }) => setCustomers(data ?? [])); }, []);
+  // Search all ~8,700 customers on the server (fuzzy: "grand design" finds "Grand Design RV"); never load the whole list.
+  useEffect(() => {
+    setConfirmNew(false);
+    const q = search.trim();
+    if (customer || q.length < 2) { setMatches([]); return; }
+    const t = setTimeout(async () => {
+      const { data } = await supabase.rpc('search_customers', { q });
+      setMatches(data ?? []);
+      // a spec from Claude with an exact name match picks that customer straight away
+      const exact = (data ?? []).filter((c: any) => c.name.toLowerCase() === q.toLowerCase());
+      if (spec && exact.length === 1) setCustomer(exact[0]);
+    }, 250);
+    return () => clearTimeout(t);
+  }, [search, customer]);
   useEffect(() => {
     if (!customer?.id) { setContacts([]); return; }
     supabase.from('contacts').select('*').eq('customer_id', customer.id).then(({ data }) => setContacts(data ?? []));
   }, [customer]);
 
-  const matches = search.length > 1 ? customers.filter(c => c.name.toLowerCase().includes(search.toLowerCase())).slice(0, 8) : [];
   const create = async () => {
     setErr(''); setBusy(true);
     try {
@@ -66,8 +79,12 @@ export function NewQuote() {
         <div>
           <label>Customer</label>
           <input value={customer?.name ?? search} onChange={e => { setCustomer(null); setSearch(e.target.value); }} placeholder="Start typing a customer name" />
-          {!customer && matches.map(c => <div key={c.id} className="muted" style={{ cursor: 'pointer', padding: 4 }} onClick={() => setCustomer(c)}>{c.name}</div>)}
-          {!customer && search.length > 1 && !matches.some(m => m.name.toLowerCase() === search.toLowerCase()) && <div className="muted">New customer "{search}" will be created.</div>}
+          {!customer && matches.map(c => <div key={c.id} style={{ cursor: 'pointer', padding: 4 }} onClick={() => setCustomer(c)}>
+            {c.name}{c.common_name && c.common_name !== c.name ? <span className="muted"> ({c.common_name})</span> : null}
+            <span className="muted"> {[c.city, c.state].filter(Boolean).join(', ')}{c.airtable_id ? '' : ' · added in quote app'}</span></div>)}
+          {!customer && search.trim().length > 1 && !matches.some(m => m.name.toLowerCase() === search.trim().toLowerCase()) && <label className="inline muted" style={{ display: 'block', marginTop: 6 }}>
+            <input type="checkbox" checked={confirmNew} onChange={e => setConfirmNew(e.target.checked)} /> {matches.length ? `None of the ${matches.length} above — ` : 'No match found — '}create new customer "{search.trim()}"</label>}
+          {customer && <button className="link" onClick={() => { setCustomer(null); }}>change customer</button>}
         </div>
         <div className="grid g3">
           <div><label>Contact</label>
@@ -85,7 +102,7 @@ export function NewQuote() {
           {!spec && <div><label>Main product</label><select value={family} onChange={e => setFamily(e.target.value)}>{FAMILIES.map(f => <option key={f.key} value={f.key}>{f.label}</option>)}</select></div>}
           <div><label>Brand</label><select value={brand} onChange={e => setBrand(e.target.value)}><option>PWI</option><option>StairZone</option><option>HoistZone</option></select></div>
         </div>
-        <div><button onClick={create} disabled={busy || !(customer || search.trim()) || !project.trim()}>{busy ? 'Building…' : spec ? 'Create & build quote' : 'Create quote'}</button> {err && <span className="msg-error">{err}</span>}</div>
+        <div><button onClick={create} disabled={busy || !(customer || (confirmNew && search.trim())) || !project.trim()}>{busy ? 'Building…' : spec ? 'Create & build quote' : 'Create quote'}</button> {err && <span className="msg-error">{err}</span>}</div>
       </div>
     </>
   );
