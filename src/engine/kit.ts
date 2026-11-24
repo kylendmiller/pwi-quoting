@@ -318,11 +318,11 @@ export class Kit {
           { role, basis: { ...tbasis, assumption: 'crewDays' }, detail: { type: 'travel', what, mode, men, crewDays, tripDays: days, nights: days - 1, miles, rate: c, markupPct: T.markupPct, ...bd } });
         tl(`Hotels — ${men} rooms × ${days - 1} nights`, men * (days - 1), T.hotel, 'hotel', 'lodging');
         tl(`Per diem — ${men} men × ${days} days`, men * days, T.perDiem, 'per_diem', 'per_diem');
-        // fare: live search (spec) → SBN fare table (nearest airport) → flat fallback
+        // fare: SBN fare table (nearest airport) is the standard; a fare typed on the spec overrides it; flat fallback when no job state
         const fare = o.trip?.airfarePerPerson, tf = !fare && mode === 'fly' ? tableFare(o.trip ?? {}) : undefined;
         const base = fare ?? tf?.fare, fareCost = base ? Math.round(base * T.airfareMultiplier * 100) / 100 : T.flightPerMan;
-        if (mode === 'fly' && tf) this.notes.push(`Airfare from the SBN fare table: SBN → ${tf.code} (${tf.city}) $${tf.fare} round trip (survey ${tf.pulledOn}) × ${T.airfareMultiplier}. Search a live fare ~2 weeks out to confirm.`);
-        if (mode === 'fly' && !fare && !tf) this.notes.push(`No airfare searched and no job state — flights priced at the $${T.flightPerMan}/man fallback. Search a round trip from South Bend (SBN) ~2 weeks out and add it to the spec (trip.airfarePerPerson).`);
+        if (mode === 'fly' && tf) this.notes.push(`Airfare from the SBN fare table: SBN → ${tf.code} (${tf.city}) $${tf.fare} round trip (survey ${tf.pulledOn}) × ${T.airfareMultiplier}.`);
+        if (mode === 'fly' && !fare && !tf) this.notes.push(`No job state on the quote — flights priced at the $${T.flightPerMan}/man fallback. Add the job's city and state so the SBN fare table can price it.`);
         const fdesc = fare ? `Flights ${o.trip?.airfareRoute ?? ''} (round trip per man: searched $${fare}${o.trip?.airfareDates ? `, ${o.trip.airfareDates}` : ''} × ${T.airfareMultiplier})`.replace('Flights  (', 'Flights (')
           : tf ? `Flights SBN → ${tf.code} (round trip per man: fare table $${tf.fare} × ${T.airfareMultiplier})` : 'Flights (round trip per man)';
         if (mode === 'fly') { tl(fdesc, men, fareCost, 'flight', 'airfare'); tl('Rental car (weekly)', Math.ceil(days / 7), T.rentalCarWeekly, 'rental_car', 'rental_car'); tl('LTL tool return to PWI', 1, T.toolReturnLtl, 'tool_return', 'tool_return'); }

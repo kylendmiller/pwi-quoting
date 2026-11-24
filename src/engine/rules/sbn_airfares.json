@@ -1,6 +1,6 @@
 {
   "_source": "Google Flights, pulled 2026-11-24 by Kyle: South Bend (SBN) round trip, 1 adult economy, depart Tue Dec 8 return Tue Dec 15 2026, to the 50 busiest US airports. Average $454, median $394.",
-  "_use": "Fallback when no live fare was searched: the nearest airport to the job (state center when no better location) × airfareMultiplier, plus the travel markup. A live search (Mon→Fri ~2 weeks out) still wins. Refresh this table every few months.",
+  "_use": "The standard airfare for every flying job (Kyle, 2026-11-24: no live searches): the nearest airport to the job (state center when no better location) × airfareMultiplier, plus the travel markup. Refresh this table every few months.",
   "pulledOn": "2026-11-24",
   "dates": "2026-12-08 → 2026-12-15",
   "median": 394,

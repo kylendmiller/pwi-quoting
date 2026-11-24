@@ -55,10 +55,10 @@ describe('airfare', () => {
     expect(f.unitCost).toBeCloseTo(412 * RULES.travel.airfareMultiplier, 2);
     expect(f.description).toContain('SBN → TUL'); expect(f.description).toContain('× 2.2');
   });
-  it('no fare searched: falls back to the flat rate and says so', () => {
+  it('no job state: falls back to the flat rate and says so', () => {
     const d = build({ items: [{ ...FS, miles: 1200 }] });
     expect(td(d, 'flight').unitCost).toBe(RULES.travel.flightPerMan);
-    expect(d.buildNotes.join(' ')).toMatch(/No airfare searched/);
+    expect(d.buildNotes.join(' ')).toMatch(/No job state/);
   });
   it('no live fare: the SBN fare table prices the nearest airport (job state from the location)', () => {
     const d = build({ items: [{ ...FS, miles: 1200 }], location: 'Tulsa, OK 74107' } as any);

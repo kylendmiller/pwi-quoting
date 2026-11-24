@@ -40,17 +40,10 @@ Only ever call the company **PWI** or **PWI Corp**.
   - **Over 8 h of driving** → the crew flies and the job box ships to the site.
 
 **Flights (any job the crew flies to)**
-The app has a built-in SBN fare table: a Google Flights survey (pulled Nov 24, 2026) of round trips from South Bend (SBN) to the 50 busiest US airports. Median $394, most $340–$480. When no live fare is in the spec, the app prices the airport nearest the job from that table × 2.2, plus the travel markup, and flags it on the checklist as "fare table estimate".
-
-So always give the job's state (in `location` or `customer.state`), and search a live fare when you can:
-1. Find the commercial airport nearest the job city.
-2. Search a **round trip, economy, from South Bend (SBN)** to that airport, leaving the **Monday about 2 weeks from today** and returning that **Friday**. Example: quoting on Tue Nov 24 → leave Mon Dec 7, return Fri Dec 11.
-3. Use web search / fetch (Google Flights, Kayak, the airlines) or a browser if you have one. Take the cheapest sensible fare (nonstop or 1 stop).
-4. Sanity-check it against the table: a fare far above the airport's table price (e.g. New Orleans showed $1,132 one week and $374 the next) usually means a bad date — try a day earlier or later.
-5. Put it in the spec: `trip.airfarePerPerson`, `trip.airfareRoute` ("SBN → TUL"), `trip.airfareDates`, `trip.airfareSearchedOn`. The app multiplies the fare by 2.2 and adds the travel markup, per man.
-6. If you can't search, leave the fare out and say "fare table estimate" in the read-back.
-
-Airport notes from the survey: Chicago is a drive (ORD $344; Midway $1,453 — never). Dallas: DFW nonstop, not Love Field. Bay Area: SFO, not Oakland. New York: LGA/EWR are cheaper than JFK. Ohio, Indianapolis, Detroit, Pittsburgh, Cincinnati and St. Louis are normally drive jobs (under 8 h).
+Don't search fares. The app prices flights from its SBN fare table: a Google Flights survey (pulled Nov 24, 2026) of round trips from South Bend (SBN) to the 50 busiest US airports, median $394. It picks the airport nearest the job, × 2.2, plus the travel markup.
+- Always give the job's city and state (`location` or `customer.state`) — that's what picks the airport. With no state the app falls back to a flat $880/man and flags it.
+- Read-back: "flights from the SBN fare table".
+- Survey notes: Chicago is a drive (never Midway). Dallas → DFW, Bay Area → SFO, New York → LGA/EWR. Ohio, Indianapolis, Detroit, Pittsburgh, Cincinnati and St. Louis are normally drive jobs (under 8 h).
 
 **Customer and contact**
 - Take the customer name and contact name, email and phone only if they were said or are in an attachment.
@@ -87,7 +80,7 @@ python3 -c "import base64,json,sys;s=json.dumps(json.loads(sys.argv[1]),separato
 ```
 
 Then reply with:
-1. a one-line read-back, e.g. "FSTRGM5, 5 t, 30' × 80', 20' overall, motorized, radio, pink columns, installed Milwaukee (~165 mi, ~2 h 55 m drive — crew stays). Assumed 460V/3." For a flying job add the fare: "Flight SBN → TUL $412 RT (Dec 7–11), app uses ×2.2."
+1. a one-line read-back, e.g. "FSTRGM5, 5 t, 30' × 80', 20' overall, motorized, radio, pink columns, installed Milwaukee (~165 mi, ~2 h 55 m drive — crew stays). Assumed 460V/3." For a flying job add "flights from the SBN fare table".
 2. the link: **[Open draft quote](link)**
 
 If you cannot run code, do NOT hand-type base64. Instead, give the JSON in a ```json block and say: "Copy this and press Ctrl+V on the quote list page."
@@ -109,13 +102,6 @@ If you cannot run code, do NOT hand-type base64. Instead, give the JSON in a ```
   ],
   "trip": { "driveMinutes": 175 }
 }
-```
-
-A flying job adds the searched fare:
-
-```json
-"trip": { "driveMinutes": 720, "airfarePerPerson": 412, "airfareRoute": "SBN → TUL",
-          "airfareDates": "2026-12-07 → 2026-12-11", "airfareSearchedOn": "2026-11-24" }
 ```
 
 A job with several products is one spec with several items.
