@@ -219,6 +219,11 @@ export function Editor({ quoteId, me, mode = 'edit' }: { quoteId: string; me: Pr
             getCatalog={() => loadCatalog(settings)} openFlags={openFlags} approvedRules={approvedRules} isManager={isMgr}
             askManager={askManager} vendorSearch={vendorSearch} importBox={importBox} />}
 
+          {(doc as any).rfq && <div className="card from-claude">
+            <h3>Built from website {(doc as any).rfq.number}</h3>
+            {(doc as any).rfq.note && <p><b>Customer wrote:</b> {(doc as any).rfq.note}</p>}
+            {(doc as any).rfq.assumed?.length > 0 && <><b>Assumed — check these:</b><ul>{(doc as any).rfq.assumed.map((n: string, i: number) => <li key={i}>{n}</li>)}</ul></>}
+          </div>}
           {!newView && <>
           {!locked && <ImportSpec doc={doc} settings={settings} onApply={(d, h, notes) => {
             H.set(d, 'Build from spec'); setBuildNotes(notes);

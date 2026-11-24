@@ -7,3 +7,7 @@ export { stampFromBuild } from '../src/engine/stamp';
 export { readSteelCost } from '../src/engine/kit';
 export { loadCatalog } from '../src/engine/catalogLoader';
 export { deltaDoc, reviseStatus } from '../src/engine/changeOrder';
+export { parseSpec } from '../src/engine/buildSpec';
+export { parseRfqDetails, configuratorSpec, milesFromState, pct } from '../src/engine/rfq';
+export { emptyDoc } from '../app/src/model';
+export { default as SKILL_MD } from '../skill/pwi-quote/SKILL.md';
