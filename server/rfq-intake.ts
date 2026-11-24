@@ -249,16 +249,23 @@ async function askClaude(key: string, skill: string, md: string, ctx: Record<str
 - Do not search flights. Do not invent a customer.
 - Quotable = a crane, monorail, gantry, jib, mezzanine, work platform, VRC, fall protection or price-list item with enough size to build. Rough sizes are fine ("roughly 80 x 30 x 18") — use them.
 - Not quotable: spam, sales pitches, stairs/ladders, decking, "call me" with no product or size, repairs/service, or anything outside the auto-builder's ranges. Say why in one short sentence.
-- Reply with ONE JSON object and nothing else: {"quotable": true, "spec": {...pwi_quote spec...}, "assumed": ["..."]} or {"quotable": false, "reason": "..."}.`;
+- Answer ONLY by calling the submit_rfq tool: quotable true with the pwi_quote spec and every default in "assumed", or quotable false with a one-sentence reason.`;
   const user = `Website RFQ:\n\n${md}\n\nContext: ${JSON.stringify(ctx)}`;
-  const ctl = new AbortController(); const t = setTimeout(() => ctl.abort(), 20000);
+  // forced tool call: the reply is always valid JSON (inch marks, notes etc. can't break it)
+  const tool = { name: 'submit_rfq', description: 'Submit the result for this website RFQ.', input_schema: { type: 'object', properties: {
+    quotable: { type: 'boolean' }, spec: { type: 'object', description: 'pwi_quote spec (pwi_quote: 1, project, location, customer, items[])' },
+    assumed: { type: 'array', items: { type: 'string' } }, reason: { type: 'string' } }, required: ['quotable'] } };
+  const ctl = new AbortController(); const t = setTimeout(() => ctl.abort(), 50000);
   try {
     const r = await fetch('https://api.anthropic.com/v1/messages', { method: 'POST', signal: ctl.signal,
       headers: { 'x-api-key': key, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' },
-      body: JSON.stringify({ model: MODEL, max_tokens: 1500, system, messages: [{ role: 'user', content: user }] }) });
+      body: JSON.stringify({ model: MODEL, max_tokens: 4000, system, tools: [tool], tool_choice: { type: 'auto' }, messages: [{ role: 'user', content: user }] }) });
     if (!r.ok) throw new Error(`API ${r.status} ${(await r.text()).slice(0, 200)}`);
-    const out = (await r.json()).content?.map((c: any) => c.text ?? '').join('') ?? '';
-    const m = out.match(/\{[\s\S]*\}/); if (!m) throw new Error('no JSON in reply');
+    const content = (await r.json()).content ?? [];
+    const out = content.find((c: any) => c.type === 'tool_use')?.input;   // this model can't be forced to the tool; it's asked to, and text JSON is the fallback
+    if (out) return out;
+    const m = content.map((c: any) => c.text ?? '').join('').match(/\{[\s\S]*\}/);
+    if (!m) throw new Error('no answer from Claude');
     return JSON.parse(m[0]);
   } finally { clearTimeout(t); }
 }
