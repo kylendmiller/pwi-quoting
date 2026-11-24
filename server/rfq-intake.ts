@@ -128,9 +128,9 @@ async function intake(admin: any, rfqId: string, dryRun: boolean, force: boolean
       else return skip(why || c.skip || 'Not enough detail to auto-quote.');
     }
     spec = E.parseSpec(JSON.stringify({ ...spec, pwi_quote: 1 }));
-    for (const it of spec.items) { if (it.install !== false && it.miles == null && miles != null) it.miles = miles; }
+    for (const it of spec.items) { if (it.miles == null && miles != null) it.miles = miles; }
     if (driveMinutes && !spec.trip?.driveMinutes) spec.trip = { ...(spec.trip ?? {}), driveMinutes };
-    if (milesWhy) assumed.push(`Miles ${spec.items[0]?.miles ?? miles} ${milesWhy}`);
+    if (milesWhy && (spec.items[0]?.miles ?? miles) === miles) assumed.push(`Miles ${miles} ${milesWhy}`);   // Claude moved the miles → its own note says why
     spec.project ??= `${number} ${product || 'Website RFQ'}`;
     spec.location ??= p.address;
 
@@ -245,7 +245,12 @@ ${checks ? `<p style="margin-bottom:4px"><b>Assumed — check these:</b></p><ul 
 async function askClaude(key: string, skill: string, md: string, ctx: Record<string, unknown>) {
   const system = `${skill}\n\n---\n\nYOU ARE RUNNING UNATTENDED on a website RFQ (no rep to ask). Rules for this mode:
 - Never ask questions. Default anything missing the way the skill says and list every default in "assumed" (short phrases a rep can check).
-- Installed unless the customer says ship only / they install. Miles: use the provided miles unless the address clearly says otherwise.
+- Installed or ship only — decide from what the customer actually wrote, NOT from the form's "Project Timeline" line (every website RFQ says "delivery/installation" there; ignore it).
+  Ship only (install: false) when they ask for delivery, shipping, freight or FOB with no mention of installing, or say they install / have their own crew.
+  Installed (install: true) when they mention install, erect, set up on site, turnkey, or ask us to put it in.
+  Neither → installed, and say "Install not mentioned — assumed installed, confirm" in assumed.
+  Always put the install decision and the words it rests on first in "assumed", e.g. "Ship only — RFQ lists 'Shipping and Freight (FOB Destination)', no install".
+- Miles: use the provided miles unless the address clearly says otherwise.
 - Do not search flights. Do not invent a customer.
 - Quotable = a crane, monorail, gantry, jib, mezzanine, work platform, VRC, fall protection or price-list item with enough size to build. Rough sizes are fine ("roughly 80 x 30 x 18") — use them.
 - Not quotable: spam, sales pitches, stairs/ladders, decking, "call me" with no product or size, repairs/service, or anything outside the auto-builder's ranges. Say why in one short sentence.
