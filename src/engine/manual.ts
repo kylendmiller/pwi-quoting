@@ -59,6 +59,7 @@ export interface QuoteDoc {
   removed?: string[];               // refs of auto lines the rep deleted: they stay deleted on rebuild
   removedInfo?: RemovedInfo[];      // what those lines were (written on delete) so the editor can list / restore them after a reload
   steelCostDate?: string;           // steel_cost.effective the auto lines were built at
+  checklist?: Record<string, { at: string; by?: string }>;   // "Before you send" ticks (checklist.ts)
 }
 
 /** One deleted auto line, as it was when the rep deleted it (doc.removedInfo). doc.removed stays the source of truth;
@@ -288,6 +289,7 @@ export function validateDoc(doc: QuoteDoc): string[] {
 }
 
 /** Wording checks. Errors block sending (never saving). */
+import { openChecklist } from './checklist';
 export function lintWording(doc: QuoteDoc, s: Settings): Lint[] {
   const out: Lint[] = [];
   const w = doc.wording;
@@ -304,6 +306,8 @@ export function lintWording(doc: QuoteDoc, s: Settings): Lint[] {
     if (l.kind === 'material' && l.unitCost != null && !l.markupPct) out.push({ level: 'warning', message: `"${l.description}" has no markup.` });
   }
   for (const b of doc.blockers ?? []) out.push({ level: 'error', message: b });
+  const open = openChecklist(doc).length;
+  if (open) out.push({ level: 'error', message: `Before you send: tick ${open} checklist item${open > 1 ? 's' : ''}.` });
   return out;
 }
 

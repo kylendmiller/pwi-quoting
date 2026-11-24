@@ -6,6 +6,7 @@ import { FLAG_TEXT, FLAG_LABEL } from './flags';
 import type { Change } from './changes';
 import { TargetPrice } from './TargetPrice';
 import { quoteMoney, showsPreUse } from './engineApi';
+import { sendChecklist } from '../../../src/engine/checklist';
 
 export interface RailProps {
   priced: Priced; doc: QuoteDoc; settings: Settings; locked: boolean; dirty: boolean; busy: boolean; hideCost: boolean; setHideCost: (b: boolean) => void;
@@ -44,6 +45,7 @@ export function PriceRail(r: RailProps) {
         </div>}
       </div>
       {target && !r.locked && <TargetPrice doc={r.doc} settings={r.settings} onClose={() => setTarget(false)} onApply={(d, l) => { r.onTarget(d, l); setTarget(false); }} />}
+      {!r.locked && <Checklist doc={r.doc} onChange={r.onTarget} />}
       <div className="card">
         {r.dirty && <div className="qe-unsaved"><button className="link" onClick={() => setShowChanges(!showChanges)}>{r.changes.length || 'Some'} unsaved change{r.changes.length === 1 ? '' : 's'} {showChanges ? '▾' : '▸'}</button>
           {showChanges && <ul>{r.changes.slice(0, 40).map((c, i) => <li key={i}>{c.text}</li>)}{r.changes.length > 40 && <li>…{r.changes.length - 40} more</li>}</ul>}</div>}
@@ -66,6 +68,26 @@ export function PriceRail(r: RailProps) {
           {r.locked && r.onWin && <button className="secondary" onClick={r.onWin}>Mark won → Confirmation</button>}
         </div>
       </div>
+    </div>
+  );
+}
+
+/** "Before you send": every item must be ticked (and saved) before Send unlocks — the server checks it too. */
+function Checklist({ doc, onChange }: { doc: QuoteDoc; onChange: (d: QuoteDoc, label: string) => void }) {
+  const items = sendChecklist(doc), ticks = doc.checklist ?? {};
+  const done = items.filter(i => ticks[i.key]).length;
+  const toggle = (key: string, label: string) => {
+    const next = { ...ticks };
+    if (next[key]) delete next[key]; else next[key] = { at: new Date().toISOString() };
+    onChange({ ...doc, checklist: next }, `${next[key] ? 'Checked' : 'Unchecked'}: ${label}`);
+  };
+  return (
+    <div className="card qe-checklist">
+      <h3 style={{ marginTop: 0 }}>Before you send <span className="muted">({done}/{items.length})</span></h3>
+      {items.map(i => <label key={i.key} className="inline" style={{ display: 'flex', gap: 8, alignItems: 'flex-start', margin: '6px 0' }}>
+        <input type="checkbox" checked={!!ticks[i.key]} onChange={() => toggle(i.key, i.label)} />
+        <span><b style={{ color: /NOT searched/.test(i.label) ? 'var(--orange)' : undefined }}>{i.label}</b>{i.detail && <><br /><span className="muted">{i.detail}</span></>}</span>
+      </label>)}
     </div>
   );
 }
