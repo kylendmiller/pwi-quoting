@@ -36,8 +36,8 @@ Only ever call the company **PWI** or **PWI Corp**.
 - Estimate one-way road miles from Nappanee, IN 46550 → `miles`, and one-way drive time in minutes → `trip.driveMinutes`.
 - The app decides the trip from those:
   - **1.5 h drive or less** → the crew commutes daily (no hotel).
-  - **Over 1.5 h** → the crew stays: hotel + per diem. A job longer than one work week also pays hotel and per diem **through the weekend** (crews work Mon–Fri and stay).
-  - **Over ~800 mi** → the crew flies.
+  - **Over 1.5 h** → the crew stays: hotel + per diem. Away crews work **6 days (Mon–Sat)**; Sunday is off but they stay, so each Sunday the job spans adds hotel + per diem.
+  - **Over 8 h of driving** → the crew flies and the job box ships to the site.
 
 **Flights (any job the crew flies to)**
 Search a real fare before making the link:

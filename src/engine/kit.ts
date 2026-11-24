@@ -289,11 +289,11 @@ export class Kit {
       const builtDays = crewDaysFor(workHrs, men), setDays = o.installDays && o.installDays > 0 ? o.installDays : undefined;
       const crewDays = setDays ?? builtDays;
       const bd = setDays != null ? { builtCrewDays: builtDays } : {};   // detail: the builder's days, only when overridden
-      // daily commute when the one-way drive is ≤ 1.5 h (site drive time when known, else miles ÷ mph); fly past flyAboveMiles
+      // daily commute when the one-way drive is ≤ 1.5 h (site drive time when known, else miles ÷ mph); fly past flyAboveDriveHrs
       const driveHrs = o.trip?.driveMinutes != null ? o.trip.driveMinutes / 60 : miles / T.driveMph;
       const dh = `${driveHrs.toFixed(1)} h drive${o.trip?.driveMinutes != null ? '' : ` (${miles} mi ÷ ${T.driveMph} mph)`}`;
-      const mode = o.travelMode ?? (driveHrs <= T.localMaxDriveHrs ? 'local' : miles > T.flyAboveMiles ? 'fly' : 'drive');
-      if (!o.travelMode) this.A.push({ field: 'travelMode', value: mode, why: mode === 'local' ? `${dh} ≤ ${T.localMaxDriveHrs} h — daily commute, no lodging` : mode === 'fly' ? `${miles} mi > ${T.flyAboveMiles} — crew flies, rental car, tools ship LTL` : `${dh} > ${T.localMaxDriveHrs} h — crew drives and stays (hotel + per diem)`, alt: mode === 'fly' ? 'drive' : mode === 'drive' ? 'fly' : 'drive' });
+      const mode = o.travelMode ?? (driveHrs <= T.localMaxDriveHrs ? 'local' : driveHrs > T.flyAboveDriveHrs ? 'fly' : 'drive');
+      if (!o.travelMode) this.A.push({ field: 'travelMode', value: mode, why: mode === 'local' ? `${dh} ≤ ${T.localMaxDriveHrs} h — daily commute, no lodging` : mode === 'fly' ? `${dh} > ${T.flyAboveDriveHrs} h — crew flies, rental car, job box ships, tools ship LTL back` : `${dh} > ${T.localMaxDriveHrs} h — crew drives and stays (hotel + per diem)`, alt: mode === 'fly' ? 'drive' : mode === 'drive' ? 'fly' : 'drive' });
       const hrsFor = (d: number) => mode === 'local' ? men * 2 * d * miles / T.driveMph : mode === 'fly' ? men * 2 * T.flyDoorToDoorHrsEachWay : men * 2 * miles / T.driveMph;
       const travelHrs = hrsFor(crewDays);
       const tbasis: Basis = setDays != null
@@ -308,8 +308,8 @@ export class Kit {
             detail: { type: 'travel', what: 'travel_time', mode, men, crewDays, miles, driveMph: T.driveMph, ...bd } });
       }
       if (mode !== 'local') {
-        // work is Mon–Fri; a crew that stays away stays through each weekend it spans (hotel + per diem every night/day)
-        const weekendDays = T.stayWeekendsWhenAway ? 2 * Math.floor(Math.max(0, crewDays - 1) / 5) : 0;
+        // away crews work Mon–Sat; Sunday is off but they stay (hotel + per diem for each Sunday the job spans)
+        const weekendDays = T.stayWeekendsWhenAway ? Math.floor(Math.max(0, crewDays - 1) / T.workDaysPerWeekAway) : 0;
         const days = crewDays + weekendDays + (miles > T.sameDayDriveMiles ? 2 : 0);
         const tl = (d: string, qty: number, c: number, what: 'hotel' | 'per_diem' | 'flight' | 'rental_car' | 'tool_return', role: Role) => this.push({ kind: 'travel', category: 'travel', description: d, qty, unitCost: c, markupPct: T.markupPct },
           { role, basis: { ...tbasis, assumption: 'crewDays' }, detail: { type: 'travel', what, mode, men, crewDays, tripDays: days, nights: days - 1, miles, rate: c, markupPct: T.markupPct, ...bd } });
@@ -319,10 +319,10 @@ export class Kit {
         if (mode === 'fly' && !fare) this.notes.push(`No airfare searched — flights priced at the $${T.flightPerMan}/man fallback. Search a round trip from South Bend (SBN) ~2 weeks out and add it to the spec (trip.airfarePerPerson).`);
         if (mode === 'fly') { tl(fare ? `Flights ${o.trip?.airfareRoute ?? ''} (round trip per man: searched $${fare}${o.trip?.airfareDates ? `, ${o.trip.airfareDates}` : ''} × ${T.airfareMultiplier})`.replace('Flights  (', 'Flights (') : 'Flights (round trip per man)', men, fareCost, 'flight', 'airfare'); tl('Rental car (weekly)', Math.ceil(days / 7), T.rentalCarWeekly, 'rental_car', 'rental_car'); tl('LTL tool return to PWI', 1, T.toolReturnLtl, 'tool_return', 'tool_return'); }
         this.A.push({ field: 'crewDays', value: crewDays, why: setDays != null
-          ? `${crewDays} days on site set on the spec (installDays; builder suggests ${builtDays})${weekendDays ? ` + ${weekendDays} weekend days away` : ''} + ${days - crewDays - weekendDays} travel days; lodging $${T.hotel}/night, per diem $${T.perDiem} (+${T.markupPct}%)`
-          : `${Math.round(workHrs)} h ÷ (${men} men × ${R.crew.hoursPerDay} h) → ${crewDays} days on site${weekendDays ? ` + ${weekendDays} weekend days away` : ''} + ${days - crewDays - weekendDays} travel days; lodging $${T.hotel}/night, per diem $${T.perDiem} (+${T.markupPct}%)` });
+          ? `${crewDays} days on site set on the spec (installDays; builder suggests ${builtDays})${weekendDays ? ` + ${weekendDays} Sunday${weekendDays > 1 ? 's' : ''} off (paid)` : ''} + ${days - crewDays - weekendDays} travel days; lodging $${T.hotel}/night, per diem $${T.perDiem} (+${T.markupPct}%)`
+          : `${Math.round(workHrs)} h ÷ (${men} men × ${R.crew.hoursPerDay} h) → ${crewDays} days on site${weekendDays ? ` + ${weekendDays} Sunday${weekendDays > 1 ? 's' : ''} off (paid)` : ''} + ${days - crewDays - weekendDays} travel days; lodging $${T.hotel}/night, per diem $${T.perDiem} (+${T.markupPct}%)` });
       }
-      const E = R.equipment, weeks = Math.ceil(crewDays / 5);
+      const E = R.equipment, weeks = Math.ceil(crewDays / (mode === 'local' ? 5 : T.workDaysPerWeekAway));
       const eq = (item: string, qty: number, purpose: 'lift' | 'handler' | 'generator' | 'extra', why: string) => {
         const it = this.cat.equip(item); if (!it) { this.notes.push(`Equipment ${item} not in list`); return; }
         const useWeekly = crewDays >= E.weekly.fromDays; const unit = useWeekly ? (weeks >= E.monthly.fromWeeks ? it.monthly * weeks / 4 : it.weekly * weeks) : it.daily * crewDays;
