@@ -40,12 +40,17 @@ Only ever call the company **PWI** or **PWI Corp**.
   - **Over 8 h of driving** → the crew flies and the job box ships to the site.
 
 **Flights (any job the crew flies to)**
-Search a real fare before making the link:
+The app has a built-in SBN fare table: a Google Flights survey (pulled Nov 24, 2026) of round trips from South Bend (SBN) to the 50 busiest US airports. Median $394, most $340–$480. When no live fare is in the spec, the app prices the airport nearest the job from that table × 2.2, plus the travel markup, and flags it on the checklist as "fare table estimate".
+
+So always give the job's state (in `location` or `customer.state`), and search a live fare when you can:
 1. Find the commercial airport nearest the job city.
 2. Search a **round trip, economy, from South Bend (SBN)** to that airport, leaving the **Monday about 2 weeks from today** and returning that **Friday**. Example: quoting on Tue Nov 24 → leave Mon Dec 7, return Fri Dec 11.
 3. Use web search / fetch (Google Flights, Kayak, the airlines) or a browser if you have one. Take the cheapest sensible fare (nonstop or 1 stop).
-4. Put it in the spec: `trip.airfarePerPerson`, `trip.airfareRoute` ("SBN → TUL"), `trip.airfareDates`, `trip.airfareSearchedOn`. The app multiplies the fare by 2.2 (late booking reality) and adds the travel markup, per man.
-5. If you can't find a fare, leave it out and say so in the read-back. The app then uses its flat rate and flags it for the rep.
+4. Sanity-check it against the table: a fare far above the airport's table price (e.g. New Orleans showed $1,132 one week and $374 the next) usually means a bad date — try a day earlier or later.
+5. Put it in the spec: `trip.airfarePerPerson`, `trip.airfareRoute` ("SBN → TUL"), `trip.airfareDates`, `trip.airfareSearchedOn`. The app multiplies the fare by 2.2 and adds the travel markup, per man.
+6. If you can't search, leave the fare out and say "fare table estimate" in the read-back.
+
+Airport notes from the survey: Chicago is a drive (ORD $344; Midway $1,453 — never). Dallas: DFW nonstop, not Love Field. Bay Area: SFO, not Oakland. New York: LGA/EWR are cheaper than JFK. Ohio, Indianapolis, Detroit, Pittsburgh, Cincinnati and St. Louis are normally drive jobs (under 8 h).
 
 **Customer and contact**
 - Take the customer name and contact name, email and phone only if they were said or are in an attachment.

@@ -1,5 +1,6 @@
 // One build path for every client (paste box, link, future Claude connector).
 // Spec in → full quote doc out. Pure: the caller supplies the catalog and settings.
+import { stateOf } from './airfare';
 import { type Catalog, type Assumption } from './freestanding';
 import { buildCrane, type BuildResult, type BuildOpts } from './crane';
 import { buildGantry } from './gantry';
@@ -196,6 +197,9 @@ export function buildFromSpec(spec0: QuoteSpec, cat0: Catalog, settings: any, ba
   const sc = cat.steelCost;
   if (sc) assumptions.push({ item: -1, field: 'steelCost', value: sc.effective, why: `Steel $/lb from the ${sc.effective} steel cost setting${sc.source ? ` (${sc.source})` : ''}; groups it doesn't list use the price list` });
   let install = 0, freight = 0, preUse = 0;
+  // job-level travel facts + the job's state (picks the nearest airport in the SBN fare table when no live fare)
+  const jobState = spec.trip?.state ?? spec.customer?.state ?? stateOf(spec.location);
+  const jobTrip = spec.trip || jobState ? { ...(spec.trip ?? {}), ...(jobState ? { state: jobState } : {}) } : undefined;
   // Several installed items on one job share one trip: build each without travel, then price the trip once.
   const installed = spec.items.filter(it => BUILDERS[it.type] && it.install);
   const shared = installed.length > 1;
@@ -216,7 +220,7 @@ export function buildFromSpec(spec0: QuoteSpec, cat0: Catalog, settings: any, ba
     let days: number | undefined;
     try {
       days = installDaysOf(it);
-      r = B.build(bare, cat, { production: pf[B.fam] ?? B.def[0], install: inf[B.fam] ?? B.def[1] }, { skipTravel: shared && !!it.install, ...(days && !shared ? { installDays: days } : {}), ...(spec.trip ? { trip: spec.trip } : {}) });
+      r = B.build(bare, cat, { production: pf[B.fam] ?? B.def[0], install: inf[B.fam] ?? B.def[1] }, { skipTravel: shared && !!it.install, ...(days && !shared ? { installDays: days } : {}), ...(jobTrip ? { trip: jobTrip } : {}) });
     }
     catch (e: any) { blockers.push(`${label}${e.message ?? e}`); return; }
     const group = `${spec.items.length > 1 ? `Item ${i + 1}` : 'Item'}${it.tag ? ` (${it.tag})` : ''} — ${it.type.replace(/_/g, ' ')}`;
@@ -256,7 +260,7 @@ export function buildFromSpec(spec0: QuoteSpec, cat0: Catalog, settings: any, ba
         if (adj) lines = lines.concat(stampRefs([{ ...adj, auto: true, source: 'auto' as const, item: x.i, group: x.group }], () => x.id) as any);
       }
     }
-    K.travel({ ...(tripDays ? { ...trip, installDays: tripDays } : trip), ...(spec.trip ? { trip: spec.trip } : {}) });
+    K.travel({ ...(tripDays ? { ...trip, installDays: tripDays } : trip), ...(jobTrip ? { trip: jobTrip } : {}) });
     lines = lines.concat(stampRefs(K.lines.map(l => ({ ...l, auto: true, source: 'auto' as const, item: -1, group: `Shared trip (${installed.length} installed items)` })), () => 'trip') as any);
     assumptions.push(...K.A.map(a => ({ ...a, item: -1 })));
     notes.push(`One shared trip for ${installed.length} installed items (${Math.round(trip.workHrs)} on-site hours).`);

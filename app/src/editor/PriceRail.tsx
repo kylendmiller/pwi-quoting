@@ -86,7 +86,7 @@ function Checklist({ doc, onChange }: { doc: QuoteDoc; onChange: (d: QuoteDoc, l
       <h3 style={{ marginTop: 0 }}>Before you send <span className="muted">({done}/{items.length})</span></h3>
       {items.map(i => <label key={i.key} className="inline" style={{ display: 'flex', gap: 8, alignItems: 'flex-start', margin: '6px 0' }}>
         <input type="checkbox" checked={!!ticks[i.key]} onChange={() => toggle(i.key, i.label)} />
-        <span><b style={{ color: /NOT searched/.test(i.label) ? 'var(--orange)' : undefined }}>{i.label}</b>{i.detail && <><br /><span className="muted">{i.detail}</span></>}</span>
+        <span><b style={{ color: /NOT/.test(i.label) ? 'var(--orange)' : undefined }}>{i.label}</b>{i.detail && <><br /><span className="muted">{i.detail}</span></>}</span>
       </label>)}
     </div>
   );

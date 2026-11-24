@@ -57,3 +57,18 @@ describe('helpers', () => {
   });
   it('reads the AI score', () => { expect(pct('85% Serious Inquiry\n\nReasoning')).toBe(85); expect(pct('')).toBeUndefined(); });
 });
+
+import { stateOf, tableFare } from '../src/engine/airfare';
+describe('SBN fare table', () => {
+  it('reads the state from a location', () => {
+    expect(stateOf('3931 Carbon Plant Road, Ozark, Arkansas 72949-8803 (US)')).toBe('AR');
+    expect(stateOf('Tulsa, OK 74107')).toBe('OK');
+    expect(stateOf('Charleston, West Virginia')).toBe('WV');
+  });
+  it('picks the nearest surveyed airport', () => {
+    expect(tableFare({ state: 'GA' })?.code).toBe('ATL');
+    expect(tableFare({ state: 'Massachusetts' })?.code).toBe('BOS');
+    expect(tableFare({ state: 'LA' })?.fare).toBe(374);     // MSY at its usual price, not the $1,132 survey spike
+    expect(tableFare({})).toBeUndefined();
+  });
+});

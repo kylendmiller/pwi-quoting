@@ -60,4 +60,16 @@ describe('airfare', () => {
     expect(td(d, 'flight').unitCost).toBe(RULES.travel.flightPerMan);
     expect(d.buildNotes.join(' ')).toMatch(/No airfare searched/);
   });
+  it('no live fare: the SBN fare table prices the nearest airport (job state from the location)', () => {
+    const d = build({ items: [{ ...FS, miles: 1200 }], location: 'Tulsa, OK 74107' } as any);
+    const f = td(d, 'flight');
+    expect(f.description).toMatch(/SBN → (DFW|MCI)/);                     // Oklahoma's nearest surveyed airports
+    expect(f.unitCost).toBeGreaterThan(300 * RULES.travel.airfareMultiplier);
+    expect(d.buildNotes.join(' ')).toMatch(/fare table/);
+  });
+  it('fare table by state name too', () => {
+    const d = build({ items: [{ ...FS, miles: 2000 }], customer: { name: 'X', state: 'Washington' } } as any);
+    expect(td(d, 'flight').description).toMatch(/SBN → SEA/);
+    expect(td(d, 'flight').unitCost).toBeCloseTo(413 * RULES.travel.airfareMultiplier, 2);
+  });
 });

@@ -3,6 +3,7 @@
 // plate, standard parts, vendor items, paint, shop labor, install crew/travel/lodging/equipment,
 // freight and PM/CAD. Numbers come from rules/freestanding_rules.json (calibrated on sold jobs)
 // and the live price lists (Catalog).
+import { tableFare } from './airfare';
 import { INSTALL_DAYS_OP, type QuoteLine } from './manual';
 import { roleOf, vendorRole, smtLaborBlock, type Role, type Basis, type LineDetail, type CostSource } from './lineDetail';
 import type { CategoryKey } from './rollup';
@@ -91,6 +92,8 @@ export interface TripOpts {
   airfareRoute?: string;             // e.g. 'SBN → TUL'
   airfareDates?: string;             // e.g. '2026-12-07 → 2026-12-11'
   airfareSearchedOn?: string;        // date the fare was looked up
+  state?: string;                    // job state (from the spec) — picks the nearest airport in the SBN fare table
+  lat?: number; lng?: number;        // job location when known (better than the state's center)
 }
 export interface JobTravel { workHrs: number; miles: number; workTopFt: number; heaviestPickLb: number; generator?: boolean; crewMen?: number; travelMode?: 'drive' | 'fly' | 'local'; extraEquipment?: string[];
   /** Crew days on site set on the spec (installDays). Nights, per diem, hotel, commute and rental periods use exactly these days.
@@ -315,9 +318,14 @@ export class Kit {
           { role, basis: { ...tbasis, assumption: 'crewDays' }, detail: { type: 'travel', what, mode, men, crewDays, tripDays: days, nights: days - 1, miles, rate: c, markupPct: T.markupPct, ...bd } });
         tl(`Hotels — ${men} rooms × ${days - 1} nights`, men * (days - 1), T.hotel, 'hotel', 'lodging');
         tl(`Per diem — ${men} men × ${days} days`, men * days, T.perDiem, 'per_diem', 'per_diem');
-        const fare = o.trip?.airfarePerPerson, fareCost = fare ? Math.round(fare * T.airfareMultiplier * 100) / 100 : T.flightPerMan;
-        if (mode === 'fly' && !fare) this.notes.push(`No airfare searched — flights priced at the $${T.flightPerMan}/man fallback. Search a round trip from South Bend (SBN) ~2 weeks out and add it to the spec (trip.airfarePerPerson).`);
-        if (mode === 'fly') { tl(fare ? `Flights ${o.trip?.airfareRoute ?? ''} (round trip per man: searched $${fare}${o.trip?.airfareDates ? `, ${o.trip.airfareDates}` : ''} × ${T.airfareMultiplier})`.replace('Flights  (', 'Flights (') : 'Flights (round trip per man)', men, fareCost, 'flight', 'airfare'); tl('Rental car (weekly)', Math.ceil(days / 7), T.rentalCarWeekly, 'rental_car', 'rental_car'); tl('LTL tool return to PWI', 1, T.toolReturnLtl, 'tool_return', 'tool_return'); }
+        // fare: live search (spec) → SBN fare table (nearest airport) → flat fallback
+        const fare = o.trip?.airfarePerPerson, tf = !fare && mode === 'fly' ? tableFare(o.trip ?? {}) : undefined;
+        const base = fare ?? tf?.fare, fareCost = base ? Math.round(base * T.airfareMultiplier * 100) / 100 : T.flightPerMan;
+        if (mode === 'fly' && tf) this.notes.push(`Airfare from the SBN fare table: SBN → ${tf.code} (${tf.city}) $${tf.fare} round trip (survey ${tf.pulledOn}) × ${T.airfareMultiplier}. Search a live fare ~2 weeks out to confirm.`);
+        if (mode === 'fly' && !fare && !tf) this.notes.push(`No airfare searched and no job state — flights priced at the $${T.flightPerMan}/man fallback. Search a round trip from South Bend (SBN) ~2 weeks out and add it to the spec (trip.airfarePerPerson).`);
+        const fdesc = fare ? `Flights ${o.trip?.airfareRoute ?? ''} (round trip per man: searched $${fare}${o.trip?.airfareDates ? `, ${o.trip.airfareDates}` : ''} × ${T.airfareMultiplier})`.replace('Flights  (', 'Flights (')
+          : tf ? `Flights SBN → ${tf.code} (round trip per man: fare table $${tf.fare} × ${T.airfareMultiplier})` : 'Flights (round trip per man)';
+        if (mode === 'fly') { tl(fdesc, men, fareCost, 'flight', 'airfare'); tl('Rental car (weekly)', Math.ceil(days / 7), T.rentalCarWeekly, 'rental_car', 'rental_car'); tl('LTL tool return to PWI', 1, T.toolReturnLtl, 'tool_return', 'tool_return'); }
         this.A.push({ field: 'crewDays', value: crewDays, why: setDays != null
           ? `${crewDays} days on site set on the spec (installDays; builder suggests ${builtDays})${weekendDays ? ` + ${weekendDays} Sunday${weekendDays > 1 ? 's' : ''} off (paid)` : ''} + ${days - crewDays - weekendDays} travel days; lodging $${T.hotel}/night, per diem $${T.perDiem} (+${T.markupPct}%)`
           : `${Math.round(workHrs)} h ÷ (${men} men × ${R.crew.hoursPerDay} h) → ${crewDays} days on site${weekendDays ? ` + ${weekendDays} Sunday${weekendDays > 1 ? 's' : ''} off (paid)` : ''} + ${days - crewDays - weekendDays} travel days; lodging $${T.hotel}/night, per diem $${T.perDiem} (+${T.markupPct}%)` });
