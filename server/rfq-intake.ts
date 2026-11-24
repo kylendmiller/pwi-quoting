@@ -28,6 +28,7 @@ const F = {
   details: 'fldQF9M9IvNhUyJK2', number: 'fldJlBjRborP75zNC', salesman: 'fldSjUwCjIVUBrI0E', customer: 'fldkleYXwPPn38bFR',
   contact: 'fldHInGSLaBY46oCO', serious: 'fld0cgnVHk0C4TCRp', real: 'fld0jrYlYFLIiGGf9', brand: 'fldlq3SWw6Js7fhes',
   product: 'fldWB71mZALdekSfH', submission: 'fldIVumkwnXybT2JQ', custName: 'fldW7xoOoWgOiQEOV', attachments: 'fldigLz2yu105tZBZ',
+  notes: 'fldc1R1cCsXCIcLtJ', salesEmail: 'fldAyoRBTm2dACXYI',
 };
 const MIN_SCORE = 50;
 const MODEL = 'claude-sonnet-5-5';
@@ -72,6 +73,9 @@ async function poll(admin: any) {
     if (!ready && Date.now() - Date.parse(rec.createdTime) < 2 * 3600_000) continue;   // let Make + Airtable AI finish
     out.push({ rfq: rec.id, ...(await intake(admin, rec.id, false, false)) });
   }
+  const { data: pending } = await admin.from('rfq_intake').select('rfq_airtable_id').eq('status', 'drafted')
+    .or('emailed_at.is.null,noted_at.is.null').gte('created_at', new Date(Date.now() - 3 * 86400_000).toISOString()).limit(10);
+  for (const x of pending ?? []) await notify(admin, x.rfq_airtable_id).catch(() => null);
   await admin.from('sync_state').update({ last_run_at: new Date().toISOString(), last_ok_at: new Date().toISOString(), counts: { seen: recs.length, processed: out.length } }).eq('name', 'rfq-intake');
   return { seen: recs.length, processed: out };
 }
@@ -173,12 +177,69 @@ async function intake(admin: any, rfqId: string, dryRun: boolean, force: boolean
     await admin.from('quote_events').insert({ quote_id: q.id, revision_id: rev.id, actor: owner, event: 'created', data: { from: 'rfq', rfq: number, source, owner_has_account: !!sp?.user_id } });
     const fullNote = sp?.user_id ? note : `${note} · Quote sits under Kyle until ${sp?.full_name ?? 'the salesperson'} has a quote-app login`;
     await log({ rfq_number: number, status: 'drafted', reason: fullNote, quote_id: q.id, spec, source, total: ro.total });
-    return { status: 'drafted', link: `${APP}/#/q/${q.id}`, note: fullNote, total: ro.total };
+    const sent = await notify(admin, rfqId).catch((e: Error) => ({ error: e.message }));
+    return { status: 'drafted', link: `${APP}/#/q/${q.id}`, note: fullNote, total: ro.total, sent };
   } catch (e) {
     const msg = (e as Error).message ?? String(e);
     await log({ status: 'error', reason: msg });
     return { status: 'error', note: `Auto-quote failed: ${msg}` };
   }
+}
+
+/** Tell the salesperson: append the link to the RFQ's notes in Airtable, and email them (Microsoft 365).
+ *  Each half runs once (noted_at / emailed_at) and is retried by the poll until it works — e.g. before the
+ *  Microsoft secrets exist or while the Airtable token lacks write access. */
+async function notify(admin: any, rfqId: string) {
+  const { data: row } = await admin.from('rfq_intake').select('*').eq('rfq_airtable_id', rfqId).single();
+  if (!row?.quote_id || (row.noted_at && row.emailed_at)) return { skipped: true };
+  const tok = Deno.env.get('AIRTABLE_TOKEN')!;
+  const r = await fetch(`https://api.airtable.com/v0/${BASE}/${RFQS}/${rfqId}?returnFieldsByFieldId=true`, { headers: { authorization: `Bearer ${tok}` } });
+  if (!r.ok) throw new Error(`Airtable ${r.status}`);
+  const f = (await r.json()).fields ?? {};
+  const link = `${APP}/#/q/${row.quote_id}`, total = row.total ? `$${Math.round(Number(row.total)).toLocaleString('en-US')}` : '';
+  const res: Record<string, unknown> = {};
+  if (!row.noted_at) {
+    const cur = text(f[F.notes]);
+    const add = `Draft quote (auto, ${total}): ${link}`;
+    if (cur.includes(link)) res.noted = 'already';
+    else {
+      const w = await fetch(`https://api.airtable.com/v0/${BASE}/${RFQS}/${rfqId}`, { method: 'PATCH', headers: { authorization: `Bearer ${tok}`, 'content-type': 'application/json' },
+        body: JSON.stringify({ fields: { [F.notes]: cur ? `${cur.trimEnd()}\n\n${add}\n` : `${add}\n` } }) });
+      res.noted = w.ok ? 'ok' : `Airtable ${w.status}`;
+    }
+    if (res.noted === 'ok' || res.noted === 'already') await admin.from('rfq_intake').update({ noted_at: new Date().toISOString() }).eq('rfq_airtable_id', rfqId);
+  }
+  if (!row.emailed_at) {
+    const lk = first(f[F.salesEmail]);
+    const to = (typeof lk === 'string' ? lk : lk?.valuesByLinkedRecordId ? Object.values(lk.valuesByLinkedRecordId).flat()[0] : '') as string;
+    const ms = { tenant: Deno.env.get('MS_TENANT_ID'), id: Deno.env.get('MS_CLIENT_ID'), secret: Deno.env.get('MS_CLIENT_SECRET'), from: Deno.env.get('MAIL_FROM') };
+    if (!to) res.emailed = 'no salesperson email';
+    else if (!ms.tenant || !ms.id || !ms.secret || !ms.from) res.emailed = 'Microsoft 365 not set up yet';
+    else {
+      const number = text(f[F.number]), cust = text(f[F.custName]);
+      const tk = await fetch(`https://login.microsoftonline.com/${ms.tenant}/oauth2/v2.0/token`, { method: 'POST', headers: { 'content-type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({ client_id: ms.id, client_secret: ms.secret, scope: 'https://graph.microsoft.com/.default', grant_type: 'client_credentials' }) });
+      if (!tk.ok) res.emailed = `Microsoft sign-in ${tk.status}`;
+      else {
+        const esc = (x: string) => x.replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' } as any)[c]);
+        const checks = String(row.reason ?? '').split(' · ').slice(1).map(x => `<li>${esc(x)}</li>`).join('');
+        const html = `<div style="font-family:Poppins,Arial,sans-serif;color:#000;max-width:560px">
+<div style="border-bottom:3px solid #FF6800;padding-bottom:6px;font-weight:700;letter-spacing:.5px">PWI — DRAFT QUOTE READY</div>
+<p>A draft quote was built automatically from website RFQ <b>${esc(number)}</b> for <b>${esc(cust)}</b>.</p>
+${total ? `<p>Draft total: <b>${total}</b></p>` : ''}
+<p><a href="${link}" style="background:#FF6800;color:#fff;padding:10px 18px;text-decoration:none;font-weight:700;border-radius:4px;display:inline-block">Open and edit the quote</a></p>
+${checks ? `<p style="margin-bottom:4px"><b>Assumed — check these:</b></p><ul style="margin-top:0">${checks}</ul>` : ''}
+<p style="color:#81858B">It's a starting point: change anything, then save and send from the quote app.</p>
+<p style="color:#FF6800;font-weight:700;font-size:12px">CONQUER YOUR SPACE</p></div>`;
+        const m = await fetch(`https://graph.microsoft.com/v1.0/users/${encodeURIComponent(ms.from)}/sendMail`, { method: 'POST',
+          headers: { authorization: `Bearer ${(await tk.json()).access_token}`, 'content-type': 'application/json' },
+          body: JSON.stringify({ message: { subject: `Draft quote ready — ${number} ${cust}`, body: { contentType: 'HTML', content: html }, toRecipients: [{ emailAddress: { address: to } }] }, saveToSentItems: true }) });
+        res.emailed = m.ok ? `sent to ${to}` : `Microsoft ${m.status} ${(await m.text()).slice(0, 150)}`;
+        if (m.ok) await admin.from('rfq_intake').update({ emailed_at: new Date().toISOString(), emailed_to: to }).eq('rfq_airtable_id', rfqId);
+      }
+    }
+  }
+  return res;
 }
 
 async function askClaude(key: string, skill: string, md: string, ctx: Record<string, unknown>) {
