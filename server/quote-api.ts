@@ -34,7 +34,7 @@ async function hash(o: unknown) {
 Deno.serve(async (req: Request) => {
   if (req.method === 'OPTIONS') return json({});
   const url = Deno.env.get('SUPABASE_URL')!;
-  const admin = createClient(url, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!, { auth: { persistSession: false } });
+  const admin = createClient(url, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!, { auth: { persistSession: false }, db: { schema: 'quoting' } });
   const token = (req.headers.get('authorization') ?? '').replace(/^Bearer /, '');
   const { data: u } = await admin.auth.getUser(token);
   if (!u?.user) return json({ error: 'Not signed in' }, 401);

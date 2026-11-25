@@ -19,7 +19,7 @@ export function Login() {
   }, []);
   const send = async () => {
     setErr('');
-    const { error } = await supabase.auth.signInWithOtp({ email: email.trim(), options: { shouldCreateUser: true } });
+    const { error } = await supabase.auth.signInWithOtp({ email: email.trim(), options: { shouldCreateUser: false } });
     if (error) setErr(error.message); else setSent(true);
   };
   const signInPw = async () => {

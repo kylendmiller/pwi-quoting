@@ -112,7 +112,7 @@ async function apply(db: any, d: { employees: Rec[]; customerTypes: Rec[]; custo
 }
 
 Deno.serve(async (req) => {
-  const db = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!, { auth: { persistSession: false } });
+  const db = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!, { auth: { persistSession: false }, db: { schema: 'quoting' } });
   const { data: st } = await db.from('sync_state').select('*').eq('name', 'airtable').single();
   if (!st?.key || req.headers.get('x-sync-key') !== st.key) return json({ error: 'forbidden' }, 403);
   const started = new Date();

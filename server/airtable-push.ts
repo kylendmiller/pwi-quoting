@@ -13,7 +13,7 @@ const json = (b: unknown, status = 200) => new Response(JSON.stringify(b), { sta
 const clean = (s: string) => s.replace(/[.,]/g, '').replace(/\s+/g, ' ').trim();
 
 Deno.serve(async (req) => {
-  const db = createClient(Deno.env.get('SUPABASE_URL'), Deno.env.get('SUPABASE_SERVICE_ROLE_KEY'), { auth: { persistSession: false } });
+  const db = createClient(Deno.env.get('SUPABASE_URL'), Deno.env.get('SUPABASE_SERVICE_ROLE_KEY'), { auth: { persistSession: false }, db: { schema: 'quoting' } });
   const { data: st } = await db.from('sync_state').select('key').eq('name', 'rfq-intake').single();
   if (!st?.key || req.headers.get('x-intake-key') !== st.key) return json({ error: 'Bad key' }, 401);
   const tok = Deno.env.get('AIRTABLE_TOKEN'); if (!tok) return json({ error: 'AIRTABLE_TOKEN not set' }, 500);

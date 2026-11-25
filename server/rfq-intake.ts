@@ -42,7 +42,7 @@ const POLL_MAX = 5;                          // per run (each can take a Claude 
 
 Deno.serve(async (req) => {
   if (req.method !== 'POST') return json({ error: 'POST only' }, 405);
-  const admin = createClient(Deno.env.get('SUPABASE_URL'), Deno.env.get('SUPABASE_SERVICE_ROLE_KEY'), { auth: { persistSession: false } });
+  const admin = createClient(Deno.env.get('SUPABASE_URL'), Deno.env.get('SUPABASE_SERVICE_ROLE_KEY'), { auth: { persistSession: false }, db: { schema: 'quoting' } });
   const { data: st } = await admin.from('sync_state').select('key').eq('name', 'rfq-intake').single();
   if (!st?.key || req.headers.get('x-intake-key') !== st.key) return json({ error: 'Bad key' }, 401);
   const body = await req.json().catch(() => ({}));

@@ -15,7 +15,7 @@ mkdirSync('app/public/engine', { recursive: true });
 for (const f of readdirSync('app/public/engine')) rmSync(`app/public/engine/${f}`);
 writeFileSync(`app/public/engine/engine-${hash}.js`, code);
 const url = `${SITE}/engine/engine-${hash}.js`;
-for (const fn of ['quote-api', 'rfq-intake'])
+for (const fn of ['quote-api', 'rfq-intake', 'airtable-sync', 'airtable-push'])
   await build({ entryPoints: [`server/${fn}.ts`], bundle: true, format: 'esm', platform: 'neutral', minify: false, outfile: `dist/${fn}/index.js`,
     external: ['npm:*'], define: { __ENGINE_URL__: JSON.stringify(url), __ENGINE_SHA__: JSON.stringify(sha) } });
 console.log('engine', url, code.length, 'bytes');

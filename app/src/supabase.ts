@@ -1,9 +1,9 @@
 import { createClient } from '@supabase/supabase-js';
 
 // Public values (safe in the browser). All writes go through the quote-api function.
-export const SUPABASE_URL = 'https://kiuwtbizrantrcyybkfw.supabase.co';
-export const SUPABASE_KEY = 'sb_publishable_evrkhfsIfEBBZHLlZkiaJA_J_hPzZqb';
-export const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+export const SUPABASE_URL = 'https://cartygcdzbgajstpboxu.supabase.co';
+export const SUPABASE_KEY = 'sb_publishable_7Rn_K9YTt4T22Osv6-SlHA_tonH2eP-';
+export const supabase = createClient(SUPABASE_URL, SUPABASE_KEY, { db: { schema: 'quoting' } });   // quote app tables live in schema quoting of the PWI Inventory System project
 
 export async function api<T = any>(action: string, payload: Record<string, unknown> = {}): Promise<T> {
   const { data: s } = await supabase.auth.getSession();
