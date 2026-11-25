@@ -17,7 +17,7 @@ The token itself doesn't change, so there's nothing to update in Supabase.
    (New-ApplicationAccessPolicy -AccessRight RestrictAccess -AppId <client id> -PolicyScopeGroupId <group with the mailbox>).
 4. Certificates & secrets → New client secret.
 5. Mailbox to send from, e.g. quotes@pwiworks.com (a shared mailbox is fine).
-6. Supabase → project kiuwtbizrantrcyybkfw → Edge Functions → Secrets, add:
+6. Supabase → project cartygcdzbgajstpboxu (PWI Inventory System; the quote app moved here 11/25, schema quoting) → Edge Functions → Secrets, add:
    - MS_TENANT_ID — Directory (tenant) ID
    - MS_CLIENT_ID — Application (client) ID
    - MS_CLIENT_SECRET — the secret value
