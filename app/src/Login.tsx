@@ -36,7 +36,7 @@ export function Login() {
   return (
     <main style={{ maxWidth: 420, marginTop: 80 }}>
       <div className="card">
-        <img src="/pwi-logo.png" alt="PWI" style={{ height: 60 }} />
+        <img src="pwi-logo.png" alt="PWI" style={{ height: 60 }} />
         <h2>PWI QUOTES</h2>
         {!useCode ? (<>
           <label>Work email</label>

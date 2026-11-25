@@ -152,7 +152,7 @@ export function Editor({ quoteId, me, mode = 'edit' }: { quoteId: string; me: Pr
     if (await act('win', { quote_id: quote.id, job_id: job.trim() }, 'Marked won')) await act('revise', { quote_id: quote.id, doc_type: 'CONFIRMATION' }, 'Confirmation started');
   };
   const askManager = async (f: { rule: string; detail?: any }) => {
-    const note = `${number} R${rev.rev}: ${flagText(f)}. Please review and approve in the quote app: ${location.origin}/#/q/${quoteId}/edit`;
+    const note = `${number} R${rev.rev}: ${flagText(f)}. Please review and approve in the quote app: ${location.origin}${location.pathname}#/q/${quoteId}/edit`;
     try { await api('request_approval', { revision_id: rev.id, rule: f.rule, note }); setMsg({ t: 'ok', m: 'Approval requested from your sales manager.' }); }
     catch {
       try { await navigator.clipboard.writeText(note); setMsg({ t: 'ok', m: 'Request copied — paste it to your sales manager (Teams or email). Save first so they approve the saved numbers.' }); }

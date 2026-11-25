@@ -62,8 +62,8 @@ function App() {
   return (
     <>
       <header className="top">
-        <img src="/pwi-logo.png" alt="PWI" />
-        <nav>{nav('/', 'QUOTES')}{nav('/new', 'NEW QUOTE')}{isMgr && nav('/approvals', 'APPROVALS')}{me.role === 'admin' && nav('/admin', 'SETTINGS')}</nav>
+        <img src="pwi-logo.png" alt="PWI" />
+        <nav>{nav('/', 'QUOTES')}{nav('/new', 'NEW QUOTE')}{isMgr && nav('/approvals', 'APPROVALS')}{me.role === 'admin' && nav('/admin', 'SETTINGS')}{location.pathname.startsWith('/quotes') && <a href="/" title="Back to the inventory app">INVENTORY</a>}</nav>
         <span className="me">{me.full_name || session.user.email} · {me.role} · <a style={{ color: '#fff' }} href="#/" onClick={() => supabase.auth.signOut()}>sign out</a></span>
       </header>
       {newVersion && <div className="update-bar">A new version of the quote app is ready. <button onClick={() => location.reload()}>Reload</button></div>}

@@ -71,7 +71,7 @@ export default function Harness() {
   if (open && !sessionStorage.getItem('h-open')) { try { localStorage.setItem('pwi.editor.open', JSON.stringify(open.split(','))); sessionStorage.setItem('h-open', '1'); } catch { /* ignore */ } }
   return (
     <>
-    <header className="top"><img src="/pwi-logo.png" alt="PWI" /><nav><a href="#/harness">QUOTES</a><a href="#/harness">NEW QUOTE</a></nav><span className="me">Harness (no login, no network)</span></header>
+    <header className="top"><img src="pwi-logo.png" alt="PWI" /><nav><a href="#/harness">QUOTES</a><a href="#/harness">NEW QUOTE</a></nav><span className="me">Harness (no login, no network)</span></header>
     <main>
       <div className="qe-page">
         <div className="row" style={{ justifyContent: 'space-between' }}>

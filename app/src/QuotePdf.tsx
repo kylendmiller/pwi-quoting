@@ -78,7 +78,7 @@ function Wording({ blocks }: { blocks: Block[] }) {
 }
 
 export function QuoteDocPdf({ quote, rev, doc, priced, me, number }: { quote: any; rev: any; doc: QuoteDoc; priced: Priced; me: { full_name: string; title: string }; number: string }) {
-  if (!registered) registerPdfAssets('/');
+  if (!registered) registerPdfAssets(typeof location !== 'undefined' ? new URL('.', location.href).href : '/');
   // S9: the customer numbers are priced.quote (each part rounded once, total = sum of the parts) — from the server's
   // `send` response when sending. Older priced results without `quote` fall back to the same rule on the rollup.
   const q = priced.quote ?? quoteMoney(priced.rollup.quote);
