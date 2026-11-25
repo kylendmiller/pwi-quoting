@@ -55,3 +55,24 @@ table.assume td { padding: 6px; border-bottom: 1px solid var(--silver); vertical
 table.assume td:first-child { white-space: nowrap; width: 110px; }
 pre.wording { white-space: pre-wrap; font-family: inherit; font-size: 13px; max-height: 360px; overflow: auto; background: #fafafa; padding: 10px; border-radius: 6px; margin: 0; }
 @media (max-width: 600px) { header.top nav a { font-size: 12px; padding: 0 6px; } header.top .me { display: none; } main { padding: 8px; } }
+
+/* Phones: header wraps, quote list becomes cards (no sideways scroll) */
+header.top { flex-wrap: wrap; }
+header.top nav { display: flex; flex-wrap: wrap; gap: 4px 14px; }
+header.top nav a { white-space: nowrap; margin-right: 0; }
+@media (max-width: 600px) {
+  html, body { overflow-x: hidden; }
+  header.top { padding: 8px 10px; gap: 8px 10px; }
+  header.top img { height: 28px; }
+  header.top nav { gap: 6px 12px; }
+  header.top nav a { padding: 0; }
+  .tip { display: none; }
+  table.qlist thead { display: none; }
+  table.qlist, table.qlist tbody { display: block; }
+  table.qlist tr { display: grid; grid-template-columns: 1fr auto; grid-template-areas: "no st" "cust cust" "proj proj" "tot date"; gap: 2px 8px; padding: 10px 12px; border-bottom: 1px solid var(--silver); }
+  table.qlist td { display: block; padding: 0; border: 0; min-width: 0; overflow-wrap: anywhere; }
+  table.qlist td.q-no { grid-area: no; } table.qlist td.q-st { grid-area: st; text-align: right; }
+  table.qlist td.q-cust { grid-area: cust; font-weight: 700; } table.qlist td.q-proj { grid-area: proj; color: var(--charcoal, #81858B); font-size: 13px; }
+  table.qlist td.q-tot { grid-area: tot; text-align: left; font-weight: 700; } table.qlist td.q-date { grid-area: date; text-align: right; font-size: 12px; }
+  table.qlist td[colspan] { grid-column: 1 / -1; }
+}

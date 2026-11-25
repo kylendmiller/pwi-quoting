@@ -18,25 +18,25 @@ export function QuoteList() {
       {pending ? <div className="card from-claude"><h3>Quote from Claude waiting</h3>
         <ul className="summary">{pending.items.map((it: any, i: number) => <li key={i}>{describe(it)}</li>)}</ul>
         <a className="btn" href="#/new">Create it →</a></div>
-        : <p className="muted">Tip: copy the block or link Claude gives you and press Ctrl+V anywhere on this page.</p>}
+        : <p className="muted tip">Tip: copy the block or link Claude gives you and press Ctrl+V anywhere on this page.</p>}
       <div className="row" style={{ justifyContent: 'space-between' }}>
         <h2>Quotes</h2>
         <a className="btn" href="#/new">+ New quote</a>
       </div>
       <input placeholder="Search customer, project, quote # or job #" value={q} onChange={e => setQ(e.target.value)} />
       <div className="card" style={{ marginTop: 12, padding: 0 }}>
-        <table>
+        <table className="qlist">
           <thead><tr><th>Number</th><th>Customer</th><th>Project</th><th>Status</th><th className="num">Total</th><th>Updated</th></tr></thead>
           <tbody>
             {shown.map(r => {
               const cur = (r.quote_revisions ?? []).find((x: any) => x.rev === r.current_revision);
               return (
                 <tr key={r.id} style={{ cursor: 'pointer' }} onClick={() => (location.hash = `/q/${r.id}`)}>
-                  <td><b>{r.job_id ?? r.quote_number}</b> <span className="muted">R{r.current_revision}</span></td>
-                  <td>{r.customers?.name}</td><td>{r.project_name}</td>
-                  <td><span className={`pill ${r.status}`}>{r.status.replace('_', ' ')}</span></td>
-                  <td className="num">{money(cur?.total)}</td>
-                  <td className="muted">{new Date(r.updated_at).toLocaleDateString()}</td>
+                  <td className="q-no"><b>{r.job_id ?? r.quote_number}</b> <span className="muted">R{r.current_revision}</span></td>
+                  <td className="q-cust">{r.customers?.name}</td><td className="q-proj">{r.project_name}</td>
+                  <td className="q-st"><span className={`pill ${r.status}`}>{r.status.replace('_', ' ')}</span></td>
+                  <td className="num q-tot">{money(cur?.total)}</td>
+                  <td className="muted q-date">{new Date(r.updated_at).toLocaleDateString()}</td>
                 </tr>
               );
             })}
