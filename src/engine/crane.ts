@@ -249,7 +249,9 @@ export function buildCrane(spec: CraneSpec, cat: Catalog, f: Factors = { product
   if (motor) {
     const W = R.endTruckWheelbase; const wb = Math.max(W.minIn, Math.ceil(s.spanFt * 12 / W.spanInPerWbIn / W.stepIn) * W.stepIn);
     const pre = under ? pick([[2, 'SCU-110-100'], [5, 'SCU-130-100'], [999, 'SCU-170-100']] as [number, string][], cap) : pick([...(R.endTruck as [number, string][]).filter(([c]) => c <= 10), [15, 'STT-250-150'], [999, 'STT-500-100']] as [number, string][], cap);
-    const et = cat.vendorParts(pre).map(p => ({ ...p, wb: Number(p.part.split('-').pop()) })).filter(p => p.wb >= wb).sort((a, b) => a.wb - b.wb)[0];
+    const etAll = cat.vendorParts(pre).map(p => ({ ...p, wb: Number(p.part.split('-').pop()) })).sort((a, b) => a.wb - b.wb);
+    let et = etAll.find(p => p.wb >= wb);
+    if (!et && etAll.length) { et = etAll[etAll.length - 1]; K.notes.push(`No ${pre} end truck with a ${wb}" wheelbase on the price list — priced as ${et.part} (longest listed); confirm with Starke.`); }
     if (et) K.vend(et.part, bridges, { role: 'end_truck', basis: { source: 'catalog', text: `${pre} series for ${cap} t ${under ? 'underhung' : 'top running'}; wheelbase ≥ ${wb}" (span ${s.spanFt}' × 12 ÷ ${W.spanInPerWbIn}, step ${W.stepIn}", min ${W.minIn}") → ${et.wb}"` } }); else K.notes.push(`End truck ${pre}-${wb} not found.`);
     K.vend(pick((v === '460V' ? [[3, 'SCP-0246'], [5, 'SCP-0346'], [10, 'SCP-0446'], [15, 'SCP-0746'], [999, 'SCP-1046']] : R.panel230) as [number, string][], cap), bridges);
   }

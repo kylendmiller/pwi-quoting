@@ -383,12 +383,12 @@
   "tubeFromCap": 3
  },
  "boxGirder": {
-  "_why": "Added 11/20 (overnight). Past the AQT girder chart the girder is sized at L/600 (rated load + hoist, plus self weight) as the lightest W shape up to 36\" deep; when none works, a plate box girder: depth = span/24 (24-48\"), two 1/4\" webs, flanges for the required I, x1.15 for diaphragms/rail/stiffeners. Calibrated on 29562 (70' 10 t, 189 plf sold) and 28723 (75' 15 t double girder, 161 plf sold). Box fab 1.8 SMT h/ft (both jobs).",
+  "_why": "Added 11/20 (overnight). Past the AQT girder chart the girder is sized at L/600 (rated load + hoist, plus self weight) as the lightest W shape up to 36\" deep; when none works, a plate box girder: depth = span/24 (24-48\"), two 1/4\" webs, flanges for the required I, x1.15 for diaphragms/rail/stiffeners. Calibrated on 29562 (70' 10 t, 189 plf sold) and 28723 (75' 15 t double girder, 161 plf sold). Box fab 1.8 SMT h/ft (both jobs). 11/27: max depth 48\" \u2192 96\" so long spans (100'+) get a deep box instead of very heavy flanges (28421: 150' 60 t).",
   "deflLimit": 600,
   "maxWDepthIn": 36,
   "depthInPerSpanIn": 0.0417,
   "minDepthIn": 24,
-  "maxDepthIn": 48,
+  "maxDepthIn": 96,
   "webIn": 0.25,
   "fabFactor": 1.15,
   "lbPerIn2Ft": 3.4,
