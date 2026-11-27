@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <script>if (location.pathname === "/quotes") location.replace("/quotes/" + location.search + location.hash);</script>
+    <script>if (location.hostname === "pwi-quotes.netlify.app") location.replace("https://pwiinventory.netlify.app/quotes/" + location.search + location.hash); else if (location.pathname === "/quotes") location.replace("/quotes/" + location.search + location.hash);</script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>PWI Quotes</title>
