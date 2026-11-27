@@ -52,7 +52,7 @@ export function normalize(x0: CraneSpec): Norm {
   check('runwayCapacityTons', x0.runwayCapacityTons, 0.25, 120);
   check('runwayOalFt', x0.runwayOalFt, 8, 3000, support !== 'bridge_only');
   check('overallHeightFt', x0.overallHeightFt, 8, 80); check('hookHeightFt', x0.hookHeightFt, 6, 78); check('systems', x0.systems, 1, 60);
-  check('bridgesPerSystem', x0.bridgesPerSystem, 1, 10); check('hoistsPerBridge', x0.hoistsPerBridge, 1, 4); check('columnsPerSystem', x0.columnsPerSystem, 4, 200);
+  check('bridgesPerSystem', x0.bridgesPerSystem, 1, 10); check('hoistsPerBridge', x0.hoistsPerBridge, 0, 4); check('columnsPerSystem', x0.columnsPerSystem, 4, 200);
   check('liftFt', x0.liftFt, 8, 150); check('railFt', x0.railFt, 0, 20000); check('runwayElectrificationFt', x0.runwayElectrificationFt, 0, 20000); check('crewMen', x0.crewMen, 2, 10); check('buildingBayFt', x0.buildingBayFt, 8, 80);
   if (x0.columnStyle != null && !['tube', 'wide_flange', 'built_up'].includes(x0.columnStyle)) throw new Error('columnStyle must be tube, wide_flange or built_up.');
   if (x0.install || x0.miles != null) check('miles', x0.miles, 0, 3500, true);
@@ -245,7 +245,8 @@ export function buildCrane(spec: CraneSpec, cat: Catalog, f: Factors = { product
   const hoistPart = pickHoist(cat, classD ? cap * CD.hoistCapFactor : cap, lift, v, s.trolley, doubleGirder);
   if (classD) A.push({ field: 'serviceClass', value: 'D', why: `Class D (heavy service): hoist sized at ${CD.hoistCapFactor}× rated capacity and derated to ${cap} t (sold 29562, 28723)`, alt: 'C' });
   if (cap > 3) A.push({ field: 'hoistFamily', value: `Starke ${doubleGirder ? 'STW' : 'SMW'} wire rope`, why: '≥5 t sold jobs used wire rope (SMW single girder 29331/28192; STW double girder 29523)' });
-  if (hoistPart) K.vend(hoistPart, hoists, { role: 'hoist', basis: { source: 'catalog', text: `Smallest stocked ${cap <= 3 && /^STK/.test(hoistPart) ? 'STK chain' : 'wire rope'} hoist ≥ ${classD ? `${cap * CD.hoistCapFactor} t (class D ${CD.hoistCapFactor}×)` : `${cap} t`}, lift ≥ ${lift}', ${v}, ${s.trolley} trolley; ${hoists} = ${bridges} bridge${bridges > 1 ? 's' : ''} × ${s.hoistsPerBridge ?? 1}`, assumption: 'liftFt' } }); else K.notes.push(`No hoist found for ${cap} t / ${lift}' / ${v} — pick in editor.`);
+  if (hoists === 0) K.notes.push('No hoist on this quote (hoist by others or existing) — 0 hoists per bridge.');
+  else if (hoistPart) K.vend(hoistPart, hoists, { role: 'hoist', basis: { source: 'catalog', text: `Smallest stocked ${cap <= 3 && /^STK/.test(hoistPart) ? 'STK chain' : 'wire rope'} hoist ≥ ${classD ? `${cap * CD.hoistCapFactor} t (class D ${CD.hoistCapFactor}×)` : `${cap} t`}, lift ≥ ${lift}', ${v}, ${s.trolley} trolley; ${hoists} = ${bridges} bridge${bridges > 1 ? 's' : ''} × ${s.hoistsPerBridge ?? 1}`, assumption: 'liftFt' } }); else K.notes.push(`No hoist found for ${cap} t / ${lift}' / ${v} — pick in editor.`);
   if (motor) {
     const W = R.endTruckWheelbase; const wb = Math.max(W.minIn, Math.ceil(s.spanFt * 12 / W.spanInPerWbIn / W.stepIn) * W.stepIn);
     const pre = under ? pick([[2, 'SCU-110-100'], [5, 'SCU-130-100'], [999, 'SCU-170-100']] as [number, string][], cap) : pick([...(R.endTruck as [number, string][]).filter(([c]) => c <= 10), [15, 'STT-250-150'], [999, 'STT-500-100']] as [number, string][], cap);
