@@ -126,6 +126,21 @@ export interface Conflict {
   field: EditableField | '*';
   builderWas: unknown; builderNow: unknown; yours: unknown;
 }
+// The ranges the builders were checked against sold jobs before limits were widened (Kyle 11/27). Past these the job still builds, with a review note.
+const CHECKED: Record<string, [string, number][]> = {
+  freestanding: [['capacityTons', 10], ['spanFt', 60], ['runwayOalFt', 600], ['systems', 10], ['bridgesPerSystem', 4], ['hoistsPerBridge', 2], ['overallHeightFt', 45], ['liftFt', 80]],
+  bridge: [['capacityTons', 20], ['spanFt', 80], ['runwayOalFt', 600], ['systems', 10], ['bridgesPerSystem', 4], ['hoistsPerBridge', 2], ['overallHeightFt', 45], ['liftFt', 80]],
+  gantry: [['capacityTons', 10], ['spanFt', 65], ['qty', 20], ['heightUnderBeamFt', 30], ['hoists', 3]],
+  monorail: [['capacityTons', 10], ['lengthFt', 600], ['systems', 10], ['overallHeightFt', 40], ['hoists', 6]],
+  jib: [['capacityTons', 5], ['spanFt', 30], ['overallHeightFt', 30], ['qty', 20]],
+  mezzanine: [['lengthFt', 400], ['widthFt', 300], ['deckHeightFt', 30], ['qty', 10]],
+};
+const LABEL: Record<string, string> = { capacityTons: 'capacity', spanFt: 'span', runwayOalFt: 'runway length', systems: 'systems', bridgesPerSystem: 'bridges per system', hoistsPerBridge: 'hoists per bridge', overallHeightFt: 'height', liftFt: 'lift', qty: 'quantity', heightUnderBeamFt: 'height under beam', hoists: 'hoists', lengthFt: 'length', widthFt: 'width', deckHeightFt: 'deck height' };
+export function pastChecked(it: any): string[] {
+  const lim = CHECKED[it.type]; if (!lim) return [];
+  return lim.filter(([k, max]) => typeof it[k] === 'number' && it[k] > max).map(([k, max]) => `${LABEL[k] ?? k} ${it[k]} (checked to ${max})`);
+}
+
 export interface BuiltDoc { doc: QuoteDoc; notes: string[]; blockers: string[]; assumptions: (Assumption & { item: number })[]; conflicts: Conflict[] }
 
 /** Items pasted without ids inherit the id of the old item at the same index when the type matches. */
@@ -239,6 +254,8 @@ export function buildFromSpec(spec0: QuoteSpec, cat0: Catalog, settings: any, ba
     lines = lines.concat(stampRefs(built.map(tag), () => it.id) as any);
     wording.push(it.wording ?? r.wording);
     notes.push(...r.notes.map(n => label + n));
+    const wide = pastChecked(it);
+    if (wide.length) notes.push(`${label}REVIEW BEFORE SENDING: ${wide.join(', ')} is past the range checked against sold jobs. Big / special jobs have priced up to ~35% low (moment or portal frames, box runways, tandem runways, bought-in items) — have engineering or the sales manager check it.`);
     blockers.push(...r.blockers.map(n => label + n));
     assumptions.push(...r.assumptions.map(a => ({ ...a, item: i })));
     install += r.suggestedInstallHours; freight += r.outboundFreight; preUse += r.preUse;
