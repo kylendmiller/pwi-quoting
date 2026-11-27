@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { supabase, api } from './supabase';
 import { FAMILIES, emptyDoc, describe } from './model';
-import { getPending, clearPending } from './pendingSpec';
+import { getPending, clearPending, pendingWaitingId, markWaiting } from './pendingSpec';
 import { loadCatalog } from './catalog';
 import { buildFromSpec } from '../../src/engine/buildSpec';
 
@@ -61,7 +61,7 @@ export function NewQuote() {
         doc = buildFromSpec(spec, await loadCatalog(settings), settings, doc).doc;
       }
       const res = await api('create', { customer_id: cust.id, contact_id: cid, project_name: project.trim(), job_location: location.trim(), brand, doc });
-      if (spec) { await api('save', { revision_id: res.revision.id, doc, doc_version: res.revision.doc_version }); clearPending(); }
+      if (spec) { await api('save', { revision_id: res.revision.id, doc, doc_version: res.revision.doc_version }); await markWaiting(pendingWaitingId(), { built_quote_id: res.quote.id }).catch(() => null); clearPending(); }
       window.location.hash = `/q/${res.quote.id}`;
     } catch (e: any) { setErr(e.message); } finally { setBusy(false); }
   };
@@ -73,7 +73,7 @@ export function NewQuote() {
         <h3>From Claude</h3>
         <ul className="summary">{spec.items.map((it: any, i: number) => <li key={i}>{describe(it)}</li>)}</ul>
         <p className="muted">Pick or confirm the customer below, then Create — every line, the install and the wording build automatically.</p>
-        <button className="secondary" onClick={() => { clearPending(); setSpec(null); }}>Discard</button>
+        <button className="secondary" onClick={() => { const w = pendingWaitingId(); clearPending(); setSpec(null); markWaiting(w, { dismissed: true }).catch(() => null); }}>Discard</button> <a className="btn secondary" href="#/" onClick={() => { if (pendingWaitingId()) clearPending(); }}>Build later</a>
       </div>}
       <div className="card grid">
         <div>

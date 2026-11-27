@@ -8,7 +8,7 @@ import { NewQuote } from './NewQuote';
 import { Editor } from './Editor';
 import { Approvals } from './Approvals';
 import { Admin } from './Admin';
-import { captureFromUrl, capturePending } from './pendingSpec';
+import { captureFromUrl, capturePending, syncPending } from './pendingSpec';
 import { useAppVersion } from './useAppVersion';
 
 captureFromUrl();
@@ -45,6 +45,8 @@ function App() {
     if (!session) { setMe(null); return; }
     supabase.from('profiles').select('*').eq('user_id', session.user.id).single().then(({ data }) => setMe(data as Profile));
   }, [session]);
+
+  useEffect(() => { if (me && me.role !== 'none') syncPending(me.user_id).catch(() => null); }, [me, route]);
 
   if (session === undefined) return null;
   if (!session) return <Login />;

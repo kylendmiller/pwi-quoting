@@ -1,11 +1,24 @@
 import { useEffect, useState } from 'react';
 import { supabase, money } from './supabase';
-import { getPending } from './pendingSpec';
+import { getPending, usePendingFromWaiting, markWaiting } from './pendingSpec';
 import { describe } from './model';
 
 export function QuoteList() {
   const [rows, setRows] = useState<any[]>([]);
   const [q, setQ] = useState('');
+  const [waiting, setWaiting] = useState<any[]>([]);
+  const [names, setNames] = useState<Record<string, string>>({});
+  const [uid, setUid] = useState('');
+  const loadWaiting = () => supabase.from('waiting_quotes').select('id, spec, summary, created_at, created_by')
+    .is('built_quote_id', null).is('dismissed_at', null).order('created_at', { ascending: false }).limit(50)
+    .then(({ data }) => setWaiting(data ?? []));
+  useEffect(() => {
+    loadWaiting();
+    supabase.auth.getSession().then(({ data }) => setUid(data.session?.user.id ?? ''));
+    supabase.from('profiles').select('user_id, full_name').then(({ data }) => setNames(Object.fromEntries((data ?? []).map((p: any) => [p.user_id, p.full_name]))));
+    const t = setTimeout(loadWaiting, 2500);          // a link just opened is saved a moment after sign-in
+    return () => clearTimeout(t);
+  }, []);
   useEffect(() => {
     supabase.from('quotes').select('id, quote_number, job_id, project_name, status, updated_at, current_revision, customers(name), quote_revisions(rev, total, doc_type)')
       .order('updated_at', { ascending: false }).limit(300).then(({ data }) => setRows(data ?? []));
@@ -15,10 +28,25 @@ export function QuoteList() {
   const pending = getPending();
   return (
     <>
-      {pending ? <div className="card from-claude"><h3>Quote from Claude waiting</h3>
+      {waiting.length > 0 && <div className="card from-claude waiting">
+        <h3>Waiting to be built ({waiting.length})</h3>
+        {waiting.map(w => (
+          <div key={w.id} className="wq">
+            <div className="wq-txt">
+              <b>{w.spec?.customer?.name || w.spec?.project || 'Job from Claude'}</b>
+              <ul className="summary">{(w.spec?.items ?? []).map((it: any, i: number) => <li key={i}>{describe(it)}</li>)}</ul>
+              <span className="muted">{w.created_by !== uid && names[w.created_by] ? `${names[w.created_by]} · ` : ''}{new Date(w.created_at).toLocaleString([], { month: 'numeric', day: 'numeric', hour: 'numeric', minute: '2-digit' })}</span>
+            </div>
+            <div className="wq-act">
+              <a className="btn" href="#/new" onClick={() => usePendingFromWaiting(w.spec, w.id)}>Build it →</a>
+              <button className="secondary" onClick={async () => { if (!confirm('Remove this job from the waiting list?')) return; await markWaiting(w.id, { dismissed: true }); loadWaiting(); }}>Remove</button>
+            </div>
+          </div>))}
+      </div>}
+      {pending && !waiting.length ? <div className="card from-claude"><h3>Quote from Claude waiting</h3>
         <ul className="summary">{pending.items.map((it: any, i: number) => <li key={i}>{describe(it)}</li>)}</ul>
         <a className="btn" href="#/new">Create it →</a></div>
-        : <p className="muted tip">Tip: copy the block or link Claude gives you and press Ctrl+V anywhere on this page.</p>}
+        : !waiting.length && <p className="muted tip">Tip: copy the block or link Claude gives you and press Ctrl+V anywhere on this page.</p>}
       <div className="row" style={{ justifyContent: 'space-between' }}>
         <h2>Quotes</h2>
         <a className="btn" href="#/new">+ New quote</a>
