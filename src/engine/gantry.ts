@@ -21,8 +21,8 @@ const KEYS = ['qty', 'capacityTons', 'spanFt', 'heightUnderBeamFt', 'hookHeightF
 const up = (x: number, br: number[]) => br.find(b => x <= b + 1e-9) ?? br[br.length - 1];
 
 export function buildGantry(spec: GantrySpec, cat: Catalog, f: Factors = { production: 0.69, install: 1.09 }, bo: BuildOpts = {}): BuildResult {
-  check('capacityTons', spec.capacityTons, 0.25, 10, true); check('spanFt', spec.spanFt, 6, 65, true); check('qty', spec.qty, 1, 20);
-  check('heightUnderBeamFt', spec.heightUnderBeamFt, 6, 30); check('hookHeightFt', spec.hookHeightFt, 5, 28); check('hoists', spec.hoists, 1, 3); check('floorTrackFt', spec.floorTrackFt, 0, 400);
+  check('capacityTons', spec.capacityTons, 0.25, 30, true); check('spanFt', spec.spanFt, 6, 100, true); check('qty', spec.qty, 1, 250);   // wide limits (Kyle 11/27); past the tab's charts it is flagged
+  check('heightUnderBeamFt', spec.heightUnderBeamFt, 6, 50); check('hookHeightFt', spec.hookHeightFt, 5, 48); check('hoists', spec.hoists, 1, 4); check('floorTrackFt', spec.floorTrackFt, 0, 400);
   if (spec.install || spec.miles != null) check('miles', spec.miles, 0, 3500, true);
   if (spec.heightUnderBeamFt == null && spec.hookHeightFt == null) throw new Error('Gantry needs heightUnderBeamFt or hookHeightFt');
   const s = keep<GantrySpec>(spec, KEYS);

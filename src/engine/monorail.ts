@@ -29,8 +29,8 @@ const chart = (rows: any[], k: string, x: number, cap: number) => {
 };
 
 export function buildMonorail(spec: MonorailSpec, cat: Catalog, f: Factors = { production: 0.7, install: 1.02 }, bo: BuildOpts = {}): BuildResult {
-  check('lengthFt', spec.lengthFt, 6, 600, true); check('capacityTons', spec.capacityTons, 0.125, 10, true); check('systems', spec.systems, 1, 10);
-  check('overallHeightFt', spec.overallHeightFt, 7, 40); check('hookHeightFt', spec.hookHeightFt, 5, 38); check('hoists', spec.hoists, 1, 6); check('supportSpacingFt', spec.supportSpacingFt, 5, 40); check('frameWidthFt', spec.frameWidthFt, 4, 30);
+  check('lengthFt', spec.lengthFt, 6, 3000, true); check('capacityTons', spec.capacityTons, 0.125, 30, true); check('systems', spec.systems, 1, 60);
+  check('overallHeightFt', spec.overallHeightFt, 7, 60); check('hookHeightFt', spec.hookHeightFt, 5, 58); check('hoists', spec.hoists, 1, 20); check('supportSpacingFt', spec.supportSpacingFt, 5, 60); check('frameWidthFt', spec.frameWidthFt, 4, 30);
   if (spec.install || spec.miles != null) check('miles', spec.miles, 0, 3500, true);
   const s = keep<MonorailSpec>(spec, KEYS);
   const n = s.systems ?? 1, cap = s.capacityTons, support = s.support ?? 'freestanding', hoistsPer = s.hoists ?? 1, hoists = hoistsPer * n;

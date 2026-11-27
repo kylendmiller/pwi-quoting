@@ -26,7 +26,7 @@ export interface JibSpec {
   install: boolean; miles?: number; crewMen?: number; travelMode?: 'drive' | 'fly' | 'local';
 }
 export function buildJib(spec: JibSpec, cat: Catalog, f: Factors = { production: 0.77, install: 1.25 }, bo: BuildOpts = {}): BuildResult {
-  check('capacityTons', spec.capacityTons, 0.125, 5, true); check('spanFt', spec.spanFt, 4, 30, true); check('overallHeightFt', spec.overallHeightFt, 6, 30); check('heightUnderBoomFt', spec.heightUnderBoomFt, 5, 28); check('qty', spec.qty, 1, 20);
+  check('capacityTons', spec.capacityTons, 0.125, 15, true); check('spanFt', spec.spanFt, 4, 40, true); check('overallHeightFt', spec.overallHeightFt, 6, 40); check('heightUnderBoomFt', spec.heightUnderBoomFt, 5, 38); check('qty', spec.qty, 1, 100);
   if (spec.install || spec.miles != null) check('miles', spec.miles, 0, 3500, true);
   const s = keep<JibSpec>(spec, ['qty', 'capacityTons', 'spanFt', 'overallHeightFt', 'heightUnderBoomFt', 'mount', 'rotation', 'hoist', 'trolley', 'liftFt', 'voltage', 'install', 'miles', 'crewMen', 'travelMode']);
   const n = s.qty ?? 1, cap = s.capacityTons, mount = s.mount ?? 'floor', v = volt(s.voltage), trolley = s.trolley ?? 'manual';

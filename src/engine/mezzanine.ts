@@ -23,8 +23,8 @@ export interface MezzanineSpec {
 const KEYS = ['qty', 'lengthFt', 'widthFt', 'deckHeightFt', 'liveLoadPsf', 'deck', 'treadPlate', 'guardrailFt', 'guardrail', 'stairs', 'stairType', 'stairPrice', 'gates', 'bracing', 'maxColumnSpacingFt', 'columns', 'primerOnly', 'colors', 'stamped', 'install', 'miles', 'crewMen', 'travelMode'] as const;
 
 export function buildMezzanine(spec: MezzanineSpec, cat: Catalog, f: Factors = { production: 0.83, install: 1.11 }, bo: BuildOpts = {}): BuildResult {
-  check('lengthFt', spec.lengthFt, 6, 400, true); check('widthFt', spec.widthFt, 6, 300, true); check('deckHeightFt', spec.deckHeightFt, 4, 30, true);
-  check('liveLoadPsf', spec.liveLoadPsf, 35, 250); check('guardrailFt', spec.guardrailFt, 0, 2000); check('stairs', spec.stairs, 0, 10); check('qty', spec.qty, 1, 10); check('maxColumnSpacingFt', spec.maxColumnSpacingFt, 8, 40);
+  check('lengthFt', spec.lengthFt, 6, 1000, true); check('widthFt', spec.widthFt, 6, 600, true); check('deckHeightFt', spec.deckHeightFt, 4, 40, true);
+  check('liveLoadPsf', spec.liveLoadPsf, 35, 250); check('guardrailFt', spec.guardrailFt, 0, 2000); check('stairs', spec.stairs, 0, 10); check('qty', spec.qty, 1, 50); check('maxColumnSpacingFt', spec.maxColumnSpacingFt, 8, 40);
   if (spec.install || spec.miles != null) check('miles', spec.miles, 0, 3500, true);
   const s = keep<MezzanineSpec>(spec, KEYS);
   const n = s.qty ?? 1, LL = s.liveLoadPsf ?? 125, DL = M.deadLoadPsf, w = LL + DL, mk = M.markupPct;

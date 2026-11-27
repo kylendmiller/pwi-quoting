@@ -29,6 +29,8 @@ export interface CraneSpec {
   bracedToBuilding?: boolean; preUseInspection?: boolean;
   backupPendant?: boolean;                  // radio + backup pendant (forces festoon on the bridge)
   serviceClass?: 'C' | 'D';
+  runwayCapacityTons?: number;             // runway / columns rated for more than one bridge (tandem): default = capacityTons
+  columnStyle?: 'tube' | 'wide_flange' | 'built_up';   // force the column type (sold jobs often use tube / W on crane columns)
   bracketsByOthers?: boolean;               // building_runway: crane brackets / seats come with the building (PEMB) — PWI supplies beams only (sold 28772)                 // CMAA class; D (heavy service) = hoist one size up, derated (sold 29562, 28723)
 }
 export interface BuildResult { lines: QuoteLine[]; assumptions: Assumption[]; notes: string[]; wording: string; suggestedInstallHours: number; smtShopHours: number;
@@ -39,18 +41,20 @@ export interface BuildOpts { skipTravel?: boolean; installDays?: number; trip?: 
 type Norm = CraneSpec & { support: Support; hanging: 'top_running' | 'underhung'; series: 'UL' | 'M' | 'GM' | 'HL'; systems: number; runwayOalFt: number; trolley: 'manual' | 'motorized'; control: 'radio' | 'pendant'; voltage: '460V/3' | '230V/3' | '208V/3' };
 const KEYS = ['backupPendant', 'series', 'support', 'hanging', 'systems', 'runwayOalFt', 'spanFt', 'capacityTons', 'overallHeightFt', 'hookHeightFt', 'liftFt', 'columnsPerSystem', 'bridgesPerSystem', 'hoistsPerBridge',
   'buildingBayFt', 'runwayElectrification', 'railFt', 'runwayElectrificationFt', 'bridgeDrive', 'trolley', 'voltage', 'control', 'collisionAvoidance', 'asceRail', 'doubleGirder', 'bracing', 'foundation', 'colors', 'install', 'miles',
-  'crewMen', 'travelMode', 'bracedToBuilding', 'preUseInspection', 'serviceClass', 'bracketsByOthers'] as const;
+  'crewMen', 'travelMode', 'bracedToBuilding', 'preUseInspection', 'serviceClass', 'bracketsByOthers', 'runwayCapacityTons', 'columnStyle'] as const;
 
 export function normalize(x0: CraneSpec): Norm {
   const support: Support = x0.support ?? 'freestanding';
   if (!['freestanding', 'building_runway', 'crane_columns', 'bridge_only'].includes(support)) throw new Error(`Unknown support ${support}.`);
   if (x0.overallHeightFt == null && x0.hookHeightFt == null && support !== 'bridge_only') throw new Error('Crane needs overallHeightFt or hookHeightFt');
-  const maxCap = support === 'freestanding' ? 10 : 20;
-  check('capacityTons', x0.capacityTons, 0.25, maxCap, true); check('spanFt', x0.spanFt, 5, support === 'freestanding' ? 60 : 80, true);
-  check('runwayOalFt', x0.runwayOalFt, 8, 600, support !== 'bridge_only');
-  check('overallHeightFt', x0.overallHeightFt, 8, 45); check('hookHeightFt', x0.hookHeightFt, 6, 42); check('systems', x0.systems, 1, 10);
-  check('bridgesPerSystem', x0.bridgesPerSystem, 1, 4); check('hoistsPerBridge', x0.hoistsPerBridge, 1, 2); check('columnsPerSystem', x0.columnsPerSystem, 4, 60);
-  check('liftFt', x0.liftFt, 8, 80); check('railFt', x0.railFt, 0, 4000); check('runwayElectrificationFt', x0.runwayElectrificationFt, 0, 4000); check('crewMen', x0.crewMen, 2, 4); check('buildingBayFt', x0.buildingBayFt, 8, 40);
+  // Limits are wide on purpose (Kyle 11/27: the app must take every job). Past the charts members are calculated and flagged for engineering.
+  check('capacityTons', x0.capacityTons, 0.25, 60, true); check('spanFt', x0.spanFt, 5, 150, true);
+  check('runwayCapacityTons', x0.runwayCapacityTons, 0.25, 120);
+  check('runwayOalFt', x0.runwayOalFt, 8, 3000, support !== 'bridge_only');
+  check('overallHeightFt', x0.overallHeightFt, 8, 80); check('hookHeightFt', x0.hookHeightFt, 6, 78); check('systems', x0.systems, 1, 60);
+  check('bridgesPerSystem', x0.bridgesPerSystem, 1, 10); check('hoistsPerBridge', x0.hoistsPerBridge, 1, 4); check('columnsPerSystem', x0.columnsPerSystem, 4, 200);
+  check('liftFt', x0.liftFt, 8, 150); check('railFt', x0.railFt, 0, 20000); check('runwayElectrificationFt', x0.runwayElectrificationFt, 0, 20000); check('crewMen', x0.crewMen, 2, 10); check('buildingBayFt', x0.buildingBayFt, 8, 80);
+  if (x0.columnStyle != null && !['tube', 'wide_flange', 'built_up'].includes(x0.columnStyle)) throw new Error('columnStyle must be tube, wide_flange or built_up.');
   if (x0.install || x0.miles != null) check('miles', x0.miles, 0, 3500, true);
   const series = x0.series ?? (x0.bridgeDrive === 'motorized' ? (x0.capacityTons >= 3 ? 'GM' : 'M') : 'M');
   if (!['UL', 'M', 'GM', 'HL'].includes(series)) throw new Error(`Unknown series ${series}.`);
@@ -95,7 +99,7 @@ export function buildCrane(spec: CraneSpec, cat: Catalog, f: Factors = { product
   const s = normalize(spec), s0 = spec;
   const fam = s.support === 'freestanding' ? 'freestanding' : 'bridge';
   const K = new Kit(cat, fam, f), A = K.A;
-  const cap = s.capacityTons, n = s.systems, bridges = (s.bridgesPerSystem ?? 1) * n, hoists = bridges * (s.hoistsPerBridge ?? 1);
+  const cap = s.capacityTons, rcap = s.runwayCapacityTons ?? cap, n = s.systems, bridges = (s.bridgesPerSystem ?? 1) * n, hoists = bridges * (s.hoistsPerBridge ?? 1);
   const motor = s.bridgeDrive === 'motorized', under = s.hanging === 'underhung';
   const hasRunway = s.support !== 'bridge_only', hasCols = s.support === 'freestanding' || s.support === 'crane_columns';
   const oal = s.runwayOalFt;
@@ -104,7 +108,7 @@ export function buildCrane(spec: CraneSpec, cat: Catalog, f: Factors = { product
   if (s.support === 'bridge_only') A.push({ field: 'support', value: 'bridge_only', why: `Bridge only on the customer's existing runway${oal ? ` (${oal}' long)` : ''} — runway capacity and condition by others`, alt: 'building_runway', altLabel: 'Add new runway beams on the building columns' });
 
   // ---------- geometry ----------
-  const maxBay = s.support === 'building_runway' ? (s.buildingBayFt ?? 25) : pick(R.bays.maxBayFtByCap as [number, number][], cap);
+  const maxBay = s.support === 'building_runway' ? (s.buildingBayFt ?? 25) : pick(R.bays.maxBayFtByCap as [number, number][], rcap);
   const bays = s.columnsPerSystem ? Math.max(1, s.columnsPerSystem / 2 - 1) : Math.max(1, Math.ceil(oal / maxBay));
   const colsPer = hasCols ? (s.columnsPerSystem ?? 2 * (bays + 1)) : 0, cols = colsPer * n, bayFt = oal ? oal / bays : 0;
   const supports = 2 * (bays + 1) * n;            // runway support points (columns or building brackets)
@@ -123,11 +127,17 @@ export function buildCrane(spec: CraneSpec, cat: Catalog, f: Factors = { product
   if (s.overallHeightFt != null || s.hookHeightFt != null) A.push({ field: 'heightBasis', value: basis, why: basis === 'overall' ? `"${hRaw}' tall" read as OVERALL height (top of runway) → hook ≈ ${hook.toFixed(1)}' (${headroom}' hoist/bridge headroom)` : `Hook height ${hRaw}' → top of runway ≈ ${overall.toFixed(1)}'`,
     alt: basis === 'overall' ? 'hook' : 'overall', altLabel: basis === 'overall' ? `${hRaw}' is hook height (system ${(hRaw + headroom).toFixed(1)}' tall)` : `${hRaw}' is overall height` });
 
-  let column = hasCols ? chartPick(CH.column_by_overall_height, 'overallHeightFt', overall, cap) : null;
-  let runway = hasRunway ? chartPick(CH.runway_by_bay, 'bayFt', bayFt, cap) : null;
+  let column = hasCols ? chartPick(CH.column_by_overall_height, 'overallHeightFt', overall, rcap) : null;
+  let runway = hasRunway ? chartPick(CH.runway_by_bay, 'bayFt', bayFt, rcap) : null;
+  // past the AQT runway chart: calculated (same method as girders past the chart: L/600 + 24 ksi, lightest W ≤ 36", else a plate box), flagged for engineering
+  let runBoxPlf = 0, runUnity: ReturnType<typeof sizeGirder>['check'] | undefined, runBoxDepth = 0;
   if (hasRunway && !runway) {
-    if (cap > 10 || bayFt <= 40) { runway = chartMax(CH.runway_by_bay); K.blockers.push(`${bayFt.toFixed(1)}' bays at ${cap} t are past the AQT runway chart — engineering must size the runway (priced as ${runway} placeholder).`); }
-    else throw new Error(`${bayFt.toFixed(1)}' bays at ${cap} t are past the sizing chart — add columns or quote by hand.`);
+    const perLine = rcap;                                             // one bridge (or the tandem rating) in a bay
+    const bridgeDeadLb = 100 * s.spanFt + 1500 + (cap >= 10 ? 60 * s.spanFt : 0);   // girder + end trucks, rough: only the runway past the chart uses it
+    const g = sizeGirder(cat, bayFt, perLine, true, bridgeDeadLb);
+    runUnity = g.check; runBoxDepth = g.depthIn;
+    if (g.shape) runway = g.shape; else runBoxPlf = g.boxPlf;
+    K.notes.push(`Runway calculated past the AQT chart (${bayFt.toFixed(1)}' bays, ${perLine} t): ${runway ?? `plate box ${runBoxDepth}" × ${runBoxPlf} plf`} — engineering to confirm.`);
   }
   let girder: string | null = null, girderSrc = 'AQT chart';
   if (s.series !== 'UL' && s.series !== 'HL') {
@@ -143,13 +153,21 @@ export function buildCrane(spec: CraneSpec, cat: Catalog, f: Factors = { product
     if (g.shape) { girder = g.shape; A.push({ field: 'girder', value: girder, why: `${s.spanFt}' span at ${cap} t is past the PWI bridge chart — sized at L/${R.boxGirder.deflLimit} (rated load + hoist + self weight) as the lightest W ≤ ${R.boxGirder.maxWDepthIn}" deep; engineering to confirm` }); }
     else { boxPlf = g.boxPlf; A.push({ field: 'girder', value: `box ${boxPlf} plf`, why: `No W shape ≤ ${R.boxGirder.maxWDepthIn}" deep meets L/${R.boxGirder.deflLimit} at ${s.spanFt}' / ${cap} t → plate box girder ${g.depthIn}" deep, ${boxPlf} plf (Ireq ≈ ${Math.round(g.Ireq)} in⁴); engineering to confirm` }); }
   }
-  const builtUp = hasCols && (s.support === 'crane_columns' ? cap >= 5 || !column : cap >= R.columnType.builtUpFromCap || !column || overall > R.columnType.maxChartHeightFt + 2);
+  const builtUpAuto = hasCols && (s.support === 'crane_columns' ? rcap >= 5 || !column : rcap >= R.columnType.builtUpFromCap || !column || overall > R.columnType.maxChartHeightFt + 2);
+  if (hasCols && s.columnStyle && s.columnStyle !== 'built_up' && !column) {
+    // asked for tube / W but past the column chart: largest chart size of that type, flagged
+    const want = s.columnStyle === 'tube' ? /^(ST|RT|HSS)/ : /^W/;
+    const all = (CH.column_by_overall_height as any[]).flatMap(r => Object.values(r.byCap) as string[]).filter(x => x && want.test(x) && cat.shape(x));
+    column = all.sort((a, b) => (Number(/x (\d+(?:\.\d+)?)\s*$/.exec(b)?.[1] ?? 0) - Number(/x (\d+(?:\.\d+)?)\s*$/.exec(a)?.[1] ?? 0)))[0] ?? null;
+    if (column) K.notes.push(`${s.columnStyle === 'tube' ? 'Tube' : 'W'} columns asked for past the AQT column chart — priced as ${column}; engineering to size.`);
+  }
+  const builtUp = hasCols && (s.columnStyle ? s.columnStyle === 'built_up' || !column : builtUpAuto);
   const SC = (R.columnType as any).builtUpShortColumn;
   const colLen0 = Math.ceil((overall - (runway ? depthIn(runway) / 12 : 1.5) - (rail ? R.height.railHeightFt : 0) - R.height.topPlateFt) / R.height.roundColumnToFt) * R.height.roundColumnToFt;
-  const builtUpPlf = s.support === 'crane_columns' ? pick([[5, 40], [10, 48], [20, 90], [999, 162]] as [number, number][], cap)
-    : SC && colLen0 <= SC.maxColumnFt && cap <= 10 ? pick(SC.plfByCap as [number, number][], cap) : pick(R.columnType.builtUpPlfByCap as [number, number][], cap);   // crane columns: tapered 3-plate (sold 28192 48 plf @10 t, 28970 162 plf @25 t)
+  const builtUpPlf = s.support === 'crane_columns' ? pick([[5, 40], [10, 48], [20, 90], [999, 162]] as [number, number][], rcap)
+    : SC && colLen0 <= SC.maxColumnFt && cap <= 10 ? pick(SC.plfByCap as [number, number][], cap) : pick(R.columnType.builtUpPlfByCap as [number, number][], rcap);   // crane columns: tapered 3-plate (sold 28192 48 plf @10 t, 28970 162 plf @25 t)
   A.push({ field: 'steelSource', value: 'chart', why: 'Steel from the AQT sizing chart (height × capacity, bay × capacity, span × capacity) — engineering to confirm' });
-  const runDepthFt = runway ? depthIn(runway) / 12 : 1.5;
+  const runDepthFt = runway ? depthIn(runway) / 12 : runBoxPlf ? runBoxDepth / 12 : 1.5;
   const colLen = hasCols ? Math.ceil((overall - runDepthFt - (rail ? R.height.railHeightFt : 0) - R.height.topPlateFt) / R.height.roundColumnToFt) * R.height.roundColumnToFt : 0;
   const columnType = !hasCols ? 'none' : builtUp ? 'built_up' : /^W/.test(column!) ? 'wide_flange' : 'tube';
   const foundation = s.foundation ?? (builtUp || s.support === 'crane_columns' ? 'foundation' : 'slab');
@@ -170,14 +188,15 @@ export function buildCrane(spec: CraneSpec, cat: Catalog, f: Factors = { product
 
   // ---------- structural + plate ----------
   if (hasCols) { if (builtUp) K.box('Built-up plate columns', cols, builtUpPlf, colLen, { role: 'column', basis: colBasis }); else K.steel('Columns', column!, cols, colLen, { role: 'column', basis: colBasis }); }
-  if (hasRunway) K.steel('Runways', runway!, 2 * piecesPerLine * n, pieceFt, { role: 'runway', basis: runBasis });
+  if (hasRunway && runBoxPlf) K.box('Plate box runways', 2 * piecesPerLine * n, runBoxPlf, pieceFt, { role: 'runway', basis: { ...calcBasis(`Plate box runway ${runBoxDepth}" deep, ${runBoxPlf} plf for ${bayFt.toFixed(1)}' bays at ${rcap} t (L/${R.boxGirder.deflLimit}, 24 ksi)`, runUnity, 'runway'), flag: 'Past the runway chart — calculated, engineering to confirm' } });
+  else if (hasRunway) K.steel('Runways', runway!, 2 * piecesPerLine * n, pieceFt, { role: 'runway', basis: runUnity ? { ...calcBasis(`${runway} calculated for ${bayFt.toFixed(1)}' bays at ${rcap} t (L/${R.boxGirder.deflLimit}, 24 ksi), past the AQT runway chart`, runUnity, 'runway'), flag: 'Past the runway chart — calculated, engineering to confirm' } : runBasis });
   const girderLb = girder ? K.steel(doubleGirder ? 'Bridge girders (double)' : 'Bridge girder', girder, bridges * (doubleGirder ? 2 : 1), Math.ceil(s.spanFt + 2), { role: 'girder', basis: girdBasis }) * (doubleGirder ? 2 : 1)
     : boxPlf ? K.box(doubleGirder ? 'Plate box girders (double)' : 'Plate box girder', bridges * (doubleGirder ? 2 : 1), boxPlf, Math.ceil(s.spanFt + 2), { role: 'girder', basis: girdBasis }) * (doubleGirder ? 2 : 1) : 0;
   const BR = (R as any).bracing ?? { tubeFromColumns: 6, tubeFromCap: 3 };
   const bracing = s.support === 'freestanding' && (s.bracing ?? (columnType === 'tube' && (colsPer >= BR.tubeFromColumns || cap >= BR.tubeFromCap)));
   if (bracing) K.steel('Bracing', 'ST 3 x 3 x 1/4', 6 * n, 20, { role: 'brace', basis: { source: 'rule', text: s.bracing != null ? 'Bracing requested on the spec' : `Tube columns with ${colsPer} columns / ${cap} t → 6 ST 3×3×1/4 × 20' braces per system (≥ ${BR.tubeFromColumns} columns or ≥ ${BR.tubeFromCap} t)` } });
   if (hasCols) {
-    const bp = (R.basePlate as [number, number, number][]).find(([m]) => cap <= m) ?? [0, 1, 24];
+    const bp = (R.basePlate as [number, number, number][]).find(([m]) => rcap <= m) ?? [0, 1, 24];
     K.plate('Column base plates', cols, bp[1], bp[2], bp[2], { basis: { source: 'rule', text: `Base plate ${bp[1]}" × ${bp[2]}" × ${bp[2]}" for ≤ ${bp[0]} t (freestanding_rules basePlate)`, assumption: 'foundation' } });
     K.plate('Column top plates', cols, cap <= 1 ? 0.375 : 0.5, cap <= 3 ? 10 : 18, cap <= 3 ? 14 : 12);
     if (columnType === 'tube') K.plate('Column gussets', cols * 4, cap <= 1 ? 0.25 : 0.3125, 5, 12);
@@ -287,28 +306,28 @@ export function buildCrane(spec: CraneSpec, cat: Catalog, f: Factors = { product
   const geo = { wireRope, festoon, overall, hook, colLen, colsPer, bayFt, rail, motor, doubleGirder, lift, bridges, builtUp, foundation, supports, runwayElec, cols, railFt, elecFt };
   return { lines: K.lines, assumptions: A, notes: K.notes, blockers: K.blockers, wording: wording(s, geo), preUse: s.preUseInspection ? 1500 * n : 0, suggestedInstallHours: Math.round(K.site * 10) / 10,
     smtShopHours: K.smtShopHours, outboundFreight: K.freight, tons: K.lbs / 2000, job: { ...job, workHrs: K.workHrs },
-    geometry: { overall: +overall.toFixed(2), hook: +hook.toFixed(2), colLen, column: !hasCols ? '' : builtUp ? `built-up ${builtUpPlf} plf` : column!, runway: runway ?? '', girder: girder ?? (boxPlf ? `box ${boxPlf} plf` : ''), bays, bayFt: +bayFt.toFixed(1), pieceFt, piecesPerLine, units: K.units } };
+    geometry: { overall: +overall.toFixed(2), hook: +hook.toFixed(2), colLen, column: !hasCols ? '' : builtUp ? `built-up ${builtUpPlf} plf` : column!, runway: runway ?? (runBoxPlf ? `box ${runBoxPlf} plf` : ''), girder: girder ?? (boxPlf ? `box ${boxPlf} plf` : ''), bays, bayFt: +bayFt.toFixed(1), pieceFt, piecesPerLine, units: K.units } };
 }
 
 /** Girder past the AQT chart: lightest W (≤ maxWDepthIn) meeting L/600 under rated load + hoist + self weight and
  *  24 ksi bending, else a plate box girder sized for the same I (and 24 ksi bending). W-shape Ix from ixOf() (conservative). */
-export function sizeGirder(cat: Catalog, spanFt: number, cap: number, double: boolean): { shape: string | null; boxPlf: number; depthIn: number; Ireq: number; check: { unity: number; checks: { name: string; unity: number }[] } } {
+export function sizeGirder(cat: Catalog, spanFt: number, cap: number, double: boolean, extraLb = 0): { shape: string | null; boxPlf: number; depthIn: number; Ireq: number; check: { unity: number; checks: { name: string; unity: number }[] } } {
   const r3 = (x: number) => Math.round(x * 1000) / 1000;
   const chk = (defl: number, bend: number) => ({ unity: r3(Math.max(defl, bend)), checks: [{ name: `deflection L/${R.boxGirder.deflLimit}`, unity: r3(defl) }, { name: 'bending 24 ksi (15% impact)', unity: r3(bend) }] });
   const B = R.boxGirder, L = spanFt * 12, E = 29e6, lim = L / B.deflLimit;
-  const P = (cap * 2000 + cap * B.hoistLbPerTon + 300) / (double ? 2 : 1);
+  const P = (cap * 2000 + cap * B.hoistLbPerTon + 300 + extraLb) / (double ? 2 : 1);
   const Ireq = (w: number) => P * L ** 3 / (48 * E * lim) + 5 * (w / 12) * L ** 4 / (384 * E * lim);
   // lightest W meeting deflection with its own weight and bending (24 ksi on Sx ≈ 2·Ix/d, 15% impact)
   const cands = W_SHAPES.map(n => ({ n, d: depthIn(n), wt: Number(/x (\d+(?:\.\d+)?)/.exec(n)?.[1] ?? 0) })).filter(x => x.d <= B.maxWDepthIn && cat.shape(x.n)).sort((a, b) => a.wt - b.wt);
   for (const c of cands) {
     const I = ixOf(c.n), M = P * 1.15 * L / 4 + (c.wt / 12) * L * L / 8;
-    if (I >= Ireq(c.wt) && M / (2 * I / c.d) <= 24000) return { shape: c.n, boxPlf: 0, depthIn: c.d, Ireq: Ireq(c.wt), check: chk(Ireq(c.wt) / I, M / (2 * I / c.d) / 24000) };
+    if (Ireq(c.wt) / I <= 0.98 && M / (2 * I / c.d) <= 24000 * 0.98) return { shape: c.n, boxPlf: 0, depthIn: c.d, Ireq: Ireq(c.wt), check: chk(Ireq(c.wt) / I, M / (2 * I / c.d) / 24000) };
   }
   const d = Math.min(B.maxDepthIn, Math.max(B.minDepthIn, Math.round(L * B.depthInPerSpanIn)));
   let plf = 150, I = 0;
   for (let i = 0; i < 6; i++) {
     const M = P * 1.15 * L / 4 + (plf / 12) * L * L / 8;
-    I = Math.max(Ireq(plf), M * (d / 2) / 24000);          // deflection or bending, whichever needs more (webs ignored: conservative)
+    I = Math.max(Ireq(plf), M * (d / 2) / 24000) / 0.98;   // deflection or bending, whichever needs more, at PWI's 0.98 max unity (webs ignored: conservative)
     const Af = 2 * I / (d * d); plf = Math.round(B.lbPerIn2Ft * (2 * Af + 2 * d * B.webIn) * B.fabFactor);
   }
   // the box is sized so its I equals the governing need (deflection or bending) at the last iteration's plf
